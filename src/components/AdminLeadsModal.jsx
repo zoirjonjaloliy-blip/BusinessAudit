@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Download, Phone, Send, Trash2, Search, Users, ShieldAlert, ShieldCheck, DollarSign, Calendar, Lock, KeyRound, LogOut } from 'lucide-react';
 
-const ADMIN_PASSWORD = "19990127"; // Yangi admin paroli
+const ADMIN_PASSWORD = "19990127";
 
 export function AdminLeadsModal({ isOpen, onClose, leads, onDeleteLead, onClearAll }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -29,64 +29,59 @@ export function AdminLeadsModal({ isOpen, onClose, leads, onDeleteLead, onClearA
     onClose();
   };
 
-  // Agar parol terilmagan bo'lsa - Parol so'rash oynasi chiqadi
+  // Ixcham (kichik) parol kiritish oynasi
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fadeIn">
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md p-6 sm:p-8 shadow-2xl relative">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-xs p-5 shadow-2xl relative">
           <button
             onClick={handleClose}
-            className="absolute top-5 right-5 p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
+            className="absolute top-3.5 right-3.5 p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
 
-          <div className="text-center space-y-3">
-            <div className="w-14 h-14 rounded-2xl bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center mx-auto shadow-lg shadow-blue-500/20">
-              <Lock className="w-7 h-7 text-blue-400" />
+          <div className="flex items-center gap-2.5 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-blue-600/20 text-blue-400 border border-blue-500/30 flex items-center justify-center">
+              <Lock className="w-4 h-4" />
             </div>
-            <h3 className="text-xl font-bold text-white tracking-tight">
-              Admin Tizimiga Kirish
-            </h3>
-            <p className="text-xs text-slate-400">
-              Ushbu bo'lim faqat tizim ma'muri (Zoirjon Jalolov) uchun mo'ljallangan. Iltimos, parolni kiriting.
-            </p>
+            <div>
+              <h3 className="text-sm font-bold text-white">Admin Kirish</h3>
+              <p className="text-[11px] text-slate-400">Parolni kiriting</p>
+            </div>
           </div>
 
-          <form onSubmit={handlePasswordSubmit} className="mt-6 space-y-4">
+          <form onSubmit={handlePasswordSubmit} className="space-y-3 mt-2">
             <div>
-              <div className="relative">
-                <KeyRound className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="password"
-                  autoFocus
-                  required
-                  value={inputPassword}
-                  onChange={(e) => {
-                    setInputPassword(e.target.value);
-                    setPasswordError(false);
-                  }}
-                  placeholder="Admin parolini kiriting"
-                  className={`w-full bg-slate-950 border rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:outline-none transition-all ${
-                    passwordError 
-                      ? 'border-red-500 focus:border-red-500' 
-                      : 'border-slate-800 focus:border-blue-500'
-                  }`}
-                />
-              </div>
+              <input
+                type="password"
+                autoFocus
+                required
+                value={inputPassword}
+                onChange={(e) => {
+                  setInputPassword(e.target.value);
+                  setPasswordError(false);
+                }}
+                placeholder="Parol..."
+                className={`w-full bg-slate-950 border rounded-xl px-3 py-2 text-xs text-white focus:outline-none transition-all ${
+                  passwordError 
+                    ? 'border-red-500 focus:border-red-500' 
+                    : 'border-slate-800 focus:border-blue-500'
+                }`}
+              />
               {passwordError && (
-                <p className="text-xs text-red-400 mt-1.5 font-medium flex items-center gap-1">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  Parol noto'g'ri! Qayta urinib ko'ring.
+                <p className="text-[11px] text-red-400 mt-1 font-medium flex items-center gap-1">
+                  <ShieldAlert className="w-3 h-3" />
+                  Parol noto'g'ri!
                 </p>
               )}
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition-all cursor-pointer"
+              className="w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs shadow-md shadow-blue-500/20 transition-all cursor-pointer"
             >
-              Kirish &rarr;
+              Tasdiqlash
             </button>
           </form>
         </div>
