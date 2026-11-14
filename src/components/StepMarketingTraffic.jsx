@@ -41,7 +41,7 @@ export function StepMarketingTraffic({ formData, onChange, onNext, onPrev }) {
     <div className="space-y-6 animate-fadeIn">
       <div>
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold mb-2">
-          4-Bosqich: Marketing & Trafik
+          3-Bosqich: Marketing & Trafik
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
           Reklama va Mijozlarni jalb qilish holati

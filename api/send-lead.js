@@ -26,8 +26,20 @@ export default async function handler(req, res) {
     ? "⚠️ Qarz daftari bor (Qo'lda)"
     : "🚨 Umuman hisobsiz (Xavfli)";
 
+  const inventoryStatusText = leadData.inventoryStatus === 'accurate'
+    ? "✅ Qoldiqlar aniq"
+    : leadData.inventoryStatus === 'estimated'
+    ? "⚠️ Taxminiy biladi"
+    : "🚨 Omborda oylab tovar muzlab yotibdi (Nelikvid)";
+
+  const fiscalStatusText = leadData.fiscalMarking === 'automated'
+    ? "✅ To'liq qonuniy (1C/POS)"
+    : leadData.fiscalMarking === 'partial'
+    ? "⚠️ Qisman (qo'lda uriladi)"
+    : "🚨 Tizimlashmagan (Jarima xavfi yuqori!)";
+
   const message = `
-🔥 <b>YANGI TADBIRKOR AUDITI! (POS / 1C Mijoz)</b>
+🔥 <b>YANGI TADBIRKOR AUDITI! (360° PRO 3.0 Dossier)</b>
 ━━━━━━━━━━━━━━━━━
 👤 <b>Ismi:</b> ${leadData.fullName || "Noma'lum"}
 🏢 <b>Biznes nomi:</b> ${leadData.businessName || "Kiritilmagan"}
@@ -37,14 +49,25 @@ export default async function handler(req, res) {
 📊 <b>BIZNES VA DASTUR HOLATI:</b>
 • <b>Sohasi:</b> ${leadData.industry?.name || "Savdo"}
 • <b>Hisob-kitob tizimi:</b> ${softwareStatus}
-• <b>Qarzlar / To'lovlar:</b> ${debtStatus}
+• <b>Qarzlar / Nasiya:</b> ${debtStatus}
+• <b>Ombor / Nelikvid:</b> ${inventoryStatusText}
+• <b>Soliq & Markirovka:</b> ${fiscalStatusText}
 • <b>Mijozlar bazasi (CRM):</b> ${leadData.hasCrm === 'yes' ? "Bor" : "Yo'q"}
+• <b>Bonus / Loyallik tizimi:</b> ${leadData.loyaltySystem === 'automated' ? "Avtomatlashgan" : leadData.loyaltySystem === 'verbal' ? "Og'zaki chegirma" : "Yo'q"}
 • <b>Sotuv jamoasi:</b> ${leadData.salesTeam === 'owner_only' ? "Egasi o'zi sotadi" : "Menejerlar bor"}
 
-💰 <b>MOLIYAVIY RAQAMLAR:</b>
-• <b>Oylik maqsad:</b> $${leadData.targetRevenue?.toLocaleString()}
-• <b>O'rtacha chek:</b> $${leadData.averageCheck}
-• ⚠️ <b>Oylik yo'qotish (Zarar):</b> $${leadData.monthlyWastedMoney?.toLocaleString()} /oyiga
+💰 <b>MOLIYAVIY RENTGEN RAQAMLARI:</b>
+• <b>Oylik maqsad:</b> $${leadData.targetRevenue?.toLocaleString() || 0}
+• <b>O'rtacha chek:</b> $${leadData.averageCheck || 0}
+• <b>Doimiy xarajatlar:</b> $${leadData.fixedCosts?.toLocaleString() || 0}/oy
+• ⚠️ <b>Umumiy oylik zarar:</b> $${(leadData.totalMonthlyLoss || leadData.monthlyWastedMoney)?.toLocaleString() || 0} /oy ($${(leadData.totalYearlyLoss || leadData.yearlyWastedMoney)?.toLocaleString() || 0} /yil)
+  ↳ <i>Yo'qotilgan sof foyda:</i> $${leadData.lostNetProfitMonthly?.toLocaleString() || 0}/oy
+  ↳ <i>Reklama behuda ketishi:</i> $${leadData.monthlyWastedMarketing?.toLocaleString() || 0}/oy
+  ↳ <i>Kamomad/o'g'irlik:</i> $${leadData.inventoryShrinkLossMonthly?.toLocaleString() || 0}/oy
+• 🧊 <b>Ombordagi muzlagan tovar (Nelikvid):</b> $${leadData.deadStockSum?.toLocaleString() || 0}
+• 📋 <b>Nasiya daftari xavfi:</b> $${leadData.estimatedDebtRiskSum?.toLocaleString() || 0}
+• 📅 <b>Zararsizlik kuni:</b> Oyning ${leadData.breakEvenDay || 1}-kuni
+• ⏱️ <b>Operatsionka vaqti:</b> ${leadData.yearlyOpHours || 0} soat/yil ($${leadData.yearlyTimeCost?.toLocaleString() || 0} tadbirkor vaqti qiymati)
 • 🏥 <b>Salomatlik balli:</b> ${leadData.scores?.overall}/100 (${leadData.riskLevel})
 
 ━━━━━━━━━━━━━━━━━

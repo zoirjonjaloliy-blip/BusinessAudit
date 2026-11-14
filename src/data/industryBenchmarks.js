@@ -1,4 +1,4 @@
-// Sohaviy benchmarklar (O'zbekiston va MDH bozori o'rtacha ko'rsatkichlari)
+// Sohaviy benchmarklar va PRO 3.0 Texnik Arxitektura (Hardware & Software)
 export const INDUSTRY_BENCHMARKS = {
   retail_food: {
     id: 'retail_food',
@@ -9,8 +9,30 @@ export const INDUSTRY_BENCHMARKS = {
     avgConversion: 35,
     avgCheck: 15,
     avgMargin: 18,
-    softwareTip: "Kassa, elektron tarozi va shtrix-kod skaneri bilan ishlovchi zamonaviy POS savdo dasturi.",
-    tip: "Oziq-ovqatda tovar aylanmasi tezligi va doimiy mahalliy xaridorlar oqimi eng muhimi."
+    typicalFixedCosts: 1800,
+    typicalInventory: 15000,
+    autoInvestCost: 950,
+    softwareTip: "1C: Chakana savdo (Розница) yoki ixtisoslashgan Kassa POS tizimi + Asl Belgisi markirovka moduli.",
+    tip: "Oziq-ovqatda tovar aylanmasi tezligi va tez buziluvchi tovarlar yaroqlilik muddatini avtomat nazorat qilish shart.",
+    benchmarks: [
+      { name: "Sof foyda marjasi", userMetric: "netMargin", userSuffix: "%", marketAvg: "15-18%", top10: "22%+", note: "TOP-10% do'konlar to'g'ridan-to'g'ri ishlab chiqaruvchilar bilan ishlash hisobiga yuqori marja oladi." },
+      { name: "Ombor tovar aylanishi", userValue: "35 kun", marketAvg: "35 kun", top10: "14-18 kun", note: "Tez buziluvchi tovarlar yaroqliligini saqlash uchun tovarlar 18 kundan tez aylanishi shart." },
+      { name: "Kassa kamomadi normasi", userValue: "<0.8%", marketAvg: "<0.5%", top10: "<0.1%", note: "Shtrix-kod va kassa intizomi orqali kamomadni amalda nolga tushirish mumkin." },
+      { name: "Qayta xarid darajasi (LTV)", userValue: "60%", marketAvg: "65%", top10: "85%+", note: "Doimiy xaridorlar oylik umumiy kassa tushumining asosiy 80% qismini keltiradi." }
+    ],
+    hardwareChecklist: [
+      { id: 'pos_terminal', name: "Sensorli POS-monoblok (15.6 dyuymli kassa ekrani)", essential: true },
+      { id: 'scanner_2d', name: "2D Shtrix-kod va Markirovka (DataMatrix) skaneri", essential: true },
+      { id: 'receipt_printer', name: "80mm tezkor termochek printeri (Avto-qirqish bilan)", essential: true },
+      { id: 'barcode_scale', name: "Shtrix-kod chop etuvchi elektron tarozi (Shtrih-M / Rongta)", essential: true },
+      { id: 'cash_drawer', name: "Avtomatik ochiluvchi metall pul qutisi", essential: false },
+      { id: 'ups', name: "UPS (Elektr uzilishida 1-2 soat kassa ishlashi uchun)", essential: false }
+    ],
+    rules: [
+      "Tez aylanuvchi (top-20) tovarlar hech qachon omborda tugab qolmasligi uchun minimal qoldiq (min-ostatok) xabarnomasini yoqing.",
+      "Asl Belgisi markirovkalangan mahsulotlarni faqat 2D skaner orqali to'g'ridan-to'g'ri soliq chekiga chiqarishni ta'minlang.",
+      "Kunlik kassa smenasini xodimlar bilan birga Z-hisobot orqali 5 daqiqada taqqoslab yoping."
+    ]
   },
   retail_general: {
     id: 'retail_general',
@@ -21,8 +43,30 @@ export const INDUSTRY_BENCHMARKS = {
     avgConversion: 20,
     avgCheck: 45,
     avgMargin: 35,
-    softwareTip: "Shtrix-kod skaner va ombordagi real qoldiqlarni (ostatka) hisoblovchi POS savdo dasturi.",
-    tip: "Chakana savdoda qoldiq tovarlar 'muzlab qolishi' aylanma mablag'ni yeb qo'yadi."
+    typicalFixedCosts: 1500,
+    typicalInventory: 25000,
+    autoInvestCost: 850,
+    softwareTip: "1C: Savdoni boshqarish (УТ) yoki 1C: Chakana savdo + Telegram orqali rahbar hisoboti va mijozlar bonus boti.",
+    tip: "Chakana savdoda qoldiq tovarlar 'muzlab qolishi' aylanma mablag'ni yeb qo'yadi. ABC-tahlil shart.",
+    benchmarks: [
+      { name: "Sof marja foizi", userMetric: "netMargin", userSuffix: "%", marketAvg: "28-35%", top10: "45%+", note: "Kuchli brend va eksklyuziv mahsulot assortimenti marjani 45% dan yuqoriga olib chiqadi." },
+      { name: "Ombor tovar aylanishi", userValue: "60 kun", marketAvg: "60 kun", top10: "30 kun", note: "Omborda tovar 30 kunda aylanmasa, aylanma pul muzlaydi va qarz majburiyatlari o'sadi." },
+      { name: "Sotuv konversiyasi", userMetric: "conversionRate", userSuffix: "%", marketAvg: "25%", top10: "45%+", note: "Sotuvchilar skript va kassa takliflari orqali har 2 ta kurgandan 1 tasiga sotishadi." },
+      { name: "Nasiya qaytish muddati", userValue: "30 kun", marketAvg: "30 kun", top10: "10 kun", note: "Qat'iy limit va SMS eslatmalar pulning o'z vaqtida qaytishini kafolatlaydi." }
+    ],
+    hardwareChecklist: [
+      { id: 'pos_terminal', name: "Sensorli POS-monoblok yoki Kassa noutbuki", essential: true },
+      { id: 'scanner_2d', name: "2D Simsiz/Simli shtrix-kod skaneri (Markirovka o'qiydigan)", essential: true },
+      { id: 'label_printer', name: "Godex / Xprinter shtrix-kod va etiketka printeri", essential: true },
+      { id: 'receipt_printer', name: "80mm yoki 58mm termochek printeri", essential: true },
+      { id: 'cash_drawer', name: "Avtomatik metall pul qutisi", essential: false },
+      { id: 'ts_terminal', name: "TSD (Ma'lumot yig'ish terminali - tezkor reviziya uchun)", essential: false }
+    ],
+    rules: [
+      "ABC-tahlil orqali ombordagi 20% eng ko'p foyda keltiruvchi tovarlarni aniqlab, muzlagan nelikvidlarni chegirmada naqdga aylantiring.",
+      "Mijozlar telefon raqamiga bog'langan avtomatik 3-5% keshbek tizimini joriy qilib, takroriy xaridni 30% oshiring.",
+      "Nasiya berish chegarasi (limiti)ni har bir mijoz uchun qat'iy dasturda belgilang."
+    ]
   },
   wholesale_b2b: {
     id: 'wholesale_b2b',
@@ -33,8 +77,28 @@ export const INDUSTRY_BENCHMARKS = {
     avgConversion: 12,
     avgCheck: 800,
     avgMargin: 20,
-    softwareTip: "1C: Korxona va mobil savdo agentlari integratsiyasi, mijozlar qarzdorligi (debitorlik) nazorati.",
-    tip: "Nasiya daftarda yuritilsa, aylanma mablag'ning 15-20% yillab qaytmasligi mumkin."
+    typicalFixedCosts: 2500,
+    typicalInventory: 60000,
+    autoInvestCost: 1500,
+    softwareTip: "1C: Savdoni boshqarish (УТ) + Savdo agentlari uchun mobil ilova (Smartup / Agentlik) va Debitorlik nazorati.",
+    tip: "Nasiya daftarda yuritilsa, aylanma mablag'ning 15-20% yillab qaytmasligi mumkin.",
+    benchmarks: [
+      { name: "Ulgurji sof marja", userMetric: "netMargin", userSuffix: "%", marketAvg: "8-12%", top10: "16%+", note: "Yirik aylanmada 4% qo'shimcha marja korxonaga yuz minglab dollar sof foyda beradi." },
+      { name: "Debitorlik (Nasiya) qaytishi", userValue: "30 kun", marketAvg: "30 kun", top10: "7-14 kun", note: "Nasiyaning 14 kunda qaytishi yiliga pul aylanmasi tezligini 2 barobar tezlashtiradi." },
+      { name: "Ombor tovar aylanishi", userValue: "20 kun", marketAvg: "20 kun", top10: "10 kun", note: "Tezkor logistika va agentlar buyurtmalarini avtomatlashtirish hisobiga erishiladi." }
+    ],
+    hardwareChecklist: [
+      { id: 'server_pc', name: "Asosiy 1C Server kompyuteri (SSD va tezkor RAM bilan)", essential: true },
+      { id: 'tsd_scanner', name: "TSD (Katta ombor uchun sanoat skaneri)", essential: true },
+      { id: 'label_industrial', name: "Sanoat darajasidagi etiketka printeri", essential: true },
+      { id: 'tablets', name: "Agentlar uchun planshet/smartfon mobil savdo bazasi", essential: true },
+      { id: 'backup_drive', name: "Avtomatik kundalik zaxira nusxa diski (Backup Drive)", essential: true }
+    ],
+    rules: [
+      "Qarzdorlik muddati 15 kundan oshgan mijozlarga avtomatik tovar yuklashni dasturda bloklang.",
+      "Har bir savdo agenti buyurtmalarni faqat mobil ilovadan real vaqtda bazaga tushirsin.",
+      "Haftalik P&L va pul oqimi (Cash Flow) hisobotini dasturdan bir tugma bilan oling."
+    ]
   },
   horeca_cafe: {
     id: 'horeca_cafe',
@@ -45,8 +109,28 @@ export const INDUSTRY_BENCHMARKS = {
     avgConversion: 28,
     avgCheck: 20,
     avgMargin: 35,
-    softwareTip: "Umumiy ovqatlanish uchun maxsus POS kassa tizimi, tex-kartalar va oshxona nazorati.",
-    tip: "Yaxshi servis va sodiqlik tizimi orqali takroriy tashriflarni 40% oshirish mumkin."
+    typicalFixedCosts: 2200,
+    typicalInventory: 8000,
+    autoInvestCost: 1100,
+    softwareTip: "Poster, Jowi, iiko yoki 1C: Umumiy ovqatlanish + Oshxona ekrani (KDS) va Telegram-bot yetkazib berish.",
+    tip: "Yaxshi servis va sodiqlik tizimi orqali takroriy tashriflarni 40% oshirish mumkin.",
+    benchmarks: [
+      { name: "Food-cost (Masalliq ulushi)", userValue: "38%", marketAvg: "40-45%", top10: "28-32%", note: "Masalliq sarfini 30% dan oshirmaslik uchun har bir taomga qat'iy tex-karta kiritiladi." },
+      { name: "Sof foyda marjasi", userMetric: "netMargin", userSuffix: "%", marketAvg: "20-25%", top10: "35%+", note: "Menyu muhandisligi va marjali ichimliklar/desertlar orqali sof foyda keskin oshadi." },
+      { name: "O'rtacha stol aylanishi", userValue: "kuniga 4 marta", marketAvg: "kuniga 4 marta", top10: "kuniga 7-8 marta", note: "Tezkor ofitsiantlar va oshxona printeri stol bo'shash vaqtini 15 daqiqaga qisqartiradi." }
+    ],
+    hardwareChecklist: [
+      { id: 'pos_waterproof', name: "Sensorli namlikka chidamli POS-monoblok", essential: true },
+      { id: 'kitchen_printer', name: "Oshxona va Bar uchun qo'ng'iroqli (Buzzer) chek printeri", essential: true },
+      { id: 'waiter_tablets', name: "Ofitsiantlar uchun buyurtma qabul qilish mini-planshetlari", essential: false },
+      { id: 'cash_drawer', name: "Kassa pul qutisi", essential: true },
+      { id: 'caller_id', name: "Yetkazib berish uchun Caller ID (telefon integratsiyasi)", essential: false }
+    ],
+    rules: [
+      "Har bir taom uchun tex-karta (kalkulyatsiya) kiriting — shunda oshpazlar isrofi va o'g'irliklar 90% yo'qoladi.",
+      "Stop-list tizimini yoqing: mahsulot oshxonada tugasa, ofitsiantlar buyurtma ololmasin.",
+      "Mijozlarga Telegram orqali har xariddan 5% keshbek berib, takroriy tashrifni oshiring."
+    ]
   },
   manufacturing: {
     id: 'manufacturing',
@@ -57,8 +141,27 @@ export const INDUSTRY_BENCHMARKS = {
     avgConversion: 14,
     avgCheck: 650,
     avgMargin: 30,
-    softwareTip: "Hom-ashyo sarfi va tayyor mahsulot tannarxini hisoblovchi 1C: Korxona ishlab chiqarish moduli.",
-    tip: "Ishlab chiqarishda hom-ashyo isrofi va nosoz mahsulot (brak) foizi rentabellikni keskin tushiradi."
+    typicalFixedCosts: 3000,
+    typicalInventory: 40000,
+    autoInvestCost: 1800,
+    softwareTip: "1C: ERP / 1C: Ishlab chiqarish korxonasini boshqarish (УПП) + Sexlararo harakat va ishbay maosh hisobi.",
+    tip: "Ishlab chiqarishda hom-ashyo isrofi va nosoz mahsulot (brak) foizi rentabellikni keskin tushiradi.",
+    benchmarks: [
+      { name: "Xomashyo braki / yo'qotishi", userValue: "8%", marketAvg: "8-12%", top10: "<2%", note: "Brakni 2% dan tushirish to'g'ridan-to'g'ri korxonaning sof foydasini 12% ga oshiradi." },
+      { name: "Sof rentabellik marjasi", userMetric: "netMargin", userSuffix: "%", marketAvg: "20-25%", top10: "32%+", note: "Tannarx kalkulyatsiyasidagi noaniqliklarni bartaraf etish hisobiga erishiladi." },
+      { name: "Buyurtma bajarish aniqligi", userValue: "92%", marketAvg: "95%", top10: "99%+", note: "Sexlararo operatsiyalarning reja-grafigi to'liq avtomatlashganda muddatlar buzilmaydi." }
+    ],
+    hardwareChecklist: [
+      { id: 'server_pc', name: "Kuchli 1C Server va Buxgalteriya kompyuterlari", essential: true },
+      { id: 'barcode_industrial', name: "Sexlar uchun sanoat shtrix-kod skaneri", essential: true },
+      { id: 'weight_platform', name: "Hom-ashyo qabul qilish uchun platformali tarozi", essential: true },
+      { id: 'label_durable', name: "Namlikka va yirtilishga chidamli etiketka printeri", essential: true }
+    ],
+    rules: [
+      "Hom-ashyoni sexlarga faqat moddiy javobgar shaxs tilxati va dasturiy nakladnoy orqali bering.",
+      "Tayyor mahsulot tannarxiga nafaqat hom-ashyo, balki elektr, ijara va ishbay maoshni avtomat taqsimlang.",
+      "Brak mahsulotlar foizini har hafta monitoring qilib, uning sabablarini bartaraf eting."
+    ]
   },
   education_courses: {
     id: 'education_courses',
@@ -69,8 +172,27 @@ export const INDUSTRY_BENCHMARKS = {
     avgConversion: 18,
     avgCheck: 80,
     avgMargin: 45,
-    softwareTip: "O'quvchilar hisobi, to'lovlar va davomatni yurituvchi ta'lim CRM tizimi.",
-    tip: "Birinchi ochiq bepul darsga lillarni yig'ish va 10 daqiqada bog'lanish asosiy drayver."
+    typicalFixedCosts: 1600,
+    typicalInventory: 2000,
+    autoInvestCost: 700,
+    softwareTip: "Ta'lim CRM tizimi (Modme / AmoCRM) + O'quvchilar davomati Face ID/Turniket va SMS xabarnoma.",
+    tip: "Birinchi ochiq bepul darsga lidlarni yig'ish va 10 daqiqada bog'lanish asosiy drayver.",
+    benchmarks: [
+      { name: "Sinov darsiga konversiya", userMetric: "conversionRate", userSuffix: "%", marketAvg: "15-20%", top10: "40%+", note: "Murojaat qilgan lidga 5 daqiqada qo'ng'iroq qilinganda sinov darsiga kelish 40% ga yetadi." },
+      { name: "O'quvchi qolish muddati (LTV)", userValue: "2.5 oy", marketAvg: "2.5 oy", top10: "5.5+ oy", note: "O'quvchilar 5 oydan ortiq o'qisa, markaz reklamasiz ham to'la zallarda ishlaydi." },
+      { name: "Sof rentabellik marjasi", userMetric: "netMargin", userSuffix: "%", marketAvg: "30%", top10: "48%", note: "Xonalar bandligi 80%+ ga yetganda marja eng yuqori nuqtasiga chiqadi." }
+    ],
+    hardwareChecklist: [
+      { id: 'face_id', name: "O'quvchilar davomati uchun Face ID yoki Barmoq izi skaneri", essential: true },
+      { id: 'reception_pc', name: "Administrator uchun tezkor noutbuk/kompyuter", essential: true },
+      { id: 'sms_gateway', name: "Ota-onalarga avtomatik SMS yuboruvchi shlyuz integratsiyasi", essential: true },
+      { id: 'receipt_small', name: "To'lov cheki printeri", essential: false }
+    ],
+    rules: [
+      "To'lov muddati o'tgan o'quvchilar ota-onalariga dars boshlanishidan 2 kun oldin avtomatik eslatma yuboring.",
+      "Sinov darsiga yozilgan lidlarga 15 daqiqadan kechikmay qo'ng'iroq qilib, darsga kelish konversiyasini oshiring.",
+      "Har bir o'qituvchining oylik saqlab qolish (Retention) ko'rsatkichiga qarab bonus bering."
+    ]
   },
   services_general: {
     id: 'services_general',
@@ -81,8 +203,27 @@ export const INDUSTRY_BENCHMARKS = {
     avgConversion: 25,
     avgCheck: 110,
     avgMargin: 50,
-    softwareTip: "Mijozlar navbati va qabulini yurituvchi elektron xizmat dasturi.",
-    tip: "Mijozlar bilan ishonch va usta/shifokor tavsiyalari sotuvni 2 barobar osonlashtiradi."
+    typicalFixedCosts: 1700,
+    typicalInventory: 5000,
+    autoInvestCost: 750,
+    softwareTip: "Elektron qabul & Jadval tizimi (Yclients / 1C: Xizmat) + Ustalar KPI va Telegram eslatma boti.",
+    tip: "Mijozlar bilan ishonch va usta/shifokor tavsiyalari sotuvni 2 barobar osonlashtiradi.",
+    benchmarks: [
+      { name: "Mijoz qaytish darajasi (Retention)", userValue: "35%", marketAvg: "30%", top10: "70%+", note: "Har 10 ta mijozdan 7 tasini qaytara olish yangi mijoz jalb qilish xarajatini 3x ga kamaytiradi." },
+      { name: "Usta / Shifokor bandligi", userValue: "50%", marketAvg: "50%", top10: "85%", note: "Bo'sh qolib ketgan vaqtlarni oldindan to'ldirish uchun onlayn navbat va eslatmalar zarur." },
+      { name: "Sof foyda marjasi", userMetric: "netMargin", userSuffix: "%", marketAvg: "35%", top10: "55%", note: "Sarf materiallarini aniq hisobdan chiqarish va qimmatroq xizmatlar hisobiga erishiladi." }
+    ],
+    hardwareChecklist: [
+      { id: 'reception_pc', name: "Administrator uchun sensorli planshet yoki noutbuk", essential: true },
+      { id: 'thermal_printer', name: "Mijozga kvitansiya beruvchi termochek printeri", essential: true },
+      { id: 'barcode_spare', name: "Ehtiyot qismlar va sarf materiallari uchun mini-skaner", essential: false },
+      { id: 'sms_sender', name: "Tashrif eslatuvchi avtomatik SMS tizimi", essential: true }
+    ],
+    rules: [
+      "Mijozga qabul vaqtini 2 soat oldin avtomatik SMS/Telegram orqali eslatib, bo'sh qolib ketishni 70% kamaytiring.",
+      "Sarf materiallari (kraska, ehtiyot qismlar, shpritslar)ni har bir ko'rsatilgan xizmatga avtomat hisobdan chiqaring.",
+      "Doimiy mijozlarga keyingi profilaktika yoki xizmat muddatini oldindan eslatib, qayta chaqiring."
+    ]
   },
   other_biz: {
     id: 'other_biz',
@@ -93,8 +234,26 @@ export const INDUSTRY_BENCHMARKS = {
     avgConversion: 20,
     avgCheck: 70,
     avgMargin: 30,
+    typicalFixedCosts: 1500,
+    typicalInventory: 10000,
+    autoInvestCost: 800,
     softwareTip: "Biznesingizga mos zamonaviy POS dastur yoki 1C: Korxona avtomatlashtirish tizimi.",
-    tip: "Hisob-kitob qilinmagan narsani boshqarib ham, o'stirib ham bo'lmaydi."
+    tip: "Hisob-kitob qilinmagan narsani boshqarib ham, o'stirib ham bo'lmaydi.",
+    benchmarks: [
+      { name: "Sof marja foizi", userMetric: "netMargin", userSuffix: "%", marketAvg: "25%", top10: "40%", note: "Tizimli hisob va xarajatlarni optimallashtirish hisobiga o'sadi." },
+      { name: "Sotuv konversiyasi", userMetric: "conversionRate", userSuffix: "%", marketAvg: "20%", top10: "38%", note: "Tezkor javob berish va mijozlar bazasi (CRM) bilan ishlash natijasi." },
+      { name: "Takroriy xaridlar", userValue: "25%", marketAvg: "25%", top10: "50%", note: "Muntazam aloqa va keshbek tizimi qayta xaridlarni 2 barobar ko'paytiradi." }
+    ],
+    hardwareChecklist: [
+      { id: 'pos_terminal', name: "Kassa kompyuteri yoki noutbuki", essential: true },
+      { id: 'scanner_2d', name: "2D Shtrix-kod skaneri", essential: true },
+      { id: 'receipt_printer', name: "Termochek printeri", essential: true }
+    ],
+    rules: [
+      "Daromad va xarajatlarni har kuni bitta elektron bazada yuring.",
+      "Nasiyalarni daftardan dasturga o'tkazing.",
+      "Muntazam reviziya o'tkazib turing."
+    ]
   }
 };
 

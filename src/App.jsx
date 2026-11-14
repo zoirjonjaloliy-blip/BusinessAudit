@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
-import { StepPersonalContact } from './components/StepPersonalContact';
 import { StepBusinessProfile } from './components/StepBusinessProfile';
 import { StepAutomationSoftware } from './components/StepAutomationSoftware';
 import { StepMarketingTraffic } from './components/StepMarketingTraffic';
 import { StepSalesSystem } from './components/StepSalesSystem';
 import { StepFinancialGoals } from './components/StepFinancialGoals';
+import { StepAuditUnlock } from './components/StepAuditUnlock';
 import { AuditReport } from './components/AuditReport';
 import { AdminLeadsModal } from './components/AdminLeadsModal';
 import { calculateBusinessAudit } from './utils/auditCalculator';
@@ -20,6 +20,9 @@ const INITIAL_FORM_DATA = {
   industry: 'retail_general',
   accountingSoftware: 'paper',
   debtTracking: 'paper',
+  inventoryStatus: 'estimated',
+  fiscalMarking: 'partial',
+  dailyOperationalHours: 'medium',
   platforms: ['instagram'],
   platform: 'instagram',
   socialStatus: 'good',
@@ -28,10 +31,13 @@ const INITIAL_FORM_DATA = {
   salesTeam: 'owner_only',
   responseTime: 'slow',
   retention: 'no',
+  loyaltySystem: 'verbal',
   targetRevenue: 10000,
   averageCheck: 60,
   conversionRate: 25,
-  netMargin: 30
+  netMargin: 30,
+  fixedCosts: 1800,
+  inventoryCapital: 15000
 };
 
 export default function App() {
@@ -53,6 +59,7 @@ export default function App() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const [auditResult, setAuditResult] = useState(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
@@ -84,10 +91,12 @@ export default function App() {
     setCurrentStep((prev) => Math.max(1, prev - 1));
   };
 
-  const handleSubmit = () => {
+  // VIP Qulfni ochish (Ism, biznes va telefon kiritilganda)
+  const handleUnlockSubmit = () => {
     const result = calculateBusinessAudit(formData);
     setAuditResult(result);
     setIsSubmitted(true);
+    setIsUnlocked(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
 
     // Yangi lid obyektini shakllantirish
@@ -117,6 +126,15 @@ export default function App() {
       .catch(() => {});
   };
 
+  // Demo ko'rish (Kontakt kiritmasdan cheklangan prevyu)
+  const handleDemoSubmit = () => {
+    const result = calculateBusinessAudit(formData);
+    setAuditResult(result);
+    setIsSubmitted(true);
+    setIsUnlocked(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
   const handleDeleteLead = (id) => {
     setLeads((prev) => prev.filter((item, idx) => (item.id ? item.id !== id : idx !== id)));
   };
@@ -133,6 +151,7 @@ export default function App() {
       setFormData(INITIAL_FORM_DATA);
       setCurrentStep(1);
       setIsSubmitted(false);
+      setIsUnlocked(false);
       setAuditResult(null);
       try {
         localStorage.removeItem('biz_audit_data');
@@ -157,24 +176,17 @@ export default function App() {
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 py-6 sm:py-10">
         {!isSubmitted ? (
           <div className="max-w-2xl mx-auto">
+            {/* 1-Bosqich: Soha va Faoliyat turi */}
             {currentStep === 1 && (
-              <StepPersonalContact
-                formData={formData}
-                onChange={updateFormData}
-                onNext={handleNext}
-              />
-            )}
-
-            {currentStep === 2 && (
               <StepBusinessProfile
                 formData={formData}
                 onChange={updateFormData}
                 onNext={handleNext}
-                onPrev={handlePrev}
               />
             )}
 
-            {currentStep === 3 && (
+            {/* 2-Bosqich: Dastur & Avtomatlashtirish */}
+            {currentStep === 2 && (
               <StepAutomationSoftware
                 formData={formData}
                 onChange={updateFormData}
@@ -183,7 +195,8 @@ export default function App() {
               />
             )}
 
-            {currentStep === 4 && (
+            {/* 3-Bosqich: Marketing & Trafik */}
+            {currentStep === 3 && (
               <StepMarketingTraffic
                 formData={formData}
                 onChange={updateFormData}
@@ -192,7 +205,8 @@ export default function App() {
               />
             )}
 
-            {currentStep === 5 && (
+            {/* 4-Bosqich: Sotuv tizimi va Voronka */}
+            {currentStep === 4 && (
               <StepSalesSystem
                 formData={formData}
                 onChange={updateFormData}
@@ -201,11 +215,23 @@ export default function App() {
               />
             )}
 
-            {currentStep === 6 && (
+            {/* 5-Bosqich: Moliyaviy reja & Unit-iqtisodiyot */}
+            {currentStep === 5 && (
               <StepFinancialGoals
                 formData={formData}
                 onChange={updateFormData}
-                onSubmit={handleSubmit}
+                onNext={handleNext}
+                onPrev={handlePrev}
+              />
+            )}
+
+            {/* 6-Bosqich: Natija Prevyusi & VIP Qulfni Ochish */}
+            {currentStep === 6 && (
+              <StepAuditUnlock
+                formData={formData}
+                onChange={updateFormData}
+                onUnlock={handleUnlockSubmit}
+                onDemo={handleDemoSubmit}
                 onPrev={handlePrev}
               />
             )}
@@ -214,6 +240,11 @@ export default function App() {
           <AuditReport
             auditData={auditResult}
             rawFormData={formData}
+            isUnlocked={isUnlocked}
+            onUnlock={() => {
+              setIsSubmitted(false);
+              setCurrentStep(6);
+            }}
           />
         )}
       </main>
@@ -229,7 +260,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500 no-print">
-        <p>© {new Date().getFullYear()} BiznesAudit.uz — Barcha huquqlar himoyalangan. Dasturlash va avtomatlashtirish: Zoirjon Jalolov.</p>
+        <p>© {new Date().getFullYear()} BiznesAudit.uz — Xolis Biznes-Laboratoriya va Yechimlar Markazi. Dasturlash va avtomatlashtirish: Zoirjon Jalolov.</p>
       </footer>
     </div>
   );

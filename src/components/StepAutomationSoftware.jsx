@@ -1,10 +1,12 @@
 import React from 'react';
-import { Database, BookOpen, AlertOctagon, CheckCircle2, AlertTriangle, XCircle, ShoppingCart, Coffee, GraduationCap, Briefcase } from 'lucide-react';
+import { 
+  CheckCircle2, AlertTriangle, XCircle, BookOpen, AlertOctagon, 
+  Package, Clock, ShieldAlert, Sparkles 
+} from 'lucide-react';
 import { INDUSTRY_BENCHMARKS } from '../data/industryBenchmarks';
 
 export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
   const currentIndustry = INDUSTRY_BENCHMARKS[formData.industry] || INDUSTRY_BENCHMARKS.retail_general;
-  const category = currentIndustry.category || 'savdo';
   const isHoreca = currentIndustry.id === 'horeca_cafe';
   const isEducation = currentIndustry.category === 'talim';
   const isServices = currentIndustry.category === 'xizmat' && !isHoreca;
@@ -60,17 +62,17 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
     <div className="space-y-6 animate-fadeIn">
       <div>
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-400 text-xs font-semibold mb-2">
-          3-Bosqich: Dastur & Avtomatlashtirish
+          2-Bosqich: Dastur & Avtomatlashtirish
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-          Hisob-kitob, Kassa va Mijozlar intizomi
+          Hisob-kitob, Kassa va Operatsion Nazorat
         </h2>
         <p className="text-sm text-slate-400 mt-1">
           Soha: <span className="text-white font-medium">{currentIndustry.name}</span>
         </p>
       </div>
 
-      {/* 1. Kassa va tovar/xizmat hisobi */}
+      {/* 1. Kassa va hisob tizimi */}
       <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
         <label className="block text-sm font-semibold text-slate-200 mb-3">
           {question1Title}
@@ -79,7 +81,7 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ accountingSoftware: 'software' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.accountingSoftware === 'software'
                 ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -97,7 +99,7 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ accountingSoftware: 'excel' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.accountingSoftware === 'excel'
                 ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -115,7 +117,7 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ accountingSoftware: 'paper' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.accountingSoftware === 'paper'
                 ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -141,7 +143,7 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ debtTracking: 'software' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.debtTracking === 'software'
                 ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -159,7 +161,7 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ debtTracking: 'paper' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.debtTracking === 'paper'
                 ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -177,7 +179,7 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ debtTracking: 'no_tracking' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.debtTracking === 'no_tracking'
                 ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -194,19 +196,169 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
         </div>
       </div>
 
+      {/* 3. Ombor va Nelikvid holati (PRO 3.0) */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <Package className="w-4 h-4 text-blue-400" />
+          3. Ombor va Nelikvid (Muzlagan tovarlar) holati qanday?
+        </label>
+        <p className="text-xs text-slate-400 mb-3">
+          Ombordagi tovarlar qanchalik tez pulga aylanadi va hisobi aniqmi?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => onChange({ inventoryStatus: 'accurate' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.inventoryStatus === 'accurate'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-emerald-400 mb-1">Qoldiqlar aniq & Tez aylanadi</div>
+            <div className="text-[11px] text-slate-400">Kamomad yo'q, tovarlar muzlab qolmaydi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ inventoryStatus: 'estimated' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.inventoryStatus === 'estimated'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-amber-400 mb-1">Taxminan bilaman</div>
+            <div className="text-[11px] text-slate-400">Bazi tovarlar qolib ketadi, aniq hisob yo'q</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ inventoryStatus: 'dead_stock' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.inventoryStatus === 'dead_stock'
+                ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-red-400 mb-1">Nelikvid & Kamomad ko'p</div>
+            <div className="text-[11px] text-slate-400">Oylab sotilmaydigan tovarlar aylanmani band qilgan</div>
+          </button>
+        </div>
+      </div>
+
+      {/* 4. Soliq, Markirovka (Asl Belgisi) integratsiyasi (PRO 3.0) */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <ShieldAlert className="w-4 h-4 text-cyan-400" />
+          4. Soliq, Markirovka (Asl Belgisi) va Kassa integratsiyasi:
+        </label>
+        <p className="text-xs text-slate-400 mb-3">
+          Soliq talablari va 2D skaner orqali markirovka tizimlashganmi?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => onChange({ fiscalMarking: 'automated' })}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.fiscalMarking === 'automated'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-emerald-400 mb-1">To'liq avtomatlashgan</div>
+            <div className="text-[11px] text-slate-400">1C/POS ga ulangan, cheklar avtomat ketadi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ fiscalMarking: 'partial' })}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.fiscalMarking === 'partial'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-amber-400 mb-1">Qisman (Qo'lda uriladi)</div>
+            <div className="text-[11px] text-slate-400">Xatoliklar va kassa navbatlari bo'lib turadi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ fiscalMarking: 'unorganized' })}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.fiscalMarking === 'unorganized'
+                ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-red-400 mb-1">Tizimlashtirilmagan</div>
+            <div className="text-[11px] text-slate-400">Markirovka qilinmaydi (katta jarima xavfi)</div>
+          </button>
+        </div>
+      </div>
+
+      {/* 5. Kunlik operatsionkaga ketadigan vaqt (PRO 3.0) */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <Clock className="w-4 h-4 text-purple-400" />
+          5. Kunlik operatsionkaga (hisob-kitob, qoldiq tekshirish, nazorat) qancha shaxsiy vaqtingiz ketadi?
+        </label>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
+          <button
+            type="button"
+            onClick={() => onChange({ dailyOperationalHours: 'low' })}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.dailyOperationalHours === 'low'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-emerald-400 mb-1">Kuniga 1 soatdan kam</div>
+            <div className="text-[11px] text-slate-400">Tizim ishlaydi, rahbar hisobotni ko'radi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ dailyOperationalHours: 'medium' })}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.dailyOperationalHours === 'medium'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-amber-400 mb-1">Kuniga 2 - 4 soat</div>
+            <div className="text-[11px] text-slate-400">Doimiy nazorat va tekshirishlar talab qiladi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ dailyOperationalHours: 'high' })}
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.dailyOperationalHours === 'high'
+                ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-red-400 mb-1">Kuniga 5+ soat</div>
+            <div className="text-[11px] text-slate-400">Butunlay operatsionkaga bog'lanib qolganman</div>
+          </button>
+        </div>
+      </div>
+
       {/* Navigation */}
       <div className="flex items-center justify-between pt-2">
         <button
           type="button"
           onClick={onPrev}
-          className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium transition-all"
+          className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium transition-all cursor-pointer"
         >
           &larr; Orqaga
         </button>
         <button
           type="button"
           onClick={onNext}
-          className="px-7 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-purple-500/25 transition-all flex items-center gap-2"
+          className="px-7 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-purple-500/25 transition-all flex items-center gap-2 cursor-pointer"
         >
           Keyingisi (Marketing & Trafik) &rarr;
         </button>

@@ -15,12 +15,12 @@ export function Header({ currentStep, totalSteps, isSubmitted, onReset, leadsCou
               <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
                 BiznesAudit<span className="text-blue-500">.uz</span>
               </h1>
-              <span className="text-[10px] uppercase font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded">
-                PRO 2.0
+              <span className="text-[10px] uppercase font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                Anti-Sale & DIY
               </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block">
-              Marketing, Savdo & Avtomatlashtirish Diagnostikasi
+              Xolis Biznes-Laboratoriya & Mustaqil Yechimlar Markazi
             </p>
           </div>
         </div>

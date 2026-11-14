@@ -1,18 +1,18 @@
 import React from 'react';
-import { Database, Users, Clock, RefreshCw, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
+import { Database, Users, Clock, RefreshCw, CheckCircle2, AlertCircle, XCircle, Gift } from 'lucide-react';
 
 export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
   return (
     <div className="space-y-6 animate-fadeIn">
       <div>
-        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-medium mb-2">
-          3-Bosqich: Sotuv & Konversiya
+        <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 text-xs font-semibold mb-2">
+          4-Bosqich: Sotuv tizimi va Voronka
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-          Sotuv zanjiri va Mijozlarga xizmat ko'rsatish
+          Sotuv zanjiri va Mijozlarni ushlab qolish (LTV)
         </h2>
         <p className="text-sm text-slate-400 mt-1">
-          Lidlarni pulga aylantiradigan voronka qanchalik mustahkam?
+          Lidlarni xaridga aylantirish va ularni doimiy mijoz qilib saqlash tizimi.
         </p>
       </div>
 
@@ -25,7 +25,7 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ hasCrm: 'yes' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.hasCrm === 'yes'
                 ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -36,14 +36,14 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
               <CheckCircle2 className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="text-xs text-slate-400">
-              AmoCRM, Bitrix24 yoki maxsus tizim to'liq sozlangan
+              AmoCRM, Bitrix24 yoki maxsus CRM to'liq sozlangan
             </div>
           </button>
 
           <button
             type="button"
             onClick={() => onChange({ hasCrm: 'excel' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.hasCrm === 'excel'
                 ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -54,14 +54,14 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
               <AlertCircle className="w-4 h-4 text-amber-400" />
             </div>
             <div className="text-xs text-slate-400">
-              Qo'lda kiritiladi, lekin avtomatik eslatmalar yo'q
+              Qo'lda kiritiladi, avtomatik eslatmalar yo'q
             </div>
           </button>
 
           <button
             type="button"
             onClick={() => onChange({ hasCrm: 'no' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.hasCrm === 'no'
                 ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -72,7 +72,7 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
               <XCircle className="w-4 h-4 text-red-400" />
             </div>
             <div className="text-xs text-slate-400">
-              Lidlar shunchaki chatda qolib ketadi
+              Murojaatlar shunchaki chatda unutiladi
             </div>
           </button>
         </div>
@@ -87,40 +87,40 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ salesTeam: 'pro_team' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.salesTeam === 'pro_team'
                 ? 'bg-indigo-600/15 border-indigo-500 text-white ring-1 ring-indigo-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
             }`}
           >
             <div className="font-semibold text-sm mb-1">To'liq jamoa + ROP</div>
-            <div className="text-xs text-slate-400">Skriptlar, rejalar va kunlik nazorat yo'lga qo'yilgan</div>
+            <div className="text-xs text-slate-400">Skriptlar va kunlik nazorat yo'lga qo'yilgan</div>
           </button>
 
           <button
             type="button"
             onClick={() => onChange({ salesTeam: 'junior' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.salesTeam === 'junior'
                 ? 'bg-indigo-600/15 border-indigo-500 text-white ring-1 ring-indigo-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
             }`}
           >
-            <div className="font-semibold text-sm mb-1">1-2 ta menejer bor</div>
-            <div className="text-xs text-slate-400">Biroq aniq skript va qattiq nazorat yetishmaydi</div>
+            <div className="font-semibold text-sm mb-1">1-2 ta sotuvchi bor</div>
+            <div className="text-xs text-slate-400">Aniq skript va qattiq nazorat yetishmaydi</div>
           </button>
 
           <button
             type="button"
             onClick={() => onChange({ salesTeam: 'owner_only' })}
-            className={`p-3.5 rounded-xl border text-left transition-all ${
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
               formData.salesTeam === 'owner_only'
                 ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
             }`}
           >
-            <div className="font-semibold text-sm mb-1">Yo'q, o'zim sotaman</div>
-            <div className="text-xs text-slate-400">Biznes egasi barcha qo'ng'iroq va chatlarga o'zi qaraydi</div>
+            <div className="font-semibold text-sm mb-1">Faqat o'zim sotaman</div>
+            <div className="text-xs text-slate-400">Biznes egasi barcha qo'ng'iroqlarga o'zi qaraydi</div>
           </button>
         </div>
       </div>
@@ -134,7 +134,7 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ responseTime: 'fast' })}
-            className={`p-3 rounded-xl border text-left transition-all ${
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
               formData.responseTime === 'fast'
                 ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -147,7 +147,7 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ responseTime: 'slow' })}
-            className={`p-3 rounded-xl border text-left transition-all ${
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
               formData.responseTime === 'slow'
                 ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
@@ -160,48 +160,65 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
           <button
             type="button"
             onClick={() => onChange({ responseTime: 'very_slow' })}
-            className={`p-3 rounded-xl border text-left transition-all ${
+            className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
               formData.responseTime === 'very_slow'
                 ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
             }`}
           >
             <div className="font-semibold text-xs sm:text-sm text-red-400">Kechqurun / Ertasi kuni</div>
-            <div className="text-[11px] text-slate-400 mt-1">Ko'p lidlar kutishdan soviydi</div>
+            <div className="text-[11px] text-slate-400 mt-1">Ko'p lidlar sovuydi yoki boshqadan oladi</div>
           </button>
         </div>
       </div>
 
-      {/* 4. Qayta sotuvlar (Retention) */}
+      {/* 4. Mijozlarni ushlab qolish: Bonus / Keshbek / Loyallik (PRO 3.0) */}
       <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-3">
-          4. Eski mijozlar bazasi bilan qayta sotuv (LTV) ishlari bormi?
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <Gift className="w-4 h-4 text-pink-400" />
+          4. Mijozlarni ushlab qolish (Bonus / Keshbek / Loyallik tizimi):
         </label>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <p className="text-xs text-slate-400 mb-3">
+          Eski xaridorlar qayta sotib olishi uchun maxsus dasturiy rag'batlantirish bormi?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
-            onClick={() => onChange({ retention: 'yes' })}
-            className={`p-3 rounded-xl border text-left transition-all ${
-              formData.retention === 'yes'
-                ? 'bg-indigo-600/15 border-indigo-500 text-white ring-1 ring-indigo-500'
+            onClick={() => onChange({ loyaltySystem: 'automated' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.loyaltySystem === 'automated'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
             }`}
           >
-            <div className="font-semibold text-xs sm:text-sm">Ha, muntazam qayta sotuv bor</div>
-            <div className="text-[11px] text-slate-400 mt-1">Eski mijozlarga takliflar yuboriladi</div>
+            <div className="font-semibold text-xs sm:text-sm text-emerald-400 mb-1">Avtomatlashgan Bonus / Bot</div>
+            <div className="text-[11px] text-slate-400">Telegram bot yoki SMS orqali keshbek yig'iladi</div>
           </button>
 
           <button
             type="button"
-            onClick={() => onChange({ retention: 'no' })}
-            className={`p-3 rounded-xl border text-left transition-all ${
-              formData.retention === 'no'
-                ? 'bg-indigo-600/15 border-indigo-500 text-white ring-1 ring-indigo-500'
+            onClick={() => onChange({ loyaltySystem: 'verbal' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.loyaltySystem === 'verbal'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
                 : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
             }`}
           >
-            <div className="font-semibold text-xs sm:text-sm">Yo'q, faqat bir marta sotiladi</div>
-            <div className="text-[11px] text-slate-400 mt-1">Har doim yangi mijoz qidiriladi</div>
+            <div className="font-semibold text-xs sm:text-sm text-amber-400 mb-1">Faqat og'zaki chegirma</div>
+            <div className="text-[11px] text-slate-400">Mijoz so'rasagina narx tushirib beriladi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ loyaltySystem: 'none' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.loyaltySystem === 'none'
+                ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="font-semibold text-xs sm:text-sm text-red-400 mb-1">Tizim umuman yo'q</div>
+            <div className="text-[11px] text-slate-400">Mijoz ketib qolsa qaytarish mexanizmi yo'q</div>
           </button>
         </div>
       </div>
@@ -211,14 +228,14 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
         <button
           type="button"
           onClick={onPrev}
-          className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium transition-all"
+          className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium transition-all cursor-pointer"
         >
           &larr; Orqaga
         </button>
         <button
           type="button"
           onClick={onNext}
-          className="px-7 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2"
+          className="px-7 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-500 hover:to-blue-500 text-white font-semibold text-sm shadow-lg shadow-indigo-500/25 transition-all flex items-center gap-2 cursor-pointer"
         >
           Keyingisi (Moliya & Maqsad) &rarr;
         </button>
@@ -226,4 +243,3 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
     </div>
   );
 }
-

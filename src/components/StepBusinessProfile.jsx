@@ -26,7 +26,7 @@ export function StepBusinessProfile({ formData, onChange, onNext, onPrev }) {
     <div className="space-y-6 animate-fadeIn">
       <div>
         <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-2">
-          2-Bosqich: Soha va Faoliyat turi
+          1-Bosqich: Soha va Faoliyat turi
         </div>
         <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
           Biznesingiz qaysi yo'nalishda faoliyat yuritadi?
@@ -111,18 +111,20 @@ export function StepBusinessProfile({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between pt-2">
-        <button
-          type="button"
-          onClick={onPrev}
-          className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium transition-all"
-        >
-          &larr; Orqaga
-        </button>
+      <div className={`flex items-center ${onPrev ? 'justify-between' : 'justify-end'} pt-2`}>
+        {onPrev && (
+          <button
+            type="button"
+            onClick={onPrev}
+            className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-sm font-medium transition-all cursor-pointer"
+          >
+            &larr; Orqaga
+          </button>
+        )}
         <button
           type="button"
           onClick={onNext}
-          className="px-7 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2"
+          className="px-7 py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold text-sm shadow-lg shadow-blue-500/25 transition-all flex items-center justify-center gap-2 cursor-pointer"
         >
           Keyingisi (Dastur & Kassa) &rarr;
         </button>

@@ -4,43 +4,95 @@ import {
   DollarSign, Users, Target, ArrowRight, Printer, Share2, Sparkles, 
   CheckCircle, XCircle, Layers, Cpu, Zap,
   User, Building, Phone, Calendar, Laptop, Send, Award, Check,
-  Sliders, AlertOctagon, CheckCircle2, ChevronRight
+  Sliders, AlertOctagon, CheckCircle2, ChevronRight,
+  Package, Clock, CheckSquare, Square, Flame, Activity, FileText,
+  Copy, Lock, Unlock, HelpCircle, ArrowUpRight
 } from 'lucide-react';
 
-export function AuditReport({ auditData, rawFormData }) {
+export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnlock }) {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'software' | 'funnel' | 'roadmap'
+  const [activeDiyTab, setActiveDiyTab] = useState('debt_scripts'); // 'debt_scripts' | 'sales_scripts' | 'kpi_calc' | 'revision_checklist'
+  const [copiedId, setCopiedId] = useState(null);
 
   const hasSoftware = rawFormData.accountingSoftware === 'software';
   const hasDebtTracking = rawFormData.debtTracking === 'software';
   const hasCrm = rawFormData.hasCrm === 'yes';
+  const hasLoyalty = rawFormData.loyaltySystem === 'automated';
 
-  // Interaktiv simulyator
+  // Reviziya chek-listi holati (interaktiv)
+  const [checkedRevision, setCheckedRevision] = useState({});
+  const toggleRevision = (idx) => {
+    setCheckedRevision((prev) => ({ ...prev, [idx]: !prev[idx] }));
+  };
+
+  // Hardware checklist holati
+  const [checkedHardware, setCheckedHardware] = useState({});
+  const toggleHardware = (id) => {
+    setCheckedHardware((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  // Interaktiv simulyator (4 ta switch)
   const [simPosInstalled, setSimPosInstalled] = useState(!hasSoftware);
   const [simDebtFixed, setSimDebtFixed] = useState(!hasDebtTracking);
   const [simCrmInstalled, setSimCrmInstalled] = useState(!hasCrm);
+  const [simLoyaltyInstalled, setSimLoyaltyInstalled] = useState(!hasLoyalty);
 
-  const baseWasted = auditData.monthlyWastedMoney || 500;
+  const baseTotalLoss = auditData.totalMonthlyLoss || auditData.monthlyWastedMoney || 600;
+  
   let simulatedSavingsMonthly = 0;
-  if (simPosInstalled) simulatedSavingsMonthly += Math.round(baseWasted * 0.45);
-  if (simDebtFixed) simulatedSavingsMonthly += Math.round(baseWasted * 0.30);
-  if (simCrmInstalled) simulatedSavingsMonthly += Math.round(baseWasted * 0.25);
+  if (simPosInstalled) simulatedSavingsMonthly += Math.round(baseTotalLoss * 0.38);
+  if (simDebtFixed) simulatedSavingsMonthly += Math.round(baseTotalLoss * 0.24);
+  if (simCrmInstalled) simulatedSavingsMonthly += Math.round(baseTotalLoss * 0.20);
+  if (simLoyaltyInstalled) simulatedSavingsMonthly += Math.round(auditData.potentialLtvMonthlyProfit || (baseTotalLoss * 0.18));
+  
   const simulatedSavingsYearly = simulatedSavingsMonthly * 12;
+  const simPaybackMonths = simulatedSavingsMonthly > 0 
+    ? Math.max(0.6, Number((auditData.automationCost / simulatedSavingsMonthly).toFixed(1)))
+    : 0;
+
+  // Xolis shifokor (Anti-Sale) tekshiruvi:
+  // Agar daromad < $3,000 bo'lsa yoki reklama/sotuv tizimi mutlaqo yo'q bo'lsa
+  const isAntiSaleRecommended = (Number(rawFormData.targetRevenue) < 3000) || 
+    (rawFormData.platforms?.length === 1 && rawFormData.platforms[0] === 'organic' && rawFormData.salesTeam === 'owner_only');
 
   const handlePrint = () => {
     window.print();
   };
 
+  const handleCopyText = (text, id) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => {
+      setCopiedId(null);
+    }, 2200);
+  };
+
   const handleShareTelegram = () => {
     const text = encodeURIComponent(
-      `📊 Korxona Marketing, Savdo & Moliya Auditi:\n` +
+      `📊 BiznesAudit.uz (Anti-Sale & DIY Edition) Diagnostikasi:\n` +
       `👤 Tadbirkor: ${rawFormData.fullName || "Mijoz"} (${rawFormData.businessName || "Korxona"})\n` +
       `🎯 Oylik maqsad: $${auditData.targetRevenue.toLocaleString()}\n` +
-      `🏥 Salomatlik indeksi: ${auditData.scores.overall}/100 (${auditData.riskLevel})\n` +
-      `💻 Dasturiy holat: ${hasSoftware ? "Dastur mavjud" : "Daftarda (Zarur)"}\n\n` +
-      `Dastur o'rnatish va individual sozlash: Zoirjon Jalolov (+998995160021, @Jalolov_IST)`
+      `⚠️ Umumiy yo'qotish rezervi: $${auditData.totalMonthlyLoss.toLocaleString()}/oy\n` +
+      `📅 Zararsizlik kuni: Oyning ${auditData.breakEvenDay}-kuni\n` +
+      `🏥 Salomatlik indeksi: ${auditData.scores.overall}/100\n\n` +
+      `Xolis konsalting & avtomatlashtirish: Zoirjon Jalolov (+998995160021, @Jalolov_IST)`
     );
     window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${text}`, '_blank');
   };
+
+  const hardwareList = auditData.industry?.hardwareChecklist || [
+    { id: 'pos_terminal', name: "Sensorli POS-monoblok (Kassa ekrani)", essential: true },
+    { id: 'scanner_2d', name: "2D Shtrix-kod va Markirovka skaneri", essential: true },
+    { id: 'receipt_printer', name: "80mm tezkor chek printeri", essential: true }
+  ];
+
+  const rulesList = auditData.industry?.rules || [
+    "ABC-tahlil orqali ombordagi eng ko'p foyda keltiruvchi tovarlar ro'yxatini shakllantiring va nelikvidni kamaytiring.",
+    "Har bir mijoz uchun nasiya limitini dasturda qat'iy belgilang va muddat o'tganda yangi tovar berishni to'xtating.",
+    "Kassa va omborni yagona bazaga ulab, reviziyani 1 soatda o'tkazish tartibini joriy qiling."
+  ];
+
+  const benchmarksList = auditData.industry?.benchmarks || [];
 
   return (
     <div className="space-y-6 sm:space-y-8 animate-fadeIn pb-12">
@@ -52,22 +104,24 @@ export function AuditReport({ auditData, rawFormData }) {
           <div>
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-semibold mb-2">
               <Sparkles className="w-3.5 h-3.5" />
-              Rasmiy Auditorlik Diagnostikasi & Xulosasi
+              Xolis Biznes-Laboratoriya & Mustaqil Yechimlar Markazi
             </div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-              {rawFormData.businessName ? `"${rawFormData.businessName}"` : "Korxona"} Savdo, Moliya & Marketing Auditi
+              {rawFormData.businessName ? `"${rawFormData.businessName}"` : "Korxona"} Savdo, Moliya & Operatsion Rentgen
             </h1>
             
             {/* Tadbirkor rekvizitlari */}
             <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-300 mt-2.5 flex-wrap">
               <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
                 <User className="w-3.5 h-3.5 text-blue-400" />
-                <strong className="text-white">{rawFormData.fullName || "Tadbirkor"}</strong>
+                <strong className="text-white">{rawFormData.fullName || "Tadbirkor (Demo)"}</strong>
               </span>
-              <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
-                <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                <span>{rawFormData.phone || "—"}</span>
-              </span>
+              {rawFormData.phone && (
+                <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
+                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>{rawFormData.phone}</span>
+                </span>
+              )}
               <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
                 <Building className="w-3.5 h-3.5 text-indigo-400" />
                 <span>{auditData.industry.name}</span>
@@ -85,7 +139,7 @@ export function AuditReport({ auditData, rawFormData }) {
               className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 transition-all cursor-pointer"
             >
               <Printer className="w-4 h-4 text-blue-400" />
-              <span>PDF / Chop</span>
+              <span>A4 PDF / Chop</span>
             </button>
             <button
               onClick={handleShareTelegram}
@@ -98,295 +152,898 @@ export function AuditReport({ auditData, rawFormData }) {
         </div>
       </div>
 
-      {/* 1. Asosiy Salomatlik Indeksi Kartalari */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Overall Health Card */}
-        <div className="md:col-span-2 bg-slate-900/70 border border-slate-800 rounded-3xl p-5 sm:p-6 relative overflow-hidden">
-          <div className="flex items-start justify-between">
-            <div>
-              <div className="text-xs uppercase font-bold text-slate-400 tracking-wider">
-                Biznes Salomatlik Indeksi
-              </div>
-              <div className="flex items-baseline gap-2 mt-2">
-                <span className="text-4xl sm:text-5xl font-black text-white">
-                  {auditData.scores.overall}
-                </span>
-                <span className="text-slate-500 font-semibold text-lg">/100</span>
-              </div>
-            </div>
-
-            <div className={`px-3 py-1.5 rounded-xl border text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 ${
-              auditData.scores.overall < 45
-                ? 'bg-red-500/10 border-red-500/20 text-red-400'
-                : auditData.scores.overall < 70
-                ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
-                : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400'
-            }`}>
-              {auditData.scores.overall < 45 ? <ShieldAlert className="w-4 h-4" /> : <ShieldCheck className="w-4 h-4" />}
-              {auditData.riskLevel}
-            </div>
+      {/* ⭐ 3-O'ZGARISH: XOLIS SHIFOKOR (ANTI-SALE) ALGORITMI ⭐ */}
+      {isAntiSaleRecommended ? (
+        <div className="p-5 rounded-2xl bg-amber-950/25 border-2 border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-lg shadow-amber-500/5">
+          <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
+            <AlertTriangle className="w-6 h-6" />
           </div>
-
-          <div className="mt-5 space-y-2.5">
-            <div>
-              <div className="flex justify-between text-xs font-medium text-slate-300 mb-1">
-                <span>Dastur, Kassa & Hisob-kitob (Tizim):</span>
-                <span className="text-purple-400 font-bold">{auditData.scores.system}%</span>
-              </div>
-              <div className="w-full bg-slate-800 rounded-full h-2">
-                <div 
-                  className="bg-purple-500 h-2 rounded-full transition-all duration-700" 
-                  style={{ width: `${auditData.scores.system}%` }} 
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-medium text-slate-300 mb-1">
-                <span>Sotuv Voronkasi & Menejerlar:</span>
-                <span className="text-indigo-400 font-bold">{auditData.scores.sales}%</span>
-              </div>
-              <div className="w-full bg-slate-800 rounded-full h-2">
-                <div 
-                  className="bg-indigo-500 h-2 rounded-full transition-all duration-700" 
-                  style={{ width: `${auditData.scores.sales}%` }} 
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex justify-between text-xs font-medium text-slate-300 mb-1">
-                <span>Marketing & Trafik jalb qilish:</span>
-                <span className="text-cyan-400 font-bold">{auditData.scores.marketing}%</span>
-              </div>
-              <div className="w-full bg-slate-800 rounded-full h-2">
-                <div 
-                  className="bg-cyan-500 h-2 rounded-full transition-all duration-700" 
-                  style={{ width: `${auditData.scores.marketing}%` }} 
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Wasted Money Card */}
-        <div className="bg-red-950/25 border border-red-900/40 rounded-3xl p-5 sm:p-6 flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between text-red-400 text-xs font-bold uppercase tracking-wider mb-2">
-              <span>Optimallashtirish potentsiali</span>
-              <TrendingDown className="w-4 h-4" />
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-amber-400 mb-1">
+              <span>🩺 Xolis Ekspert Ogohlantirishi (Anti-Sale Tashxis)</span>
             </div>
-            <div className="text-3xl font-extrabold text-red-400">
-              ${auditData.monthlyWastedMoney.toLocaleString()}
-              <span className="text-xs text-red-400/80 font-normal"> /oyiga</span>
-            </div>
-            <p className="text-xs text-slate-400 mt-2">
-              {hasSoftware
-                ? "Dastur imkoniyatlarini to'liq ishlatish va individual sozlash orqali oyiga ushbu summani qo'shimcha foydaga aylantirish mumkin."
-                : `Daftarda ishlash va CRM yo'qligi sababli yillik $${auditData.yearlyWastedMoney.toLocaleString()} pul yo'qotilmoqda.`}
+            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
+              <strong className="text-amber-300">DIQQAT: Xolis tashxis! Hozirgi bosqichda sizga qimmat va murakkab ERP/1C tizimlarini sotib olish TAVSIYA ETILMAYDI</strong> — bu hozircha korxonangiz uchun ortiqcha moliyaviy xarajat bo'ladi. Sizning 1-navbatdagi vazifangiz — pastdagi bepul DIY (Mustaqil) instrumentlarimiz, Excel/Telegram-bot va tayyor skriptlar yordamida oylik aylanmani kamida $5,000+ ga va bazaviy tartibga olib chiqishdir.
             </p>
           </div>
-          <div className="mt-4 pt-3 border-t border-red-900/30 text-[11px] font-semibold text-red-400">
-            {hasSoftware ? "O'sish rezervi: +" + auditData.totalPenaltyPercentage + "%" : "Ortiqcha xarajat jarimasi: +" + auditData.totalPenaltyPercentage + "%"}
+        </div>
+      ) : (
+        <div className="p-5 rounded-2xl bg-blue-950/25 border-2 border-blue-500/40 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-lg shadow-blue-500/5">
+          <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 border border-blue-500/30">
+            <Sparkles className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-blue-400 mb-1">
+              <span>🩺 Xolis Ekspert Xulosasi</span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
+              <strong className="text-blue-300">Sizning biznesingiz hajmi qog'oz va Excel bosqichidan o'tib bo'lgan.</strong> Hozirgi hisob-kitobdagi noaniqlik va tizimsizlik sizga har oy dastur narxidan 2-3 barobar qimmatga tushmoqda. Tizimli avtomatlashtirish o'zini oqlash muddati atigi ~{auditData.paybackMonths || 1.5} oyni tashkil etadi.
+            </p>
           </div>
         </div>
+      )}
 
-        {/* Target Revenue Card */}
-        <div className="bg-slate-900/70 border border-slate-800 rounded-3xl p-5 sm:p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
-              <span>Moliyaviy Maqsad</span>
-              <Target className="w-4 h-4 text-emerald-400" />
+      {/* A-BLOK: CHUQUR MOLIYAVIY VA OPERATSION RENTGEN (4 TA KARTA) */}
+      <div>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Activity className="w-4 h-4 text-blue-400" />
+            <h2 className="text-sm sm:text-base font-bold text-white uppercase tracking-wider">
+              A-Blok: 360° Chuqur Moliyaviy va Operatsion Rentgen
+            </h2>
+          </div>
+          <span className="text-xs text-slate-400">Biznesingizning real ko'rsatkichlari</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* KARTA 1: Umumiy Yo'qotilayotgan Potensial */}
+          <div className="bg-red-950/20 border border-red-900/50 rounded-2xl p-5 flex flex-col justify-between hover:border-red-800/80 transition-all">
+            <div>
+              <div className="flex items-center justify-between text-red-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <span>Umumiy Oylik Yo'qotish</span>
+                <TrendingDown className="w-4 h-4" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-red-400">
+                ${auditData.totalMonthlyLoss.toLocaleString()}
+                <span className="text-xs font-normal text-red-300/80"> /oy</span>
+              </div>
+              <div className="text-[11px] text-red-300/80 mt-1">
+                Yillik zarar: <strong>${auditData.totalYearlyLoss.toLocaleString()}</strong>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-red-900/30 space-y-1.5 text-xs text-slate-300">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Boy berilgan sof foyda:</span>
+                  <span className="font-semibold text-white">${auditData.lostNetProfitMonthly.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Reklama behuda ketishi:</span>
+                  <span className="font-semibold text-white">${auditData.monthlyWastedMarketing.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Kamomad va o'g'irlik:</span>
+                  <span className="font-semibold text-white">${auditData.inventoryShrinkLossMonthly.toLocaleString()}</span>
+                </div>
+              </div>
             </div>
-            <div className="text-3xl font-extrabold text-white">
-              ${auditData.targetRevenue.toLocaleString()}
-            </div>
-            <div className="text-xs text-slate-400 mt-2 space-y-1">
-              <div>Kerakli xaridorlar: <strong className="text-white">{auditData.requiredCustomers} ta</strong></div>
-              <div>O'rtacha chek: <strong className="text-white">${auditData.averageCheck}</strong></div>
+            <div className="mt-3 pt-2 text-[10px] text-red-400/90 font-medium bg-red-950/40 px-2 py-1 rounded">
+              ⚠️ Tizimsizlik sababli har oy ushbu summa boy berilmoqda.
             </div>
           </div>
-          <div className="mt-4 pt-3 border-t border-slate-800 text-[11px] font-semibold text-emerald-400">
-            Kutilayotgan sof tushum: ~${auditData.expectedGrossProfit.toLocaleString()}
+
+          {/* KARTA 2: Ombor va Nasiya Muzlatkichlari */}
+          <div className="bg-amber-950/20 border border-amber-900/50 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-800/80 transition-all">
+            <div>
+              <div className="flex items-center justify-between text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <span>Muzlagan Pul (Nelikvid)</span>
+                <Package className="w-4 h-4" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-amber-400">
+                ${auditData.deadStockSum.toLocaleString()}
+              </div>
+              <div className="text-[11px] text-amber-300/80 mt-1">
+                Omborda muzlab yotgan tovarlar
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-amber-900/30 space-y-1.5 text-xs text-slate-300">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Umumiy tovar qoldig'i:</span>
+                  <span className="font-semibold text-white">${auditData.inventoryCapital.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Nasiya daftari xavfi:</span>
+                  <span className="font-semibold text-amber-300">${auditData.estimatedDebtRiskSum.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Ombor hisobi holati:</span>
+                  <span className="font-semibold text-white">
+                    {rawFormData.inventoryStatus === 'accurate' ? "Aniq" : rawFormData.inventoryStatus === 'estimated' ? "Taxminiy" : "Nelikvid ko'p"}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 pt-2 text-[10px] text-amber-400/90 font-medium bg-amber-950/40 px-2 py-1 rounded">
+              🧊 ABC-tahlil va avtomatlashtirish orqali ushbu pulni naqdga aylantirish mumkin.
+            </div>
+          </div>
+
+          {/* KARTA 3: Zararsizlik Nuqtasi & LTV Potensiali */}
+          <div className="bg-blue-950/20 border border-blue-900/50 rounded-2xl p-5 flex flex-col justify-between hover:border-blue-800/80 transition-all">
+            <div>
+              <div className="flex items-center justify-between text-blue-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <span>Zararsizlik Nuqtasi</span>
+                <Target className="w-4 h-4" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-blue-400">
+                Oyning {auditData.breakEvenDay}-kuni
+              </div>
+              <div className="text-[11px] text-blue-300/80 mt-1">
+                Zararsizlik aylanmasi: <strong>${auditData.breakEvenRevenue.toLocaleString()}</strong>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-blue-900/30 space-y-1.5 text-xs text-slate-300">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Oylik doimiy xarajat:</span>
+                  <span className="font-semibold text-white">${auditData.fixedCosts.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Bonus/LTV potensiali:</span>
+                  <span className="font-semibold text-emerald-400">+${auditData.potentialLtvMonthlyProfit.toLocaleString()} /oy</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Yillik LTV rezervi:</span>
+                  <span className="font-semibold text-emerald-300">+${auditData.potentialLtvYearlyProfit.toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 pt-2 text-[10px] text-blue-300/90 font-medium bg-blue-950/40 px-2 py-1 rounded">
+              💡 {auditData.breakEvenDay}-sanadan boshlab faqat o'zingizga sof foyda ishlayapsiz.
+            </div>
+          </div>
+
+          {/* KARTA 4: Vaqt Qiymati & Soliq/Markirovka Xavfi */}
+          <div className="bg-purple-950/20 border border-purple-900/50 rounded-2xl p-5 flex flex-col justify-between hover:border-purple-800/80 transition-all">
+            <div>
+              <div className="flex items-center justify-between text-purple-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <span>Vaqt & Qonuniy Xavf</span>
+                <Clock className="w-4 h-4" />
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-purple-400">
+                {auditData.yearlyOpHours} soat
+                <span className="text-xs font-normal text-purple-300/80"> /yil</span>
+              </div>
+              <div className="text-[11px] text-purple-300/80 mt-1">
+                Qog'ozbozlikka ketgan: ~<strong>{Math.round(auditData.yearlyOpHours / 8)} ish kuni</strong>
+              </div>
+
+              <div className="mt-4 pt-3 border-t border-purple-900/30 space-y-1.5 text-xs text-slate-300">
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Vaqtingiz narxi:</span>
+                  <span className="font-semibold text-white">${auditData.hourlyRate}/soat</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Yillik vaqt yo'qotishi:</span>
+                  <span className="font-semibold text-purple-300">${auditData.yearlyTimeCost.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Soliq/Markirovka:</span>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    auditData.fiscalRiskColor === 'emerald'
+                      ? 'bg-emerald-500/20 text-emerald-300'
+                      : auditData.fiscalRiskColor === 'amber'
+                      ? 'bg-amber-500/20 text-amber-300'
+                      : 'bg-red-500/20 text-red-300'
+                  }`}>
+                    {auditData.fiscalRiskStatus}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div className="mt-3 pt-2 text-[10px] text-purple-300/90 font-medium bg-purple-950/40 px-2 py-1 rounded">
+              ⚡ Dastur o'rnatilgach, operatsionka 1 kunda 30 daqiqagacha kamayadi.
+            </div>
           </div>
         </div>
       </div>
 
-      {/* ⭐ DIAGNOSTIKA: DASTURI BOR VA YO'QLARGA MOSLANGAN TAHLIL ⭐ */}
+      {/* ⭐ 2-O'ZGARISH: O'ZBEKISTON BOZORI BENCHMARKI (TOP-10% LIDERLAR BILAN TAQQOSLASH) ⭐ */}
       <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 sm:p-7 space-y-4">
         <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">
-            <Sparkles className="w-4 h-4" />
-            {hasSoftware ? "Biznesni Tahlil Qilish & Optimallashtirish" : "Diagnostika: Pul qayerga oqib ketyapti?"}
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1">
+            <TrendingUp className="w-4 h-4" />
+            O'zbekiston Bozor Benchmarki (TOP-10% Peshqadam Bizneslar Bilan Solishtirish)
           </div>
-          <h2 className="text-lg sm:text-2xl font-bold text-white tracking-tight">
-            {hasSoftware 
-              ? "Korxonangiz Dasturiy Tizimi Bo'yicha Tahliliy Xulosa" 
-              : "Biznesingizdagi Asosiy 3 Ta Moliyaviy Teshik"}
-          </h2>
+          <h3 className="text-lg sm:text-2xl font-bold text-white tracking-tight">
+            Sizning Natijangiz vs Bozor O'rtachasi vs TOP-10% Liderlar
+          </h3>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            {hasSoftware
-              ? "Sizda dasturiy poydevor mavjud! Endi uni yanada mukammallashtirish va individual yondashuv orqali foydani oshirish bo'yicha tavsiyalar:"
-              : "Qog'oz-daftarda ishlash sababli daromadingizning katta qismi sizga yetib kelmayapti:"}
+            "{auditData.industry.name}" sohasidagi 120+ korxonalarning real tahlili asosida shakllantirilgan xolis taqqoslash jadvali:
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
-          {/* Blok 1: Kassa va Ombor */}
-          <div className={`p-5 rounded-2xl border ${hasSoftware ? 'bg-slate-950 border-emerald-900/40' : 'bg-slate-950 border-red-900/40'}`}>
-            <div className="text-xs font-bold mb-1 flex items-center justify-between">
-              <span className={hasSoftware ? 'text-emerald-400' : 'text-red-400'}>
-                {hasSoftware ? "1. KASSA & OMBOR (DASTUR BOR)" : "1-TESHIK: OMOBOR & KASSA"}
-              </span>
-              <span className={`px-2 py-0.5 rounded text-[10px] ${hasSoftware ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'}`}>
-                {hasSoftware ? "Poydevor bor" : `~${Math.round(baseWasted * 0.45)}$/oy`}
-              </span>
-            </div>
-            <h4 className="text-base font-bold text-white mt-1">
-              {hasSoftware ? "Individual yondashuv & Nazorat" : "Daftarda yuritish xavfi"}
-            </h4>
-            <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-              {hasSoftware
-                ? "Dastur o'rnatilgani juda yaxshi! Endi dasturdagi tovar qoldiqlarini 100% to'g'ri chiqarish, inventarizatsiyadagi chalkashliklarni yo'qotish va xodimlar uchun kassa intizomini kuchaytirish zarur."
-                : "Kassada shtrix-kodli dastur bo'lmasa, tovar qoldig'i (ostatka) hisoblanmaydi. Tovar kamomadi va o'g'irliklar tufayli oyiga yuzlab dollar yo'qotiladi."}
-            </p>
-            <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5">
-              <CheckCircle className="w-3.5 h-3.5" />
-              <span>{hasSoftware ? "Tavsiya: Dasturni chuqur sozlash & Audit" : "Yechim: POS savdo dasturi o'rnatish"}</span>
-            </div>
-          </div>
-
-          {/* Blok 2: Qarzlar va Nasiya */}
-          <div className={`p-5 rounded-2xl border ${hasDebtTracking ? 'bg-slate-950 border-emerald-900/40' : 'bg-slate-950 border-amber-900/40'}`}>
-            <div className="text-xs font-bold mb-1 flex items-center justify-between">
-              <span className={hasDebtTracking ? 'text-emerald-400' : 'text-amber-400'}>
-                {hasDebtTracking ? "2. QARZLAR (DASTURDA)" : "2-TESHIK: QARZ DAFTARI"}
-              </span>
-              <span className={`px-2 py-0.5 rounded text-[10px] ${hasDebtTracking ? 'bg-emerald-500/20 text-emerald-300' : 'bg-amber-500/20 text-amber-300'}`}>
-                {hasDebtTracking ? "Nazoratda" : `~${Math.round(baseWasted * 0.30)}$/oy`}
-              </span>
-            </div>
-            <h4 className="text-base font-bold text-white mt-1">
-              {hasDebtTracking ? "Nasiya moduli faol" : "Daftardagi muzlagan pullar"}
-            </h4>
-            <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-              {hasDebtTracking
-                ? "Qarzlar dasturda yuritilishi aylanma mablag'ni himoya qiladi. Endi qarzdorlik muddatlari o'tganda avtomatik SMS eslatmalar integratsiyasini ulash tavsiya etiladi."
-                : "Qarzlar daftarga yozilsa, eslatish noqulay, qachon to'lanishi aniq emas. O'rtacha 15% qarzlar yillab yopilmay, aylanma pulingiz muzlab qoladi."}
-            </p>
-            <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5">
-              <CheckCircle className="w-3.5 h-3.5" />
-              <span>{hasDebtTracking ? "Tavsiya: SMS eslatmalarni ulash" : "Yechim: Avtomatlashgan Nasiya moduli"}</span>
-            </div>
-          </div>
-
-          {/* Blok 3: Lidlar va CRM */}
-          <div className={`p-5 rounded-2xl border ${hasCrm ? 'bg-slate-950 border-emerald-900/40' : 'bg-slate-950 border-blue-900/40'}`}>
-            <div className="text-xs font-bold mb-1 flex items-center justify-between">
-              <span className={hasCrm ? 'text-emerald-400' : 'text-blue-400'}>
-                {hasCrm ? "3. MIJOZLAR (CRM BOR)" : "3-TESHIK: MIJOZLAR KETISHI"}
-              </span>
-              <span className={`px-2 py-0.5 rounded text-[10px] ${hasCrm ? 'bg-emerald-500/20 text-emerald-300' : 'bg-blue-500/20 text-blue-300'}`}>
-                {hasCrm ? "Tizimli" : `~${Math.round(baseWasted * 0.25)}$/oy`}
-              </span>
-            </div>
-            <h4 className="text-base font-bold text-white mt-1">
-              {hasCrm ? "Mijozlar bazasi nazoratda" : "Murojaatlarning unutilishi"}
-            </h4>
-            <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-              {hasCrm
-                ? "Mijozlar bazasi mavjudligi a'lo! Endi eski xaridorlarga takroriy sotuvlar (LTV) va avtomatlashgan aksiyalar orqali o'rtacha chekni ko'tarish kerak."
-                : "Reklamadan qiziqib yozgan 100 ta odamdan 30 tasi javob kechikkani yoki qayta qo'ng'iroq qilinmagani sababli raqobatchiga ketmoqda."}
-            </p>
-            <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5">
-              <CheckCircle className="w-3.5 h-3.5" />
-              <span>{hasCrm ? "Tavsiya: Qayta sotuv voronkasi" : "Yechim: CRM va tezkor sotuv tizimi"}</span>
-            </div>
-          </div>
+        <div className="overflow-x-auto pt-2">
+          <table className="w-full text-left text-xs border-collapse">
+            <thead>
+              <tr className="border-b border-slate-800 text-slate-400">
+                <th className="py-3 px-3 font-semibold uppercase tracking-wider">Ko'rsatkich</th>
+                <th className="py-3 px-3 font-semibold uppercase tracking-wider text-blue-400">Sizning Natijangiz</th>
+                <th className="py-3 px-3 font-semibold uppercase tracking-wider text-slate-300">Bozor O'rtachasi</th>
+                <th className="py-3 px-3 font-semibold uppercase tracking-wider text-emerald-400">O'zbekiston TOP-10%</th>
+                <th className="py-3 px-3 font-semibold uppercase tracking-wider text-slate-400">Xolis Ekspert Izohi</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/60">
+              {benchmarksList.map((bm, bIdx) => {
+                let userVal = bm.userValue;
+                if (bm.userMetric && rawFormData[bm.userMetric]) {
+                  userVal = `${rawFormData[bm.userMetric]}${bm.userSuffix || ''}`;
+                }
+                return (
+                  <tr key={bIdx} className="hover:bg-slate-800/30 transition-colors">
+                    <td className="py-3.5 px-3 font-semibold text-white whitespace-nowrap">
+                      {bm.name}
+                    </td>
+                    <td className="py-3.5 px-3 font-bold text-blue-400 whitespace-nowrap">
+                      {userVal || "—"}
+                    </td>
+                    <td className="py-3.5 px-3 text-slate-300 whitespace-nowrap">
+                      {bm.marketAvg}
+                    </td>
+                    <td className="py-3.5 px-3 font-bold text-emerald-400 whitespace-nowrap">
+                      {bm.top10}
+                    </td>
+                    <td className="py-3.5 px-3 text-slate-400 min-w-[240px] leading-relaxed">
+                      {bm.note}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* ⭐ Zoirjon Jalolov - Dastur O'rnatish & Individual Yondashuv Bloki ⭐ */}
-      <div className="bg-gradient-to-r from-blue-900/40 via-indigo-900/50 to-slate-900 border-2 border-blue-500/40 rounded-3xl p-5 sm:p-8 relative overflow-hidden shadow-2xl">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
-          <div className="space-y-3 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wide border border-blue-500/30">
-              <Award className="w-4 h-4 text-amber-400" />
-              {hasSoftware ? "Mavjud Dasturingizga Individual Yondashuv" : "Biznesingizni Avtomatlashtirish Yechimi"}
+      {/* ⭐ 4-O'ZGARISH: MUSTAQIL YECHIMLAR (DIY TOOLKIT) — NUSXALAB OLISH UCHUN TAYYOR INSTRUMENTLAR ⭐ */}
+      <div className="bg-slate-900/90 border-2 border-indigo-500/40 rounded-3xl p-5 sm:p-7 space-y-5 relative overflow-hidden shadow-2xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-800">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 uppercase tracking-wider mb-1">
+              <Sparkles className="w-4 h-4 text-amber-400" />
+              Mustaqil Yechimlar Sandig'i (DIY Toolkit) — $500 lik Tayyor Instrumentlar
             </div>
-            <h2 className="text-lg sm:text-2xl font-extrabold text-white">
-              {hasSoftware
-                ? "Dasturingizga Individual Yondashuv & Korxonani To'liq Tizimlashtirish"
-                : "Korxonangizga Zamonaviy POS Dasturlari & 1C: Korxona Tizimini O'rnatish"}
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              {hasSoftware
-                ? "Agar sizda dastur bo'lsa-yu, lekin tovar qoldiqlari to'g'ri chiqmayotgan bo'lsa, xodimlar chalkashayotgan bo'lsa yoki qo'shimcha imkoniyatlar kerak bo'lsa — Zoirjon Jalolov tizimingizni individual audit qilib, aniq to'g'irlab beradi:"
-                : "Daftardagi hisob-kitob, tovar kamomadlari va qarzlardagi chalkashliklarni butunlay to'xtatish uchun korxonangizga maxsus savdo dasturlarini o'rnatib, xodimlaringizni to'liq o'rgatib beramiz:"}
+            <h3 className="text-lg sm:text-2xl font-extrabold text-white">
+              Hech Kimga Pul To'lamasdan, Bugunoq Nusxalab Ishlatiladigan Resurslar
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+              O'zbekiston amaliyotida 100% sinovdan o'tgan skriptlar, KPI formulasi va reviziya chek-listi:
+            </p>
+          </div>
+
+          <div className="shrink-0 px-3 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-1.5">
+            <CheckCircle className="w-3.5 h-3.5" />
+            <span>100% Bepul & Amaliy</span>
+          </div>
+        </div>
+
+        {/* 4 ta Vkladka (Tablar) */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+          {[
+            { id: 'debt_scripts', label: "📋 Nasiyani Undirish Skriptlari", icon: FileText },
+            { id: 'sales_scripts', label: "🎯 Sotuv & Kassa 'Oltin Skripti'", icon: Flame },
+            { id: 'kpi_calc', label: "💰 Xodimlar KPI Formulari", icon: DollarSign },
+            { id: 'revision_checklist', label: "✅ 5 Qadamli Reviziya", icon: CheckSquare }
+          ].map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeDiyTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveDiyTab(tab.id)}
+                className={`p-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center sm:justify-start gap-2 transition-all cursor-pointer border ${
+                  isActive
+                    ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/20'
+                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-white'
+                }`}
+              >
+                <Icon className="w-4 h-4 shrink-0" />
+                <span className="truncate">{tab.label}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* TAB 1: Nasiya va Qarzdorlikni Undirish Skriptlari (3 bosqichli) */}
+        {activeDiyTab === 'debt_scripts' && (
+          <div className="space-y-4 animate-fadeIn">
+            <p className="text-xs text-slate-300">
+              Qarzdor bilan munosabatni buzmasdan, mas'uliyatni shaxsiy iltimosdan tizimga o'tkazuvchi 3 bosqichli matnlar:
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-xs text-slate-200">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{hasSoftware ? "Mavjud POS/1C dasturidagi xatolarni to'g'rilash" : "POS savdo dasturlari (Kassa, shtrix-kod, chek)"}</span>
+            {/* 1-Skript */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start justify-between gap-3">
+              <div className="space-y-1.5 flex-1">
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md">
+                  1-bosqich: Yumshoq eslatma (To'lov kunidan 1 kun oldin)
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                  "Assalomu alaykum, [Mijoz ismi] aka/opa! Ishlaringizga baraka bersin. {rawFormData.businessName || "[Biznes nomi]"} moliya bo'limidan yozmoqdamiz. Ertaga, [Sana] kuni hisob-kitobimiz bo'yicha [Summa] so'm to'lov muddati yetib keladi. To'lovni karta orqali ([Karta raqami]) yoki kassamizga naqd amalga oshirishingiz mumkin. Doimiy hamkorligimiz uchun rahmat!"
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>{hasSoftware ? "Tannarx va sof foydani 100% aniq chiqarish" : "1C: Korxona tizimini to'liq joriy etish"}</span>
+              <button
+                type="button"
+                onClick={() => handleCopyText(`Assalomu alaykum, [Mijoz ismi] aka/opa! Ishlaringizga baraka bersin. ${rawFormData.businessName || "[Biznes nomi]"} moliya bo'limidan yozmoqdamiz. Ertaga, [Sana] kuni hisob-kitobimiz bo'yicha [Summa] so'm to'lov muddati yetib keladi. To'lovni karta orqali ([Karta raqami]) yoki kassamizga naqd amalga oshirishingiz mumkin. Doimiy hamkorligimiz uchun rahmat!`, 'debt_1')}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border border-slate-700"
+              >
+                {copiedId === 'debt_1' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-400" />}
+                <span>{copiedId === 'debt_1' ? "Nusxalandi! ✓" : "Nusxalash"}</span>
+              </button>
+            </div>
+
+            {/* 2-Skript */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start justify-between gap-3">
+              <div className="space-y-1.5 flex-1">
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-amber-400 bg-amber-500/10 px-2.5 py-0.5 rounded-md">
+                  2-bosqich: Muddati 3-5 kun o'tganda (Tizimga tayanish usuli)
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                  "Assalomu alaykum, [Mijoz ismi]! Siz bilan doimo yaxshi ishlab kelganmiz. Hozir bizda hisob-kitob dasturi yangilanib, barcha qarzdorliklar avtomatik nazoratga olingan. Dastur [Summa] so'm qoldiqni qizil ro'yxatga o'tkazib, yangi yuk/xizmat berishni avtomatik bloklab qo'ymasligi uchun bugun soat 18:00 gacha to'lovni yopishimizga yordam bera olasizmi?"
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Qarzlar (nasiya) va mijozlar elektron bazasi</span>
+              <button
+                type="button"
+                onClick={() => handleCopyText(`Assalomu alaykum, [Mijoz ismi]! Siz bilan doimo yaxshi ishlab kelganmiz. Hozir bizda hisob-kitob dasturi yangilanib, barcha qarzdorliklar avtomatik nazoratga olingan. Dastur [Summa] so'm qoldiqni qizil ro'yxatga o'tkazib, yangi yuk/xizmat berishni avtomatik bloklab qo'ymasligi uchun bugun soat 18:00 gacha to'lovni yopishimizga yordam bera olasizmi?`, 'debt_2')}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border border-slate-700"
+              >
+                {copiedId === 'debt_2' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-400" />}
+                <span>{copiedId === 'debt_2' ? "Nusxalandi! ✓" : "Nusxalash"}</span>
+              </button>
+            </div>
+
+            {/* 3-Skript */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start justify-between gap-3">
+              <div className="space-y-1.5 flex-1">
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-red-400 bg-red-500/10 px-2.5 py-0.5 rounded-md">
+                  3-bosqich: Eski qarzni "Muzlatish va Bo'lib to'lash" orqali undirish
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                  "[Mijoz ismi], vaziyatingizni tushunib turibmiz. Keling, [Summa] so'm qarz sizga ham og'ir botmasligi uchun uni 4 haftaga bo'lib, grafik qilib qo'yamiz — har dushanba [Summa/4] so'mdan. Bugun 1-qismini tashlab bersangiz, hisobingizni faol holatda saqlab qolamiz. Ma'qulmi?"
+                </p>
               </div>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>Xodimlarni qayta o'qitish va kassa intizomini o'rnatish</span>
+              <button
+                type="button"
+                onClick={() => handleCopyText(`[Mijoz ismi], vaziyatingizni tushunib turibmiz. Keling, [Summa] so'm qarz sizga ham og'ir botmasligi uchun uni 4 haftaga bo'lib, grafik qilib qo'yamiz — har dushanba [Summa/4] so'mdan. Bugun 1-qismini tashlab bersangiz, hisobingizni faol holatda saqlab qolamiz. Ma'qulmi?`, 'debt_3')}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border border-slate-700"
+              >
+                {copiedId === 'debt_3' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-400" />}
+                <span>{copiedId === 'debt_3' ? "Nusxalandi! ✓" : "Nusxalash"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: Sotuv Menejerlari va Kassirlar uchun "Oltin Skript" */}
+        {activeDiyTab === 'sales_scripts' && (
+          <div className="space-y-4 animate-fadeIn">
+            <p className="text-xs text-slate-300">
+              Lid yo'qolishining oldini oluvchi va o'rtacha chekni 25% ga oshiruvchi 2 ta amaliy qoida:
+            </p>
+
+            {/* Skript A */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start justify-between gap-3">
+              <div className="space-y-1.5 flex-1">
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-md">
+                  A-Qoida: Kiruvchi lidga 5 daqiqa ichida javob berish skripti
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                  "Assalomu alaykum, [Ism]! {rawFormData.businessName || "[Biznes nomi]"}ga murojaat qilganingizdan xursandmiz. Siz so'ragan [Mahsulot/Xizmat] hozir omborimizda bor. Sizga eng to'g'ri variantni tanlab berishim uchun ayting-chi: buni o'zingiz (uyda/ishda) ishlatish uchun olyapsizmi yoki qayta sotish/sovg'a uchunmi? (Hoziroq 2 xil narxdagi variantni yuboraman)."
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopyText(`Assalomu alaykum, [Ism]! ${rawFormData.businessName || "[Biznes nomi]"}ga murojaat qilganingizdan xursandmiz. Siz so'ragan [Mahsulot/Xizmat] hozir omborimizda bor. Sizga eng to'g'ri variantni tanlab berishim uchun ayting-chi: buni o'zingiz (uyda/ishda) ishlatish uchun olyapsizmi yoki qayta sotish/sovg'a uchunmi? (Hoziroq 2 xil narxdagi variantni yuboraman).`, 'sales_1')}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border border-slate-700"
+              >
+                {copiedId === 'sales_1' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-400" />}
+                <span>{copiedId === 'sales_1' ? "Nusxalandi! ✓" : "Nusxalash"}</span>
+              </button>
+            </div>
+
+            {/* Skript B */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-start justify-between gap-3">
+              <div className="space-y-1.5 flex-1">
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-md">
+                  B-Qoida: Kassada o'rtacha chekni oshirish (Cross-sell) qoidasi
+                </div>
+                <p className="text-xs text-slate-200 leading-relaxed font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                  "Har bir xaridorga chek urishdan oldin aytiladigan 1 ta jumla: 'Aytgancha, bugun siz olgan [Tovar A] bilan birga [Qo'shimcha Tovar B] olgan mijozlarimizga [X]% maxsus chegirma / bonus yoqilyapti, qo'shib beraymi?' (Shu 1 ta jumla oylik aylanmani reklamasiz 15-20% ga oshiradi)."
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => handleCopyText(`Har bir xaridorga chek urishdan oldin aytiladigan 1 ta jumla: 'Aytgancha, bugun siz olgan [Tovar A] bilan birga [Qo'shimcha Tovar B] olgan mijozlarimizga [X]% maxsus chegirma / bonus yoqilyapti, qo'shib beraymi?' (Shu 1 ta jumla oylik aylanmani reklamasiz 15-20% ga oshiradi).`, 'sales_2')}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border border-slate-700"
+              >
+                {copiedId === 'sales_2' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-400" />}
+                <span>{copiedId === 'sales_2' ? "Nusxalandi! ✓" : "Nusxalash"}</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 3: Xodimlar uchun Tayyor KPI va Oylik Formulasi (Dinamik Kalkulyator) */}
+        {activeDiyTab === 'kpi_calc' && (
+          <div className="space-y-4 animate-fadeIn">
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+              <div className="text-xs font-bold text-white flex items-center justify-between">
+                <span>Dinamik KPI Modeli ({rawFormData.businessName || "Korxona"} ko'rsatkichlariga mos):</span>
+                <span className="text-emerald-400 font-mono">Formula: 40% Fiks + 40% Savdo + 20% KPI</span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2 text-xs">
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 font-semibold mb-1">1. Qat'iy Fiks (40%):</div>
+                  <div className="text-base font-bold text-white">~$250 - $350</div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Ish intizomi, o'z vaqtida kelib-ketish va kassa tozaligi uchun kafolatlangan baza.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 font-semibold mb-1">2. Savdo Bonusi (40%):</div>
+                  <div className="text-base font-bold text-emerald-400">
+                    +${Math.round(1000 * (auditData.netMargin / 100) * 0.09)} /har $1,000 ga
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Zararsizlik aylanmasi (${auditData.breakEvenRevenue.toLocaleString()}) dan oshgan har $1,000 savdodan sof marjaning 9% i bonus qilib beriladi.
+                  </p>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 font-semibold mb-1">3. Jarima & Nazorat:</div>
+                  <div className="text-base font-bold text-amber-400">-20% bonus kuyishi</div>
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    Agar kassada kamomad chiqsa yoki mijozlar CRM/daftarga kiritilmasa — oylik savdo bonusining 20% qismi ushlab qolinadi.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
+        )}
 
-          {/* Ekspert Kontaktlari */}
-          <div className="bg-slate-900/90 border border-blue-500/30 rounded-2xl p-4 sm:p-6 shrink-0 w-full lg:w-80 space-y-3.5">
+        {/* TAB 4: 5 Qadamli Reviziya Chek-listi */}
+        {activeDiyTab === 'revision_checklist' && (
+          <div className="space-y-3 animate-fadeIn">
+            <p className="text-xs text-slate-300">
+              Dastursiz ham do'konda kamomad va o'g'irliklarning 90% ini to'xtatuvchi interaktiv kunlik/haftalik tartib:
+            </p>
+
+            {[
+              { id: 1, title: "Top-20 'Lokomotiv' tovarlar nazorati", desc: "Har kuni kechqurun do'kondagi eng ko'p sotiladigan 20 ta tovar qoldig'ini 15 daqiqa ichida sanab chiqish (80% o'g'irlik va kamomad aynan shu tovarlarda bo'ladi)." },
+              { id: 2, title: "Nasiya 'Stop-List' qoidasi", desc: "Qarzi 15 kundan oshgan mijozlarga rahbar ruxsatisiz yangi tovar berishni qat'iy taqiqlash." },
+              { id: 3, title: "Kassa 'Z-otchet' va Naqd pul solishtiruvi", desc: "Kun oxirida tushgan naqd pul, terminal va karta o'tkazmalarini tiyinigacha hisoblab, farqni o'sha kuniyoq aniqlash." },
+              { id: 4, title: "'Sariq narxnomalar' aksiyasi", desc: "Omborda 45 kundan beri harakatsiz yotgan tovarlarni aniqlab, tannarxiga +5% ustama bilan 'Tezkor tugatish' burchagiga chiqarish (muzlagan pulni naqdga aylantirish)." },
+              { id: 5, title: "Yo'qotilgan lidlar auditi", desc: "Kechqurun Telegram/Instagram va qo'ng'iroqlarda javobsiz qolgan yoki 'o'ylab ko'raman' degan 10 ta mijozga qayta aloqaga chiqish." }
+            ].map((item) => {
+              const isChecked = !!checkedRevision[item.id];
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => toggleRevision(item.id)}
+                  className={`w-full text-left p-3.5 rounded-2xl border transition-all cursor-pointer flex items-start gap-3 ${
+                    isChecked
+                      ? 'bg-emerald-950/20 border-emerald-500/40 opacity-70'
+                      : 'bg-slate-950 border-slate-800 hover:border-slate-700'
+                  }`}
+                >
+                  <div className="mt-0.5">
+                    {isChecked ? <CheckSquare className="w-5 h-5 text-emerald-400 shrink-0" /> : <Square className="w-5 h-5 text-slate-500 shrink-0" />}
+                  </div>
+                  <div className="flex-1">
+                    <h5 className={`text-xs sm:text-sm font-bold ${isChecked ? 'line-through text-slate-400' : 'text-white'}`}>
+                      {item.id}. {item.title}
+                    </h5>
+                    <p className="text-xs text-slate-400 mt-0.5 leading-relaxed">
+                      {item.desc}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* C-BLOK: YANGILANGAN INTERAKTIV ROI SIMULYATORI (4 SWITCH) */}
+      <div className="bg-slate-900/80 border border-blue-900/40 rounded-3xl p-5 sm:p-7 relative overflow-hidden">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">
+              <Sliders className="w-4 h-4" />
+              C-Blok: Interaktiv Avtomatlashtirish & ROI Simulyatori
+            </div>
+            <h3 className="text-lg sm:text-xl font-bold text-white">
+              Tizimlashtirish Orqali Qancha Pul Qaytarib Olasiz?
+            </h3>
+            <p className="text-xs text-slate-400 mt-0.5">
+              Quyidagi vositalarni yoqib, korxonangiz oylik tejaydigan va qaytarib oladigan pulini ko'ring:
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 shrink-0">
+            <div className="px-4 py-2.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
+              <div className="text-[10px] uppercase font-bold text-emerald-400">O'zini oqlash muddati:</div>
+              <div className="text-lg sm:text-xl font-black text-white">
+                ~{simPaybackMonths} oyda
+              </div>
+            </div>
+            
+            <div className="px-4 py-2.5 rounded-2xl bg-blue-500/15 border border-blue-500/30 text-blue-300">
+              <div className="text-[10px] uppercase font-bold text-blue-400">Oylik tejaladigan mablag':</div>
+              <div className="text-lg sm:text-xl font-black text-emerald-400">
+                +${simulatedSavingsMonthly.toLocaleString()} <span className="text-xs text-slate-400 font-normal">/oy</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 4 ta Switch */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-5">
+          <button
+            type="button"
+            onClick={() => setSimPosInstalled(!simPosInstalled)}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+              simPosInstalled
+                ? 'bg-blue-950/40 border-blue-500/60 shadow-lg shadow-blue-500/10'
+                : 'bg-slate-950 border-slate-800 opacity-60'
+            }`}
+          >
             <div>
-              <div className="text-[11px] text-slate-400 uppercase font-semibold">Tizimlashtirish bo'yicha mutaxassis:</div>
-              <div className="text-lg font-bold text-white mt-0.5">Zoirjon Jalolov</div>
-              <div className="text-xs text-blue-400">POS & 1C Tizimlari Mutaxassisi</div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">1. POS / 1C Tizimi</span>
+                <div className={`w-9 h-5 rounded-full p-0.5 transition-colors ${simPosInstalled ? 'bg-blue-600' : 'bg-slate-700'}`}>
+                  <div className={`w-4 h-4 rounded-full bg-white transition-transform ${simPosInstalled ? 'translate-x-4' : 'translate-x-0'}`} />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Kassa qoldiqlari, shtrix-kod va tovar kamomadini bartaraf etish.
+              </p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-slate-800/80 text-xs font-bold text-emerald-400">
+              +${Math.round(baseTotalLoss * 0.38)} /oy tejaladi
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSimDebtFixed(!simDebtFixed)}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+              simDebtFixed
+                ? 'bg-blue-950/40 border-blue-500/60 shadow-lg shadow-blue-500/10'
+                : 'bg-slate-950 border-slate-800 opacity-60'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">2. Nasiya Avtomatika</span>
+                <div className={`w-9 h-5 rounded-full p-0.5 transition-colors ${simDebtFixed ? 'bg-blue-600' : 'bg-slate-700'}`}>
+                  <div className={`w-4 h-4 rounded-full bg-white transition-transform ${simDebtFixed ? 'translate-x-4' : 'translate-x-0'}`} />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Qat'iy qarz limiti va SMS/Telegram orqali avtomatik eslatmalar.
+              </p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-slate-800/80 text-xs font-bold text-emerald-400">
+              +${Math.round(baseTotalLoss * 0.24)} /oy tejaladi
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSimCrmInstalled(!simCrmInstalled)}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+              simCrmInstalled
+                ? 'bg-blue-950/40 border-blue-500/60 shadow-lg shadow-blue-500/10'
+                : 'bg-slate-950 border-slate-800 opacity-60'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">3. CRM & Voronka</span>
+                <div className={`w-9 h-5 rounded-full p-0.5 transition-colors ${simCrmInstalled ? 'bg-blue-600' : 'bg-slate-700'}`}>
+                  <div className={`w-4 h-4 rounded-full bg-white transition-transform ${simCrmInstalled ? 'translate-x-4' : 'translate-x-0'}`} />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Mijozlar bazasi va tezkor javob orqali lidlarni sotuvga aylantirish.
+              </p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-slate-800/80 text-xs font-bold text-emerald-400">
+              +${Math.round(baseTotalLoss * 0.20)} /oy tejaladi
+            </div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setSimLoyaltyInstalled(!simLoyaltyInstalled)}
+            className={`p-4 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+              simLoyaltyInstalled
+                ? 'bg-blue-950/40 border-blue-500/60 shadow-lg shadow-blue-500/10'
+                : 'bg-slate-950 border-slate-800 opacity-60'
+            }`}
+          >
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-white">4. Bonus & Keshbek Boti</span>
+                <div className={`w-9 h-5 rounded-full p-0.5 transition-colors ${simLoyaltyInstalled ? 'bg-blue-600' : 'bg-slate-700'}`}>
+                  <div className={`w-4 h-4 rounded-full bg-white transition-transform ${simLoyaltyInstalled ? 'translate-x-4' : 'translate-x-0'}`} />
+                </div>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Telegram bot orqali keshbek va qayta xaridlarni (LTV) oshirish.
+              </p>
+            </div>
+            <div className="mt-3 pt-2 border-t border-slate-800/80 text-xs font-bold text-emerald-400">
+              +${Math.round(auditData.potentialLtvMonthlyProfit || (baseTotalLoss * 0.18))} /oy qayta sotuv
+            </div>
+          </button>
+        </div>
+      </div>
+
+      {/* ⭐ 5-O'ZGARISH: 2 XIL YO'L: O'ZIM BAJARAMAN vs MUTAXASSIS BILAN (XOLIS TAQQOSLASH) ⭐ */}
+      <div className="space-y-4">
+        <div className="text-center max-w-2xl mx-auto">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 text-xs font-bold uppercase mb-2">
+            <Award className="w-3.5 h-3.5 text-amber-400" />
+            Tadbirkor Uchun 2 Ta Haqqoniy Tanlov
+          </div>
+          <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+            Keyingi Qadamingiz: Qaysi Yo'l Siz Uchun Qulayroq?
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Biz sizga majburlab dastur sotmaymiz. O'zingiz mustaqil joriy qilasizmi yoki mutaxassisga topshirasizmi — qaror sizniki:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 pt-2">
+          {/* 1-USTUN: MUSTAQIL JORIY QILISH (Byudjet: $0) */}
+          <div className="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 flex flex-col justify-between relative overflow-hidden">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-slate-800 text-slate-300 border border-slate-700">
+                  🛠️ 1-Yo'l: Mustaqil joriy qilish
+                </span>
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
+                  Byudjet: $0
+                </span>
+              </div>
+
+              <h4 className="text-lg font-bold text-white">
+                O'zingiz va jamoangiz bilan bosqichma-bosqich tartib o'rnatish
+              </h4>
+
+              <div className="space-y-2.5 text-xs text-slate-300">
+                <div className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>Nima qilasiz:</strong> Yuqoridagi bepul DIY skriptlar, KPI formulalar, 5 qadamli reviziya va yo'l xaritasini qo'llab, Excel + Telegram orqali nazorat o'rnatasiz.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Clock className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                  <span><strong>Ketadigan vaqt:</strong> 1.5 – 3 oy (kuniga 2-3 soat shaxsiy vaqt).</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <span><strong>Qiyinchilik & Xavf:</strong> Inson omili saqlanadi, xodimlar qarshilik qilishi mumkin, tovar 200 tadan oshganda Excelda chalkashliklar boshlanadi.</span>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-2 pt-2 border-t border-slate-800 text-xs">
-              <a
-                href="tel:+998995160021"
-                className="flex items-center justify-between p-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold transition-all"
+            <div className="mt-6 pt-4 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={handlePrint}
+                className="w-full py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-700 transition-all cursor-pointer"
               >
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-emerald-400" />
+                <FileText className="w-4 h-4 text-blue-400" />
+                <span>📄 Barcha bepul shablonlar & PDF xulosani yuklab olish</span>
+              </button>
+            </div>
+          </div>
+
+          {/* 2-USTUN: TIZIMLI AVTOMATLASHTIRISH (Zoirjon Jalolov bilan) */}
+          <div className="p-6 rounded-3xl bg-gradient-to-br from-blue-950/60 via-indigo-950/50 to-slate-900 border-2 border-blue-500/40 flex flex-col justify-between relative overflow-hidden shadow-2xl">
+            <div className="space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                  🚀 2-Yo'l: Zoirjon Jalolov bilan "Pod Klyuch"
+                </span>
+                <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
+                  ROI: ~1.5 oyda o'zini oqlaydi
+                </span>
+              </div>
+
+              <h4 className="text-lg font-bold text-white">
+                5+ yillik amaliyotchi mutaxassis bilan to'liq avtomatlashtirish
+              </h4>
+
+              <div className="space-y-2.5 text-xs text-slate-300">
+                <div className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>Nima qilasiz:</strong> Barcha qora ishlarni (1C / POS o'rnatish, tovarlarni shtrix-kodlash, tarozilar, Telegram-bot hisobotlari va xodimlarni o'qitish) mutaxassisga topshirasiz.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Zap className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <span><strong>Ketadigan vaqt:</strong> 3 – 7 ish kuni ichida to'liq ishga tushadi.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <span><strong>Xolis kafolat:</strong> Avval 15 daqiqalik BEPUL texnik razbor o'tkazamiz — agar korxonangizga dastur hozir kerak bo'lmasa, buni o'zimiz ochiq aytamiz.</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-slate-800 space-y-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <a
+                  href="tel:+998995160021"
+                  className="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs flex items-center justify-center gap-2 border border-slate-700 transition-all text-center"
+                >
+                  <Phone className="w-3.5 h-3.5 text-emerald-400" />
                   <span>+998 99 516 00 21</span>
-                </div>
-                <span className="text-[10px] text-slate-400">Qo'ng'iroq</span>
-              </a>
-
-              <a
-                href="https://t.me/Jalolov_IST"
-                target="_blank"
-                rel="noreferrer"
-                className="flex items-center justify-between p-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold transition-all shadow-md shadow-blue-500/20"
-              >
-                <div className="flex items-center gap-2">
-                  <Send className="w-4 h-4 text-white" />
+                </a>
+                <a
+                  href="https://t.me/Jalolov_IST"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition-all text-center"
+                >
+                  <Send className="w-3.5 h-3.5" />
                   <span>@Jalolov_IST</span>
-                </div>
-                <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded">Telegram</span>
-              </a>
+                </a>
+              </div>
             </div>
-
-            <p className="text-[11px] text-slate-400 text-center">
-              Dastur tanlash yoki mavjud tizimni sozlash bo'yicha bepul konsultatsiya
-            </p>
           </div>
         </div>
       </div>
 
-      {/* 📱 QULAY MOBIL VA DESKTOP MENYU (NATIJA BO'LIMLARI) 📱 */}
+      {/* B-BLOK: KERAKLI MANBALAR VA TEXNIK ARXITEKTURA (RESOURCE HUB) */}
+      <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 sm:p-7 space-y-5">
+        <div>
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-400 uppercase tracking-wider mb-1">
+            <Cpu className="w-4 h-4" />
+            B-Blok: Kerakli Uskunalar va Dasturiy Arxitektura
+          </div>
+          <h3 className="text-lg sm:text-2xl font-bold text-white tracking-tight">
+            "{auditData.industry.name}" Uchun Texnik Jihozlar
+          </h3>
+          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            Bozorda minglab ortiqcha jihozlar taklif etiladi — sizga faqat quyidagi asosiy uskunalar kifoya:
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+          {/* 1-USTUN: Dasturiy Tizim */}
+          <div className="p-5 rounded-2xl bg-slate-950 border border-indigo-900/40 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-indigo-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <Laptop className="w-4 h-4" />
+                <span>1. Dasturiy Tizim (Software)</span>
+              </div>
+              <h4 className="text-base font-bold text-white">
+                Sohaviy Dasturiy Arxitektura
+              </h4>
+              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                {auditData.industry.softwareTip}
+              </p>
+
+              <div className="mt-4 space-y-2.5 text-xs">
+                {auditData.softwareRecommendations.slice(0, 3).map((soft, sIdx) => (
+                  <div key={sIdx} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
+                    <div className="flex items-center justify-between text-white font-semibold">
+                      <span>{soft.name}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/20 text-indigo-300">{soft.category}</span>
+                    </div>
+                    <p className="text-[11px] text-slate-400 mt-1">{soft.reason}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-indigo-300 font-medium">
+              💡 1C yoki POS tizimi o'rnatilgach, butun savdo bitta ekranda jamlanadi.
+            </div>
+          </div>
+
+          {/* 2-USTUN: Uskunalar Checklist */}
+          <div className="p-5 rounded-2xl bg-slate-950 border border-blue-900/40 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider">
+                  <Package className="w-4 h-4" />
+                  <span>2. Uskunalar (Hardware)</span>
+                </div>
+                <span className="text-[10px] text-slate-400">Boringizni belgilang:</span>
+              </div>
+              <h4 className="text-base font-bold text-white">
+                Kassa va Ombor Jihozlari Cheklisti
+              </h4>
+              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                Kassa intizomi, Asl Belgisi markirovkasi va tezkor hisob uchun zarur uskunalar:
+              </p>
+
+              <div className="mt-4 space-y-2">
+                {hardwareList.map((hw) => {
+                  const isChecked = !!checkedHardware[hw.id];
+                  return (
+                    <button
+                      key={hw.id}
+                      type="button"
+                      onClick={() => toggleHardware(hw.id)}
+                      className={`w-full flex items-center gap-2.5 p-2 rounded-xl text-left transition-all text-xs cursor-pointer border ${
+                        isChecked 
+                          ? 'bg-emerald-950/30 border-emerald-500/40 text-emerald-200' 
+                          : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-slate-700'
+                      }`}
+                    >
+                      {isChecked ? (
+                        <CheckSquare className="w-4 h-4 text-emerald-400 shrink-0" />
+                      ) : (
+                        <Square className="w-4 h-4 text-slate-500 shrink-0" />
+                      )}
+                      <span className="flex-1 truncate">{hw.name}</span>
+                      {hw.essential && (
+                        <span className="text-[9px] px-1 py-0.5 rounded bg-blue-500/20 text-blue-300 shrink-0">
+                          Asosiy
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-blue-300 font-medium">
+              🛒 Zoirjon Jalolov barcha uskunalarni yetkazib, dasturga ulab beradi.
+            </div>
+          </div>
+
+          {/* 3-USTUN: Boshqaruv Qoidalari */}
+          <div className="p-5 rounded-2xl bg-slate-950 border border-emerald-900/40 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
+                <Flame className="w-4 h-4" />
+                <span>3. Boshqaruv Qoidalari</span>
+              </div>
+              <h4 className="text-base font-bold text-white">
+                Hozirdan Qo'llashingiz Kerak Bo'lgan 3 Qoida
+              </h4>
+              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                Tizim samarali ishlashi va daromad o'sishi uchun muhim operatsion qoidalar:
+              </p>
+
+              <div className="mt-4 space-y-3">
+                {rulesList.map((rule, rIdx) => (
+                  <div key={rIdx} className="flex items-start gap-2.5 text-xs text-slate-300 leading-relaxed">
+                    <div className="w-5 h-5 rounded-lg bg-emerald-500/20 text-emerald-400 font-bold flex items-center justify-center shrink-0 text-[11px] mt-0.5">
+                      {rIdx + 1}
+                    </div>
+                    <span>{rule}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-emerald-400 font-semibold flex items-center gap-1.5">
+              <CheckCircle className="w-3.5 h-3.5" />
+              <span>Natija: Nelikvid kamayadi, pul aylanmasi 2x tezlashadi.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 📱 TAB MENYU 📱 */}
       <div className="no-print">
         <div className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5 px-1 sm:hidden">
           Natija bo'limlari:
@@ -502,23 +1159,6 @@ export function AuditReport({ auditData, rawFormData }) {
               </div>
             ))}
           </div>
-
-          <div className="p-5 rounded-2xl bg-blue-950/40 border border-blue-800/50 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h4 className="text-sm font-bold text-white">Dastur o'rnatish yoki mavjud tizimni sozlamoqchimisiz?</h4>
-              <p className="text-xs text-slate-300 mt-1">
-                Zoirjon Jalolov sizning korxonangizga mos POS va 1C dasturlarini o'rnatib, xodimlarni o'qitib beradi.
-              </p>
-            </div>
-            <a
-              href="https://t.me/Jalolov_IST"
-              target="_blank"
-              rel="noreferrer"
-              className="px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs transition-all whitespace-nowrap text-center shadow-lg shadow-blue-600/30"
-            >
-              Telegramda yozish &rarr;
-            </a>
-          </div>
         </div>
       )}
 
@@ -560,7 +1200,7 @@ export function AuditReport({ auditData, rawFormData }) {
                     </div>
                   </div>
                   <div className="mt-2 text-xs text-amber-400 font-medium">
-                    ⚠️ Byudjet farqi (yo'qotish): +${auditData.monthlyWastedMoney.toLocaleString()}
+                    ⚠️ Byudjet farqi (yo'qotish): +${auditData.monthlyWastedMarketing.toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -590,7 +1230,7 @@ export function AuditReport({ auditData, rawFormData }) {
 
               <div className="mt-5 p-4 rounded-2xl bg-blue-950/30 border border-blue-900/40 text-xs text-slate-300">
                 <span className="font-bold text-white block mb-1">💡 Xulosa:</span>
-                Dastur optimallashtirilib, kassa va savdo nazoratga olinsa, oylik <strong className="text-emerald-400">${auditData.monthlyWastedMoney.toLocaleString()}</strong> tejaladi!
+                Dastur optimallashtirilib, kassa va savdo nazoratga olinsa, oylik <strong className="text-emerald-400">${auditData.totalMonthlyLoss.toLocaleString()}</strong> tejaladi!
               </div>
             </div>
           </div>

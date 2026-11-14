@@ -57,17 +57,45 @@ body {
   .border-slate-700 {
     border-color: #e2e8f0 !important;
   }
-  .bg-red-950\/25 {
+  .bg-red-950\/25,
+  .bg-red-950\/20,
+  .bg-red-950\/40 {
     background-color: #fef2f2 !important;
     border: 1px solid #fecaca !important;
+    color: #991b1b !important;
   }
-  .text-red-400 {
+  .bg-amber-950\/20,
+  .bg-amber-950\/40 {
+    background-color: #fffbeb !important;
+    border: 1px solid #fde68a !important;
+    color: #92400e !important;
+  }
+  .bg-blue-950\/20,
+  .bg-blue-950\/30,
+  .bg-blue-950\/40 {
+    background-color: #eff6ff !important;
+    border: 1px solid #bfdbfe !important;
+    color: #1e40af !important;
+  }
+  .bg-purple-950\/20,
+  .bg-purple-950\/40 {
+    background-color: #faf5ff !important;
+    border: 1px solid #e9d5ff !important;
+    color: #6b21a8 !important;
+  }
+  .text-red-400, .text-red-300 {
     color: #dc2626 !important;
   }
-  .text-emerald-400 {
+  .text-emerald-400, .text-emerald-300 {
     color: #16a34a !important;
   }
-  .text-blue-400 {
+  .text-blue-400, .text-blue-300 {
     color: #2563eb !important;
+  }
+  .text-purple-400, .text-purple-300 {
+    color: #7c3aed !important;
+  }
+  .text-amber-400, .text-amber-300 {
+    color: #d97706 !important;
   }
 }

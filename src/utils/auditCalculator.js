@@ -11,12 +11,15 @@ export function calculateBusinessAudit(formData) {
   const industryKey = formData.industry || 'retail_general';
   const industry = INDUSTRY_BENCHMARKS[industryKey] || INDUSTRY_BENCHMARKS.retail_general;
 
+  // Yangi PRO 3.0 kiritilgan qiymatlar
+  const fixedCosts = Math.max(100, Number(formData.fixedCosts) || industry.typicalFixedCosts || 1500);
+  const inventoryCapital = Math.max(500, Number(formData.inventoryCapital) || industry.typicalInventory || 15000);
+
   // Platformalar (Multi-select)
   const selectedPlatforms = Array.isArray(formData.platforms) && formData.platforms.length > 0
     ? formData.platforms
     : [formData.platform || 'instagram'];
 
-  // O'rtacha CPL ni hisoblash
   let totalCplSum = 0;
   selectedPlatforms.forEach((p) => {
     const cpl = industry.avgCpl[p] || industry.avgCpl.instagram || 1.5;
@@ -34,7 +37,7 @@ export function calculateBusinessAudit(formData) {
   const penalties = [];
   let totalPenaltyPercentage = 0;
 
-  // A. Kassa / Savdo / Ombor Avtomatlashtirish Dasturi (POS / 1C)
+  // A. Kassa / Savdo Dasturi
   if (formData.accountingSoftware === 'paper') {
     const penalty = 25;
     totalPenaltyPercentage += penalty;
@@ -61,7 +64,7 @@ export function calculateBusinessAudit(formData) {
     });
   }
 
-  // B. Nasiya va Qarzlar hisobi (Debitorlik)
+  // B. Nasiya va Qarzlar
   if (formData.debtTracking === 'paper') {
     const penalty = 20;
     totalPenaltyPercentage += penalty;
@@ -88,7 +91,61 @@ export function calculateBusinessAudit(formData) {
     });
   }
 
-  // C. CRM Tizimi
+  // C. Ombor va Nelikvid holati (PRO 3.0)
+  if (formData.inventoryStatus === 'dead_stock') {
+    const penalty = 15;
+    totalPenaltyPercentage += penalty;
+    penalties.push({
+      id: 'inventory_dead',
+      title: "Omborda katta miqdorda nelikvid (muzlagan tovar)",
+      impact: `+${penalty}% kapital muzlashi`,
+      lossPercent: penalty,
+      severity: 'high',
+      description: "Oylab sotilmay yotgan tovarlar aylanma mablag'ni band qilib, biznes rivojini to'xtatib qo'ygan.",
+      solution: "ABC-tahlil o'tkazib, nelikvidlarni chegirmada naqd pulga aylantirish."
+    });
+  } else if (formData.inventoryStatus === 'estimated') {
+    const penalty = 8;
+    totalPenaltyPercentage += penalty;
+    penalties.push({
+      id: 'inventory_est',
+      title: "Ombor qoldiqlari taxminiy hisoblanishi",
+      impact: `+${penalty}% noaniqlik`,
+      lossPercent: penalty,
+      severity: 'medium',
+      description: "Tovarlar real qoldig'i aniq emasligi sababli xaridlar xato qilinadi va pul behuda muzlaydi.",
+      solution: "1C yoki POS dasturi orqali avtomatik qoldiqlar hisobini yo'lga qo'yish."
+    });
+  }
+
+  // D. Soliq va Markirovka (PRO 3.0)
+  if (formData.fiscalMarking === 'unorganized') {
+    const penalty = 18;
+    totalPenaltyPercentage += penalty;
+    penalties.push({
+      id: 'fiscal_bad',
+      title: "Soliq va Markirovka integratsiyasi yo'qligi",
+      impact: `Yuqori jarima xavfi`,
+      lossPercent: penalty,
+      severity: 'critical',
+      description: "Asl Belgisi markirovkasiz va fiskal cheksiz savdo qilish katta moliyaviy jarimalar xavfini tug'diradi.",
+      solution: "2D skaner va soliqqa to'g'ridan-to'g'ri ulangan 1C/POS kassani joriy etish."
+    });
+  } else if (formData.fiscalMarking === 'partial') {
+    const penalty = 8;
+    totalPenaltyPercentage += penalty;
+    penalties.push({
+      id: 'fiscal_partial',
+      title: "Markirovka va cheklar qo'lda urilishi",
+      impact: `Qisman xatoliklar`,
+      lossPercent: penalty,
+      severity: 'low',
+      description: "Qo'lda kassa cheki urish kassirning vaqtini oladi va navbatlarni yuzaga keltiradi.",
+      solution: "Kassa monoblokiga shtrix-kod skanerini to'g'ridan-to'g'ri integratsiya qilish."
+    });
+  }
+
+  // E. CRM Tizimi
   if (formData.hasCrm === 'no') {
     const penalty = 20;
     totalPenaltyPercentage += penalty;
@@ -110,14 +167,14 @@ export function calculateBusinessAudit(formData) {
       impact: `+${penalty}% xarajat`,
       lossPercent: penalty,
       severity: 'medium',
-      description: "Excelda avtomatik eslatmalar yo'q, qo'ng'iroqlar tarixi saqlanmaydi va sotuvchilar mas'uliyati sust bo'ladi.",
+      description: "Excelda avtomatik eslatmalar yo'q, qo'ng'iroqlar tarixi saqlanmaydi.",
       solution: "Bulutli CRM tizimiga o'tish."
     });
   }
 
-  // D. Sotuv bo'limi
+  // F. Sotuvchilar va Javob tezligi
   if (formData.salesTeam === 'owner_only') {
-    const penalty = 18;
+    const penalty = 15;
     totalPenaltyPercentage += penalty;
     penalties.push({
       id: 'sales_team',
@@ -125,26 +182,13 @@ export function calculateBusinessAudit(formData) {
       impact: `+${penalty}% yo'qotish`,
       lossPercent: penalty,
       severity: 'high',
-      description: "Biznes egasining vaqti cheklangan. Boshqa ishlar sababli mijozlar kutib qoladi va sotuv foizi tushadi.",
+      description: "Biznes egasining vaqti cheklangan. Boshqa ishlar sababli mijozlar kutib qoladi.",
       solution: "Kamida 1 ta sotuv menejerini yollash va skript bilan ta'minlash."
-    });
-  } else if (formData.salesTeam === 'junior') {
-    const penalty = 8;
-    totalPenaltyPercentage += penalty;
-    penalties.push({
-      id: 'sales_junior',
-      title: "Menejerlarda skript va qat'iy reja yo'qligi",
-      impact: `+${penalty}% yo'qotish`,
-      lossPercent: penalty,
-      severity: 'low',
-      description: "Sotuvchilar faqat kutib o'tiradi, e'tirozlar bilan ishlay olmaydi.",
-      solution: "Sotuv skriptlari va kunlik hisobot joriy etish."
     });
   }
 
-  // E. Javob berish tezligi
   if (formData.responseTime === 'slow') {
-    const penalty = 15;
+    const penalty = 12;
     totalPenaltyPercentage += penalty;
     penalties.push({
       id: 'response_slow',
@@ -156,7 +200,7 @@ export function calculateBusinessAudit(formData) {
       solution: "Tezkor bildirishnoma yoki avtojavob tizimini o'rnatish."
     });
   } else if (formData.responseTime === 'very_slow') {
-    const penalty = 25;
+    const penalty = 22;
     totalPenaltyPercentage += penalty;
     penalties.push({
       id: 'response_critical',
@@ -169,51 +213,109 @@ export function calculateBusinessAudit(formData) {
     });
   }
 
-  // F. Upakovka
-  if (formData.socialStatus === 'bad') {
-    const penalty = 15;
+  // G. Loyallik va Bonus tizimi (PRO 3.0)
+  if (formData.loyaltySystem === 'none') {
+    const penalty = 12;
     totalPenaltyPercentage += penalty;
     penalties.push({
-      id: 'branding_bad',
-      title: "Ijtimoiy tarmoq va Upakovka sustligi",
-      impact: `+${penalty}% qimmat lid`,
+      id: 'loyalty_none',
+      title: "Mijozlarni ushlab qolish (Loyallik/Bonus) yo'qligi",
+      impact: `+${penalty}% qayta sotuv yo'qolishi`,
       lossPercent: penalty,
       severity: 'medium',
-      description: "Sahifada ishonch va aniq narxlar yo'qligi xarid qaroriga to'sqinlik qiladi.",
-      solution: "Profil shakli, vizual qadoq va mijozlar fikrlarini (keyslar) to'g'irlash."
+      description: "Har doim faqat yangi mijoz qidiriladi, eski mijozlar esa unutiladi va qaytib kelmaydi.",
+      solution: "Avtomatlashgan keshbek/bonus Telegram botini ishga tushirish."
     });
   }
 
-  // 4. Real hisob-kitoblar
+  // 4. CHUQUR MOLIYAVIY MATEMATIKA (PRO 3.0)
+
+  // A. Reklama byudjeti farqi
   const penaltyMultiplier = 1 + (totalPenaltyPercentage / 100);
-  const realRequiredLeads = Math.ceil(requiredLeadsIdeal * (1 + (totalPenaltyPercentage * 0.65 / 100)));
+  const realRequiredLeads = Math.ceil(requiredLeadsIdeal * (1 + (totalPenaltyPercentage * 0.60 / 100)));
   const realMinBudget = Math.round(minBudgetIdeal * penaltyMultiplier);
   const realOptimalBudget = Math.round(optimalBudgetIdeal * penaltyMultiplier);
+  const monthlyWastedMarketing = Math.round(realOptimalBudget - optimalBudgetIdeal);
 
-  // Pul yo'qotishlari
-  const monthlyWastedMoney = Math.round(realOptimalBudget - optimalBudgetIdeal);
-  const yearlyWastedMoney = monthlyWastedMoney * 12;
+  // B. Yo'qotilgan Sof Foyda (Lost Net Profit)
+  const lostCustomersCount = Math.max(0, Math.round((realRequiredLeads - requiredLeadsIdeal) * (conversionRate / 100)));
+  const lostNetProfitMonthly = Math.round(lostCustomersCount * averageCheck * (netMargin / 100));
+
+  // C. Ombor va Kassa kamomadi / isrofi (Theft & Inventory shrink)
+  let inventoryShrinkRate = 0;
+  if (formData.accountingSoftware === 'paper') inventoryShrinkRate = 0.045; // 4.5% kamomad
+  else if (formData.accountingSoftware === 'excel') inventoryShrinkRate = 0.02; // 2%
+  else inventoryShrinkRate = 0.005; // 0.5%
+  const inventoryShrinkLossMonthly = Math.round(targetRevenue * inventoryShrinkRate);
+
+  // D. Nasiyadagi xavf ostidagi summa
+  let debtRiskPercent = 0;
+  if (formData.debtTracking === 'paper') debtRiskPercent = 0.14; // 14%
+  else if (formData.debtTracking === 'no_tracking') debtRiskPercent = 0.25;
+  else debtRiskPercent = 0.02;
+  const estimatedDebtRiskSum = Math.round(targetRevenue * debtRiskPercent);
+
+  // E. UMUMIY OYLIK VA YILLIK YO'QOTISH (Grand Total Losses)
+  const totalMonthlyLoss = monthlyWastedMarketing + lostNetProfitMonthly + inventoryShrinkLossMonthly;
+  const totalYearlyLoss = totalMonthlyLoss * 12;
+
+  // F. LTV va Bonus Tizimi Potensiali (Reklamasiz qo'shimcha tushum)
+  let ltvGainPercent = formData.loyaltySystem === 'automated' ? 0 : 0.25;
+  const potentialLtvMonthlyRevenue = Math.round(requiredCustomers * averageCheck * ltvGainPercent);
+  const potentialLtvMonthlyProfit = Math.round(potentialLtvMonthlyRevenue * (netMargin / 100));
+  const potentialLtvYearlyProfit = potentialLtvMonthlyProfit * 12;
+
+  // G. Muzlagan Kapital (Dead Stock / Nelikvid tovar)
+  let deadStockRatio = 0.05;
+  if (formData.inventoryStatus === 'dead_stock') deadStockRatio = 0.25;
+  else if (formData.inventoryStatus === 'estimated') deadStockRatio = 0.16;
+  else if (formData.accountingSoftware === 'paper') deadStockRatio = 0.20;
+  const deadStockSum = Math.round(inventoryCapital * deadStockRatio);
+
+  // H. Zararsizlik Nuqtasi (Break-Even Point)
+  const breakEvenRevenue = Math.round(fixedCosts / (netMargin / 100));
+  const breakEvenDay = Math.min(30, Math.max(1, Math.round((breakEvenRevenue / targetRevenue) * 30)));
+
+  // I. Tadbirkorning Vaqt Qiymati (Operatsionka zarari)
+  const hourlyRate = Math.max(5, Math.round((targetRevenue * (netMargin / 100)) / 200));
+  const dailyOpHours = formData.dailyOperationalHours === 'high' ? 5 : formData.dailyOperationalHours === 'medium' ? 3 : 1;
+  const yearlyOpHours = dailyOpHours * 300;
+  const yearlyTimeCost = yearlyOpHours * hourlyRate;
+
+  // J. Avtomatlashtirish ROI va O'zini Oqlash Muddati (Payback Period)
+  const automationCost = industry.autoInvestCost || 950;
+  const paybackMonths = totalMonthlyLoss > 0 ? Math.max(0.6, Number((automationCost / totalMonthlyLoss).toFixed(1))) : 1.2;
+
+  // K. Soliq va Qonunchilik Xavfi Statusi
+  let fiscalRiskStatus = "Barqaror (Yashil)";
+  let fiscalRiskColor = "emerald";
+  if (formData.fiscalMarking === 'unorganized') {
+    fiscalRiskStatus = "Kritik (Jarima xavfi yuqori)";
+    fiscalRiskColor = "red";
+  } else if (formData.fiscalMarking === 'partial') {
+    fiscalRiskStatus = "O'rtacha (Qisman qo'lda)";
+    fiscalRiskColor = "amber";
+  }
 
   // 5. Biznes salomatlik indeksi (0 - 100)
   let marketingScore = 100;
   let salesScore = 100;
   let systemScore = 100;
 
-  if (formData.socialStatus === 'bad') marketingScore -= 35;
+  if (formData.socialStatus === 'bad') marketingScore -= 30;
   else if (formData.socialStatus === 'medium') marketingScore -= 15;
 
-  if (formData.salesTeam === 'owner_only') salesScore -= 35;
-  else if (formData.salesTeam === 'junior') salesScore -= 15;
+  if (formData.salesTeam === 'owner_only') salesScore -= 30;
   if (formData.responseTime === 'slow') salesScore -= 20;
   else if (formData.responseTime === 'very_slow') salesScore -= 35;
+  if (formData.loyaltySystem === 'none') salesScore -= 20;
 
-  if (formData.accountingSoftware === 'paper') systemScore -= 40;
-  else if (formData.accountingSoftware === 'excel') systemScore -= 20;
-
-  if (formData.debtTracking === 'paper') systemScore -= 25;
-  else if (formData.debtTracking === 'no_tracking') systemScore -= 40;
-
-  if (formData.hasCrm === 'no') systemScore -= 25;
+  if (formData.accountingSoftware === 'paper') systemScore -= 35;
+  else if (formData.accountingSoftware === 'excel') systemScore -= 15;
+  if (formData.debtTracking === 'paper') systemScore -= 20;
+  else if (formData.debtTracking === 'no_tracking') systemScore -= 35;
+  if (formData.fiscalMarking === 'unorganized') systemScore -= 25;
+  if (formData.hasCrm === 'no') systemScore -= 20;
 
   marketingScore = Math.max(15, marketingScore);
   salesScore = Math.max(15, salesScore);
@@ -231,31 +333,31 @@ export function calculateBusinessAudit(formData) {
     riskColor = 'amber';
   }
 
-  // 6. Dasturiy Tavsiyalar (Umumiy toifalar bilan)
+  // 6. Dasturiy Tavsiyalar
   const softwareRecommendations = [
     {
       name: "POS Savdo va Kassa Dasturlari",
       category: "POS Tizimi",
-      reason: "Kassa, shtrix-kod skaneri va chek printeri bilan ishlash, tovar qoldiqlarini real vaqtda ko'rish va kamomadni yo'qotish.",
-      impact: "Do'kondagi tovar yo'qotishlari va kamomadni 95% gacha to'xtatadi."
+      reason: "Kassa, 2D shtrix-kod skaneri va chek printeri bilan ishlash, tovar qoldiqlarini real vaqtda ko'rish va Asl Belgisi markirovkasini to'g'ri chiqarish.",
+      impact: "Do'kondagi tovar kamomadi va o'g'irliklarni 95% gacha to'xtatadi."
     },
     {
       name: "1C: Korxona Tizimlari",
       category: "Boshqaruv & Buxgalteriya",
-      reason: "Ombor hisobi, tovarlar tannarxi, ta'minotchilar bilan hisob-kitob va korxona foydasini 100% aniqlikda chiqarish.",
+      reason: "Ombor hisobi, tovarlar tannarxi, ta'minotchilar bilan hisob-kitob va korxona sof foydasini 100% aniqlikda chiqarish.",
       impact: "Mablag'lar aylanmasini to'liq shaffof qiladi va biznes egasini erkinlashtiradi."
     },
     {
       name: "Qarzlar va Nasiya Nazorati Tizimi",
       category: "Nasiya Moduli",
-      reason: "Mijozlar qarzlarini daftardan chiqarib, limit belgilash va to'lov muddati kelganda avtomatik eslatish.",
+      reason: "Mijozlar qarzlarini daftardan chiqarib, limit belgilash va to'lov muddati kelganda avtomatik SMS/Telegram eslatish.",
       impact: "Qarzlarning o'z vaqtida qaytishini 60% ga tezlashtiradi va 'muzlagan' pullarni chiqaradi."
     },
     {
-      name: "Mijozlar bilan Aloqa Tizimi (CRM)",
-      category: "CRM Voronka",
-      reason: "Telegram, Instagram va qo'ng'iroqlarni bitta oynaga yig'ib, har bir xaridorni sotuvgacha kuzatib borish.",
-      impact: "Lidlar yo'qolishini oldini olib, sotuv konversiyasini 20-30% ga oshiradi."
+      name: "Mijozlar Loyallik va Keshbek Tizimi",
+      category: "Bonus & LTV",
+      reason: "Har bir xariddan avtomatik 3-5% keshbek hisoblash va mijozlarni Telegram orqali doimiy qayta sotuvga chaqirish.",
+      impact: "Reklama xarajatlarisiz qo'shimcha 25% gacha takroriy xaridlar oqimini yaratadi."
     }
   ];
 
@@ -272,16 +374,16 @@ export function calculateBusinessAudit(formData) {
     {
       period: "8-20 kun (Tizim va Dasturiy ta'minot)",
       steps: [
-        "POS savdo dasturi yoki 1C tizimini o'rnatib, xodimlarni shtrix-kod va to'g'ri kassa yuritishga o'rgatish.",
+        "POS savdo dasturi yoki 1C tizimini o'rnatib, xodimlarni 2D shtrix-kod va to'g'ri kassa yuritishga o'rgatish.",
         formData.hasCrm === 'no' ? "CRM tizimi orqali Instagram va Telegram lidlarini avtomatlashtirish." : "CRM voronkasidagi to'xtab qolgan lidlar bilan ishlash.",
-        formData.salesTeam === 'owner_only' ? "Biznes egasini doimiy sotuvdan ozod qilish uchun menejer jalb qilish." : "Sotuvchilarga aniq reja va KPI joriy qilish."
+        "Mijozlar uchun Telegram-keshbek yoki SMS bonus tizimini yoqish."
       ]
     },
     {
       period: "21-30 kun (Masshtablash va Moliyaviy o'sish)",
       steps: [
         `Oylik $${targetRevenue.toLocaleString()} daromad maqsadi uchun barqaror kunlik ${Math.ceil(realRequiredLeads / 30)} ta lid oqimini ta'minlash.`,
-        "Eng ko'p marja va daromad keltirayotgan tovarlar guruhiga asosiy urg'uni qaratish.",
+        "Ombordagi ABC-tahlil orqali eng ko'p foyda keltirayotgan tovarlar zaxirasini mustahkamlash.",
         "Dastur orqali har haftalik P&L (Foyda va Zarar) hisobotini tahlil qilib borish."
       ]
     }
@@ -292,6 +394,8 @@ export function calculateBusinessAudit(formData) {
     averageCheck,
     conversionRate,
     netMargin,
+    fixedCosts,
+    inventoryCapital,
     industry,
     selectedPlatforms,
     baseCpl,
@@ -304,8 +408,30 @@ export function calculateBusinessAudit(formData) {
     realOptimalBudget,
     totalPenaltyPercentage,
     penalties,
-    monthlyWastedMoney,
-    yearlyWastedMoney,
+    // Yangi PRO 3.0 Chuqur Moliyaviy ko'rsatkichlar:
+    monthlyWastedMarketing,
+    lostCustomersCount,
+    lostNetProfitMonthly,
+    inventoryShrinkLossMonthly,
+    totalMonthlyLoss,
+    totalYearlyLoss,
+    monthlyWastedMoney: totalMonthlyLoss, // mavjud prop bilan moslik
+    yearlyWastedMoney: totalYearlyLoss,
+    estimatedDebtRiskSum,
+    deadStockSum,
+    breakEvenRevenue,
+    breakEvenDay,
+    potentialLtvMonthlyRevenue,
+    potentialLtvMonthlyProfit,
+    potentialLtvYearlyProfit,
+    hourlyRate,
+    dailyOpHours,
+    yearlyOpHours,
+    yearlyTimeCost,
+    automationCost,
+    paybackMonths,
+    fiscalRiskStatus,
+    fiscalRiskColor,
     expectedGrossProfit: targetRevenue * (netMargin / 100),
     scores: {
       overall: overallScore,
