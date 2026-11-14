@@ -24,17 +24,16 @@ const PLATFORM_ICONS = {
 export function StepMarketingTraffic({ formData, onChange, onNext, onPrev }) {
   const selectedPlatforms = Array.isArray(formData.platforms) 
     ? formData.platforms 
-    : [formData.platform || 'instagram'];
+    : (formData.platform ? [formData.platform] : []);
 
   const togglePlatform = (id) => {
     let updated;
     if (selectedPlatforms.includes(id)) {
-      if (selectedPlatforms.length === 1) return; // Kamida bittasi tanlangan bo'lishi kerak
       updated = selectedPlatforms.filter((p) => p !== id);
     } else {
       updated = [...selectedPlatforms, id];
     }
-    onChange({ platforms: updated, platform: updated[0] });
+    onChange({ platforms: updated, platform: updated[0] || '' });
   };
 
   return (

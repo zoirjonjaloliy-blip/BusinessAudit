@@ -8,36 +8,37 @@ import { StepFinancialGoals } from './components/StepFinancialGoals';
 import { StepAuditUnlock } from './components/StepAuditUnlock';
 import { AuditReport } from './components/AuditReport';
 import { AdminLeadsModal } from './components/AdminLeadsModal';
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { calculateBusinessAudit } from './utils/auditCalculator';
 import { sendLeadToTelegram } from './utils/telegramNotifier';
 
-const INITIAL_FORM_DATA = {
+export const BLANK_FORM_DATA = {
   fullName: '',
   businessName: '',
   phone: '',
   city: '',
-  isOwner: 'yes',
-  industry: 'retail_general',
-  accountingSoftware: 'paper',
-  debtTracking: 'paper',
-  inventoryStatus: 'estimated',
-  fiscalMarking: 'partial',
-  dailyOperationalHours: 'medium',
-  platforms: ['instagram'],
-  platform: 'instagram',
-  socialStatus: 'good',
-  leadChannel: 'direct',
-  hasCrm: 'no',
-  salesTeam: 'owner_only',
-  responseTime: 'slow',
-  retention: 'no',
-  loyaltySystem: 'verbal',
-  targetRevenue: 10000,
-  averageCheck: 60,
-  conversionRate: 25,
-  netMargin: 30,
-  fixedCosts: 1800,
-  inventoryCapital: 15000
+  isOwner: '',
+  industry: '',
+  accountingSoftware: '',
+  debtTracking: '',
+  inventoryStatus: '',
+  fiscalMarking: '',
+  dailyOperationalHours: '',
+  platforms: [],
+  platform: '',
+  socialStatus: '',
+  leadChannel: '',
+  hasCrm: '',
+  salesTeam: '',
+  responseTime: '',
+  retention: '',
+  loyaltySystem: '',
+  targetRevenue: '',
+  averageCheck: '',
+  conversionRate: '',
+  netMargin: '',
+  fixedCosts: '',
+  inventoryCapital: ''
 };
 
 export default function App() {
@@ -46,8 +47,10 @@ export default function App() {
       const saved = localStorage.getItem('biz_audit_data');
       if (saved) return JSON.parse(saved);
     } catch (e) {}
-    return INITIAL_FORM_DATA;
+    return BLANK_FORM_DATA;
   });
+
+  const [submittedLeadData, setSubmittedLeadData] = useState(null);
 
   const [leads, setLeads] = useState(() => {
     try {
@@ -63,14 +66,16 @@ export default function App() {
   const [auditResult, setAuditResult] = useState(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
-  // Auto-save form progress
+  // Saqlash faqat to'ldirish paytida (agar audit topshirilmagan bo'lsa)
   useEffect(() => {
-    try {
-      localStorage.setItem('biz_audit_data', JSON.stringify(formData));
-    } catch (e) {}
-  }, [formData]);
+    if (!isSubmitted) {
+      try {
+        localStorage.setItem('biz_audit_data', JSON.stringify(formData));
+      } catch (e) {}
+    }
+  }, [formData, isSubmitted]);
 
-  // Auto-save leads list
+  // Lidlar tarixini saqlash
   useEffect(() => {
     try {
       localStorage.setItem('biz_audit_leads', JSON.stringify(leads));
@@ -94,6 +99,9 @@ export default function App() {
   // VIP Qulfni ochish (Ism, biznes va telefon kiritilganda)
   const handleUnlockSubmit = () => {
     const result = calculateBusinessAudit(formData);
+    const leadSnapshot = { ...formData };
+    
+    setSubmittedLeadData(leadSnapshot);
     setAuditResult(result);
     setIsSubmitted(true);
     setIsUnlocked(true);
@@ -103,7 +111,7 @@ export default function App() {
     const newLead = {
       id: Date.now().toString(),
       date: new Date().toLocaleDateString('uz-UZ'),
-      ...formData,
+      ...leadSnapshot,
       ...result
     };
 
@@ -112,6 +120,12 @@ export default function App() {
 
     // 2. Mahalliy bazaga ham saqlash
     setLeads((prev) => [newLead, ...prev]);
+
+    // 3. Telefondan keshni tozalash va formani bo'shatish (keyingi foydalanuvchi uchun)
+    try {
+      localStorage.removeItem('biz_audit_data');
+    } catch (e) {}
+    setFormData(BLANK_FORM_DATA);
 
     // Dinamik konfetti animatsiyasi
     import('canvas-confetti')
@@ -129,6 +143,7 @@ export default function App() {
   // Demo ko'rish (Kontakt kiritmasdan cheklangan prevyu)
   const handleDemoSubmit = () => {
     const result = calculateBusinessAudit(formData);
+    setSubmittedLeadData({ ...formData });
     setAuditResult(result);
     setIsSubmitted(true);
     setIsUnlocked(false);
@@ -147,17 +162,16 @@ export default function App() {
   };
 
   const handleReset = () => {
-    if (window.confirm("Barcha ma'lumotlarni tozalab, auditni qaytadan boshlaysizmi?")) {
-      setFormData(INITIAL_FORM_DATA);
-      setCurrentStep(1);
-      setIsSubmitted(false);
-      setIsUnlocked(false);
-      setAuditResult(null);
-      try {
-        localStorage.removeItem('biz_audit_data');
-      } catch (e) {}
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    setFormData(BLANK_FORM_DATA);
+    setSubmittedLeadData(null);
+    setCurrentStep(1);
+    setIsSubmitted(false);
+    setIsUnlocked(false);
+    setAuditResult(null);
+    try {
+      localStorage.removeItem('biz_audit_data');
+    } catch (e) {}
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -237,19 +251,22 @@ export default function App() {
             )}
           </div>
         ) : (
-          <AuditReport
-            auditData={auditResult}
-            rawFormData={formData}
-            isUnlocked={isUnlocked}
-            onUnlock={() => {
-              setIsSubmitted(false);
-              setCurrentStep(6);
-            }}
-          />
+          <ErrorBoundary onReset={handleReset}>
+            <AuditReport
+              auditData={auditResult}
+              rawFormData={submittedLeadData || formData}
+              isUnlocked={isUnlocked}
+              onUnlock={() => {
+                setIsSubmitted(false);
+                setCurrentStep(6);
+              }}
+              onReset={handleReset}
+            />
+          </ErrorBoundary>
         )}
       </main>
 
-      {/* Admin Leads Modal (Parol bilan himoyalangan) */}
+      {/* Admin Leads Modal (Parol bilan himoyalangan: 19990127) */}
       <AdminLeadsModal
         isOpen={isAdminOpen}
         onClose={() => setIsAdminOpen(false)}

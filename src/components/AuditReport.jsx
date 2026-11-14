@@ -1,23 +1,29 @@
 import React, { useState } from 'react';
 import { 
-  ShieldAlert, ShieldCheck, AlertTriangle, TrendingDown, TrendingUp, 
+  ShieldAlert, ShieldCheck, AlertTriangle, AlertCircle, TrendingDown, TrendingUp, 
   DollarSign, Users, Target, ArrowRight, Printer, Share2, Sparkles, 
-  CheckCircle, XCircle, Layers, Cpu, Zap,
+  CheckCircle, XCircle, Layers, Cpu, Zap, RotateCcw,
   User, Building, Phone, Calendar, Laptop, Send, Award, Check,
   Sliders, AlertOctagon, CheckCircle2, ChevronRight,
   Package, Clock, CheckSquare, Square, Flame, Activity, FileText,
   Copy, Lock, Unlock, HelpCircle, ArrowUpRight
 } from 'lucide-react';
+import { calculateBusinessAudit } from '../utils/auditCalculator';
 
-export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnlock }) {
+export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnlock, onReset }) {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'software' | 'funnel' | 'roadmap'
   const [activeDiyTab, setActiveDiyTab] = useState('debt_scripts'); // 'debt_scripts' | 'sales_scripts' | 'kpi_calc' | 'revision_checklist'
   const [copiedId, setCopiedId] = useState(null);
 
-  const hasSoftware = rawFormData.accountingSoftware === 'software';
-  const hasDebtTracking = rawFormData.debtTracking === 'software';
-  const hasCrm = rawFormData.hasCrm === 'yes';
-  const hasLoyalty = rawFormData.loyaltySystem === 'automated';
+  const safeRaw = rawFormData || {};
+  const data = auditData || calculateBusinessAudit(safeRaw);
+
+  const fmt = (n) => Number(n || 0).toLocaleString();
+
+  const hasSoftware = safeRaw.accountingSoftware === 'software';
+  const hasDebtTracking = safeRaw.debtTracking === 'software';
+  const hasCrm = safeRaw.hasCrm === 'yes';
+  const hasLoyalty = safeRaw.loyaltySystem === 'automated';
 
   // Reviziya chek-listi holati (interaktiv)
   const [checkedRevision, setCheckedRevision] = useState({});
@@ -37,23 +43,22 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
   const [simCrmInstalled, setSimCrmInstalled] = useState(!hasCrm);
   const [simLoyaltyInstalled, setSimLoyaltyInstalled] = useState(!hasLoyalty);
 
-  const baseTotalLoss = auditData.totalMonthlyLoss || auditData.monthlyWastedMoney || 600;
+  const baseTotalLoss = data.totalMonthlyLoss || data.monthlyWastedMoney || 600;
   
   let simulatedSavingsMonthly = 0;
   if (simPosInstalled) simulatedSavingsMonthly += Math.round(baseTotalLoss * 0.38);
   if (simDebtFixed) simulatedSavingsMonthly += Math.round(baseTotalLoss * 0.24);
   if (simCrmInstalled) simulatedSavingsMonthly += Math.round(baseTotalLoss * 0.20);
-  if (simLoyaltyInstalled) simulatedSavingsMonthly += Math.round(auditData.potentialLtvMonthlyProfit || (baseTotalLoss * 0.18));
+  if (simLoyaltyInstalled) simulatedSavingsMonthly += Math.round(data.potentialLtvMonthlyProfit || (baseTotalLoss * 0.18));
   
   const simulatedSavingsYearly = simulatedSavingsMonthly * 12;
   const simPaybackMonths = simulatedSavingsMonthly > 0 
-    ? Math.max(0.6, Number((auditData.automationCost / simulatedSavingsMonthly).toFixed(1)))
+    ? Math.max(0.6, Number(((data.automationCost || 1200) / simulatedSavingsMonthly).toFixed(1)))
     : 0;
 
   // Xolis shifokor (Anti-Sale) tekshiruvi:
-  // Agar daromad < $3,000 bo'lsa yoki reklama/sotuv tizimi mutlaqo yo'q bo'lsa
-  const isAntiSaleRecommended = (Number(rawFormData.targetRevenue) < 3000) || 
-    (rawFormData.platforms?.length === 1 && rawFormData.platforms[0] === 'organic' && rawFormData.salesTeam === 'owner_only');
+  const isAntiSaleRecommended = (Number(safeRaw.targetRevenue || 0) < 3000) || 
+    (safeRaw.platforms?.length === 1 && safeRaw.platforms[0] === 'organic' && safeRaw.salesTeam === 'owner_only');
 
   const handlePrint = () => {
     window.print();
@@ -67,35 +72,55 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
     }, 2200);
   };
 
-  const handleShareTelegram = () => {
-    const text = encodeURIComponent(
-      `📊 BiznesAudit.uz (Anti-Sale & DIY Edition) Diagnostikasi:\n` +
-      `👤 Tadbirkor: ${rawFormData.fullName || "Mijoz"} (${rawFormData.businessName || "Korxona"})\n` +
-      `🎯 Oylik maqsad: $${auditData.targetRevenue.toLocaleString()}\n` +
-      `⚠️ Umumiy yo'qotish rezervi: $${auditData.totalMonthlyLoss.toLocaleString()}/oy\n` +
-      `📅 Zararsizlik kuni: Oyning ${auditData.breakEvenDay}-kuni\n` +
-      `🏥 Salomatlik indeksi: ${auditData.scores.overall}/100\n\n` +
-      `Xolis konsalting & avtomatlashtirish: Zoirjon Jalolov (+998995160021, @Jalolov_IST)`
-    );
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${text}`, '_blank');
-  };
-
-  const hardwareList = auditData.industry?.hardwareChecklist || [
+  const industry = data.industry || { name: "Umumiy Savdo", softwareTip: "" };
+  const hardwareList = industry.hardwareChecklist || [
     { id: 'pos_terminal', name: "Sensorli POS-monoblok (Kassa ekrani)", essential: true },
     { id: 'scanner_2d', name: "2D Shtrix-kod va Markirovka skaneri", essential: true },
     { id: 'receipt_printer', name: "80mm tezkor chek printeri", essential: true }
   ];
 
-  const rulesList = auditData.industry?.rules || [
+  const rulesList = industry.rules || [
     "ABC-tahlil orqali ombordagi eng ko'p foyda keltiruvchi tovarlar ro'yxatini shakllantiring va nelikvidni kamaytiring.",
     "Har bir mijoz uchun nasiya limitini dasturda qat'iy belgilang va muddat o'tganda yangi tovar berishni to'xtating.",
     "Kassa va omborni yagona bazaga ulab, reviziyani 1 soatda o'tkazish tartibini joriy qiling."
   ];
 
-  const benchmarksList = auditData.industry?.benchmarks || [];
+  const benchmarksList = industry.benchmarks || [];
+
+  const handleShareTelegram = () => {
+    const text = encodeURIComponent(
+      `📊 BiznesAudit.uz (Anti-Sale & DIY Edition) Diagnostikasi:\n` +
+      `👤 Tadbirkor: ${safeRaw.fullName || "Mijoz"} (${safeRaw.businessName || "Korxona"})\n` +
+      `🎯 Oylik maqsad: $${fmt(data.targetRevenue)}\n` +
+      `⚠️ Umumiy yo'qotish rezervi: $${fmt(data.totalMonthlyLoss)}/oy\n` +
+      `📅 Zararsizlik kuni: Oyning ${data.breakEvenDay || 15}-kuni\n` +
+      `🏥 Salomatlik indeksi: ${data.scores?.overall || 60}/100\n\n` +
+      `Xolis konsalting & avtomatlashtirish: Zoirjon Jalolov (+998995160021, @Jalolov_IST)`
+    );
+    window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${text}`, '_blank');
+  };
 
   return (
-    <div className="space-y-6 sm:space-y-8 animate-fadeIn pb-12">
+    <div className="space-y-6 sm:space-y-8 animate-fadeIn pb-16">
+      {/* Yuqori Tezkor Boshqaruv Paneli (Yangi Tadbirkor / Qaytadan Boshlash) */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-900/90 border border-slate-800 p-3 sm:p-4 rounded-2xl no-print">
+        <div className="flex items-center gap-2 text-xs text-slate-300">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>Diagnostika muvaffaqiyatli yakunlandi va hisoblandi!</span>
+        </div>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {onReset && (
+            <button
+              onClick={onReset}
+              className="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 hover:text-amber-200 border border-amber-500/40 text-xs sm:text-sm font-bold transition-all shadow-sm cursor-pointer"
+            >
+              <RotateCcw className="w-4 h-4 text-amber-400" />
+              <span>Yangi Tadbirkor Uchun Qaytadan Boshlash 🔄</span>
+            </button>
+          )}
+        </div>
+      </div>
+
       {/* Rasmiy Hujjat Sarlavhasi */}
       <div className="bg-gradient-to-r from-slate-900 via-indigo-950/60 to-slate-900 border border-indigo-900/40 rounded-3xl p-5 sm:p-7 relative overflow-hidden shadow-2xl">
         <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -107,24 +132,24 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               Xolis Biznes-Laboratoriya & Mustaqil Yechimlar Markazi
             </div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-extrabold text-white tracking-tight">
-              {rawFormData.businessName ? `"${rawFormData.businessName}"` : "Korxona"} Savdo, Moliya & Operatsion Rentgen
+              {safeRaw.businessName ? `"${safeRaw.businessName}"` : "Korxona"} Savdo, Moliya & Operatsion Rentgen
             </h1>
             
             {/* Tadbirkor rekvizitlari */}
             <div className="flex items-center gap-2 sm:gap-3 text-xs text-slate-300 mt-2.5 flex-wrap">
               <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
                 <User className="w-3.5 h-3.5 text-blue-400" />
-                <strong className="text-white">{rawFormData.fullName || "Tadbirkor (Demo)"}</strong>
+                <strong className="text-white">{safeRaw.fullName || "Tadbirkor"}</strong>
               </span>
-              {rawFormData.phone && (
+              {safeRaw.phone && (
                 <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
                   <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>{rawFormData.phone}</span>
+                  <span>{safeRaw.phone}</span>
                 </span>
               )}
               <span className="flex items-center gap-1.5 bg-slate-800/80 px-2.5 py-1 rounded-lg border border-slate-700/60">
                 <Building className="w-3.5 h-3.5 text-indigo-400" />
-                <span>{auditData.industry.name}</span>
+                <span>{industry.name}</span>
               </span>
               <span className="flex items-center gap-1.5 text-slate-400">
                 <Calendar className="w-3.5 h-3.5" />
@@ -152,7 +177,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
         </div>
       </div>
 
-      {/* ⭐ 3-O'ZGARISH: XOLIS SHIFOKOR (ANTI-SALE) ALGORITMI ⭐ */}
+      {/* XOLIS SHIFOKOR (ANTI-SALE) ALGORITMI */}
       {isAntiSaleRecommended ? (
         <div className="p-5 rounded-2xl bg-amber-950/25 border-2 border-amber-500/40 flex flex-col sm:flex-row items-start sm:items-center gap-4 shadow-lg shadow-amber-500/5">
           <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/30">
@@ -177,7 +202,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               <span>🩺 Xolis Ekspert Xulosasi</span>
             </div>
             <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-medium">
-              <strong className="text-blue-300">Sizning biznesingiz hajmi qog'oz va Excel bosqichidan o'tib bo'lgan.</strong> Hozirgi hisob-kitobdagi noaniqlik va tizimsizlik sizga har oy dastur narxidan 2-3 barobar qimmatga tushmoqda. Tizimli avtomatlashtirish o'zini oqlash muddati atigi ~{auditData.paybackMonths || 1.5} oyni tashkil etadi.
+              <strong className="text-blue-300">Sizning biznesingiz hajmi qog'oz va Excel bosqichidan o'tib bo'lgan.</strong> Hozirgi hisob-kitobdagi noaniqlik va tizimsizlik sizga har oy dastur narxidan 2-3 barobar qimmatga tushmoqda. Tizimli avtomatlashtirish o'zini oqlash muddati atigi ~{data.paybackMonths || 1.5} oyni tashkil etadi.
             </p>
           </div>
         </div>
@@ -204,25 +229,25 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 <TrendingDown className="w-4 h-4" />
               </div>
               <div className="text-2xl sm:text-3xl font-black text-red-400">
-                ${auditData.totalMonthlyLoss.toLocaleString()}
+                ${fmt(data.totalMonthlyLoss)}
                 <span className="text-xs font-normal text-red-300/80"> /oy</span>
               </div>
               <div className="text-[11px] text-red-300/80 mt-1">
-                Yillik zarar: <strong>${auditData.totalYearlyLoss.toLocaleString()}</strong>
+                Yillik zarar: <strong>${fmt(data.totalYearlyLoss)}</strong>
               </div>
 
               <div className="mt-4 pt-3 border-t border-red-900/30 space-y-1.5 text-xs text-slate-300">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Boy berilgan sof foyda:</span>
-                  <span className="font-semibold text-white">${auditData.lostNetProfitMonthly.toLocaleString()}</span>
+                  <span className="font-semibold text-white">${fmt(data.lostNetProfitMonthly)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Reklama behuda ketishi:</span>
-                  <span className="font-semibold text-white">${auditData.monthlyWastedMarketing.toLocaleString()}</span>
+                  <span className="font-semibold text-white">${fmt(data.monthlyWastedMarketing)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Kamomad va o'g'irlik:</span>
-                  <span className="font-semibold text-white">${auditData.inventoryShrinkLossMonthly.toLocaleString()}</span>
+                  <span className="font-semibold text-white">${fmt(data.inventoryShrinkLossMonthly)}</span>
                 </div>
               </div>
             </div>
@@ -239,7 +264,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 <Package className="w-4 h-4" />
               </div>
               <div className="text-2xl sm:text-3xl font-black text-amber-400">
-                ${auditData.deadStockSum.toLocaleString()}
+                ${fmt(data.deadStockSum)}
               </div>
               <div className="text-[11px] text-amber-300/80 mt-1">
                 Omborda muzlab yotgan tovarlar
@@ -248,16 +273,16 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               <div className="mt-4 pt-3 border-t border-amber-900/30 space-y-1.5 text-xs text-slate-300">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Umumiy tovar qoldig'i:</span>
-                  <span className="font-semibold text-white">${auditData.inventoryCapital.toLocaleString()}</span>
+                  <span className="font-semibold text-white">${fmt(data.inventoryCapital)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Nasiya daftari xavfi:</span>
-                  <span className="font-semibold text-amber-300">${auditData.estimatedDebtRiskSum.toLocaleString()}</span>
+                  <span className="font-semibold text-amber-300">${fmt(data.estimatedDebtRiskSum)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Ombor hisobi holati:</span>
                   <span className="font-semibold text-white">
-                    {rawFormData.inventoryStatus === 'accurate' ? "Aniq" : rawFormData.inventoryStatus === 'estimated' ? "Taxminiy" : "Nelikvid ko'p"}
+                    {safeRaw.inventoryStatus === 'accurate' ? "Aniq" : safeRaw.inventoryStatus === 'estimated' ? "Taxminiy" : "Nelikvid ko'p"}
                   </span>
                 </div>
               </div>
@@ -275,29 +300,29 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 <Target className="w-4 h-4" />
               </div>
               <div className="text-2xl sm:text-3xl font-black text-blue-400">
-                Oyning {auditData.breakEvenDay}-kuni
+                Oyning {data.breakEvenDay || 15}-kuni
               </div>
               <div className="text-[11px] text-blue-300/80 mt-1">
-                Zararsizlik aylanmasi: <strong>${auditData.breakEvenRevenue.toLocaleString()}</strong>
+                Zararsizlik aylanmasi: <strong>${fmt(data.breakEvenRevenue)}</strong>
               </div>
 
               <div className="mt-4 pt-3 border-t border-blue-900/30 space-y-1.5 text-xs text-slate-300">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Oylik doimiy xarajat:</span>
-                  <span className="font-semibold text-white">${auditData.fixedCosts.toLocaleString()}</span>
+                  <span className="font-semibold text-white">${fmt(data.fixedCosts)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Bonus/LTV potensiali:</span>
-                  <span className="font-semibold text-emerald-400">+${auditData.potentialLtvMonthlyProfit.toLocaleString()} /oy</span>
+                  <span className="font-semibold text-emerald-400">+${fmt(data.potentialLtvMonthlyProfit)} /oy</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Yillik LTV rezervi:</span>
-                  <span className="font-semibold text-emerald-300">+${auditData.potentialLtvYearlyProfit.toLocaleString()}</span>
+                  <span className="font-semibold text-emerald-300">+${fmt(data.potentialLtvYearlyProfit)}</span>
                 </div>
               </div>
             </div>
             <div className="mt-3 pt-2 text-[10px] text-blue-300/90 font-medium bg-blue-950/40 px-2 py-1 rounded">
-              💡 {auditData.breakEvenDay}-sanadan boshlab faqat o'zingizga sof foyda ishlayapsiz.
+              💡 {data.breakEvenDay || 15}-sanadan boshlab faqat o'zingizga sof foyda ishlayapsiz.
             </div>
           </div>
 
@@ -309,32 +334,32 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 <Clock className="w-4 h-4" />
               </div>
               <div className="text-2xl sm:text-3xl font-black text-purple-400">
-                {auditData.yearlyOpHours} soat
+                {data.yearlyOpHours || 900} soat
                 <span className="text-xs font-normal text-purple-300/80"> /yil</span>
               </div>
               <div className="text-[11px] text-purple-300/80 mt-1">
-                Qog'ozbozlikka ketgan: ~<strong>{Math.round(auditData.yearlyOpHours / 8)} ish kuni</strong>
+                Qog'ozbozlikka ketgan: ~<strong>{Math.round((data.yearlyOpHours || 900) / 8)} ish kuni</strong>
               </div>
 
               <div className="mt-4 pt-3 border-t border-purple-900/30 space-y-1.5 text-xs text-slate-300">
                 <div className="flex justify-between">
                   <span className="text-slate-400">Vaqtingiz narxi:</span>
-                  <span className="font-semibold text-white">${auditData.hourlyRate}/soat</span>
+                  <span className="font-semibold text-white">${data.hourlyRate || 15}/soat</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Yillik vaqt yo'qotishi:</span>
-                  <span className="font-semibold text-purple-300">${auditData.yearlyTimeCost.toLocaleString()}</span>
+                  <span className="font-semibold text-purple-300">${fmt(data.yearlyTimeCost)}</span>
                 </div>
                 <div className="flex justify-between items-center">
                   <span className="text-slate-400">Soliq/Markirovka:</span>
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                    auditData.fiscalRiskColor === 'emerald'
+                    data.fiscalRiskColor === 'emerald'
                       ? 'bg-emerald-500/20 text-emerald-300'
-                      : auditData.fiscalRiskColor === 'amber'
+                      : data.fiscalRiskColor === 'amber'
                       ? 'bg-amber-500/20 text-amber-300'
                       : 'bg-red-500/20 text-red-300'
                   }`}>
-                    {auditData.fiscalRiskStatus}
+                    {data.fiscalRiskStatus || "Qisman nazoratda"}
                   </span>
                 </div>
               </div>
@@ -346,7 +371,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
         </div>
       </div>
 
-      {/* ⭐ 2-O'ZGARISH: O'ZBEKISTON BOZORI BENCHMARKI (TOP-10% LIDERLAR BILAN TAQQOSLASH) ⭐ */}
+      {/* O'ZBEKISTON BOZORI BENCHMARKI (TOP-10% LIDERLAR BILAN TAQQOSLASH) */}
       <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 sm:p-7 space-y-4">
         <div>
           <div className="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1">
@@ -357,7 +382,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             Sizning Natijangiz vs Bozor O'rtachasi vs TOP-10% Liderlar
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
-            "{auditData.industry.name}" sohasidagi 120+ korxonalarning real tahlili asosida shakllantirilgan xolis taqqoslash jadvali:
+            "{industry.name}" sohasidagi 120+ korxonalarning real tahlili asosida shakllantirilgan xolis taqqoslash jadvali:
           </p>
         </div>
 
@@ -375,8 +400,8 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             <tbody className="divide-y divide-slate-800/60">
               {benchmarksList.map((bm, bIdx) => {
                 let userVal = bm.userValue;
-                if (bm.userMetric && rawFormData[bm.userMetric]) {
-                  userVal = `${rawFormData[bm.userMetric]}${bm.userSuffix || ''}`;
+                if (bm.userMetric && safeRaw[bm.userMetric]) {
+                  userVal = `${safeRaw[bm.userMetric]}${bm.userSuffix || ''}`;
                 }
                 return (
                   <tr key={bIdx} className="hover:bg-slate-800/30 transition-colors">
@@ -403,7 +428,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
         </div>
       </div>
 
-      {/* ⭐ 4-O'ZGARISH: MUSTAQIL YECHIMLAR (DIY TOOLKIT) — NUSXALAB OLISH UCHUN TAYYOR INSTRUMENTLAR ⭐ */}
+      {/* MUSTAQIL YECHIMLAR (DIY TOOLKIT) — NUSXALAB OLISH UCHUN TAYYOR INSTRUMENTLAR */}
       <div className="bg-slate-900/90 border-2 border-indigo-500/40 rounded-3xl p-5 sm:p-7 space-y-5 relative overflow-hidden shadow-2xl">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-3 border-b border-slate-800">
           <div>
@@ -453,7 +478,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
           })}
         </div>
 
-        {/* TAB 1: Nasiya va Qarzdorlikni Undirish Skriptlari (3 bosqichli) */}
+        {/* TAB 1: Nasiya va Qarzdorlikni Undirish Skriptlari */}
         {activeDiyTab === 'debt_scripts' && (
           <div className="space-y-4 animate-fadeIn">
             <p className="text-xs text-slate-300">
@@ -467,12 +492,12 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                   1-bosqich: Yumshoq eslatma (To'lov kunidan 1 kun oldin)
                 </div>
                 <p className="text-xs text-slate-200 leading-relaxed font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-                  "Assalomu alaykum, [Mijoz ismi] aka/opa! Ishlaringizga baraka bersin. {rawFormData.businessName || "[Biznes nomi]"} moliya bo'limidan yozmoqdamiz. Ertaga, [Sana] kuni hisob-kitobimiz bo'yicha [Summa] so'm to'lov muddati yetib keladi. To'lovni karta orqali ([Karta raqami]) yoki kassamizga naqd amalga oshirishingiz mumkin. Doimiy hamkorligimiz uchun rahmat!"
+                  "Assalomu alaykum, [Mijoz ismi] aka/opa! Ishlaringizga baraka bersin. {safeRaw.businessName || "[Biznes nomi]"} moliya bo'limidan yozmoqdamiz. Ertaga, [Sana] kuni hisob-kitobimiz bo'yicha [Summa] so'm to'lov muddati yetib keladi. To'lovni karta orqali ([Karta raqami]) yoki kassamizga naqd amalga oshirishingiz mumkin. Doimiy hamkorligimiz uchun rahmat!"
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => handleCopyText(`Assalomu alaykum, [Mijoz ismi] aka/opa! Ishlaringizga baraka bersin. ${rawFormData.businessName || "[Biznes nomi]"} moliya bo'limidan yozmoqdamiz. Ertaga, [Sana] kuni hisob-kitobimiz bo'yicha [Summa] so'm to'lov muddati yetib keladi. To'lovni karta orqali ([Karta raqami]) yoki kassamizga naqd amalga oshirishingiz mumkin. Doimiy hamkorligimiz uchun rahmat!`, 'debt_1')}
+                onClick={() => handleCopyText(`Assalomu alaykum, [Mijoz ismi] aka/opa! Ishlaringizga baraka bersin. ${safeRaw.businessName || "[Biznes nomi]"} moliya bo'limidan yozmoqdamiz. Ertaga, [Sana] kuni hisob-kitobimiz bo'yicha [Summa] so'm to'lov muddati yetib keladi. To'lovni karta orqali ([Karta raqami]) yoki kassamizga naqd amalga oshirishingiz mumkin. Doimiy hamkorligimiz uchun rahmat!`, 'debt_1')}
                 className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border border-slate-700"
               >
                 {copiedId === 'debt_1' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-400" />}
@@ -536,12 +561,12 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                   A-Qoida: Kiruvchi lidga 5 daqiqa ichida javob berish skripti
                 </div>
                 <p className="text-xs text-slate-200 leading-relaxed font-mono bg-slate-900/80 p-3 rounded-xl border border-slate-800">
-                  "Assalomu alaykum, [Ism]! {rawFormData.businessName || "[Biznes nomi]"}ga murojaat qilganingizdan xursandmiz. Siz so'ragan [Mahsulot/Xizmat] hozir omborimizda bor. Sizga eng to'g'ri variantni tanlab berishim uchun ayting-chi: buni o'zingiz (uyda/ishda) ishlatish uchun olyapsizmi yoki qayta sotish/sovg'a uchunmi? (Hoziroq 2 xil narxdagi variantni yuboraman)."
+                  "Assalomu alaykum, [Ism]! {safeRaw.businessName || "[Biznes nomi]"}ga murojaat qilganingizdan xursandmiz. Siz so'ragan [Mahsulot/Xizmat] hozir omborimizda bor. Sizga eng to'g'ri variantni tanlab berishim uchun ayting-chi: buni o'zingiz (uyda/ishda) ishlatish uchun olyapsizmi yoki qayta sotish/sovg'a uchunmi? (Hoziroq 2 xil narxdagi variantni yuboraman)."
                 </p>
               </div>
               <button
                 type="button"
-                onClick={() => handleCopyText(`Assalomu alaykum, [Ism]! ${rawFormData.businessName || "[Biznes nomi]"}ga murojaat qilganingizdan xursandmiz. Siz so'ragan [Mahsulot/Xizmat] hozir omborimizda bor. Sizga eng to'g'ri variantni tanlab berishim uchun ayting-chi: buni o'zingiz (uyda/ishda) ishlatish uchun olyapsizmi yoki qayta sotish/sovg'a uchunmi? (Hoziroq 2 xil narxdagi variantni yuboraman).`, 'sales_1')}
+                onClick={() => handleCopyText(`Assalomu alaykum, [Ism]! ${safeRaw.businessName || "[Biznes nomi]"}ga murojaat qilganingizdan xursandmiz. Siz so'ragan [Mahsulot/Xizmat] hozir omborimizda bor. Sizga eng to'g'ri variantni tanlab berishim uchun ayting-chi: buni o'zingiz (uyda/ishda) ishlatish uchun olyapsizmi yoki qayta sotish/sovg'a uchunmi? (Hoziroq 2 xil narxdagi variantni yuboraman).`, 'sales_1')}
                 className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border border-slate-700"
               >
                 {copiedId === 'sales_1' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-blue-400" />}
@@ -571,12 +596,12 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
           </div>
         )}
 
-        {/* TAB 3: Xodimlar uchun Tayyor KPI va Oylik Formulasi (Dinamik Kalkulyator) */}
+        {/* TAB 3: Xodimlar uchun Tayyor KPI va Oylik Formulasi */}
         {activeDiyTab === 'kpi_calc' && (
           <div className="space-y-4 animate-fadeIn">
             <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
               <div className="text-xs font-bold text-white flex items-center justify-between">
-                <span>Dinamik KPI Modeli ({rawFormData.businessName || "Korxona"} ko'rsatkichlariga mos):</span>
+                <span>Dinamik KPI Modeli ({safeRaw.businessName || "Korxona"} ko'rsatkichlariga mos):</span>
                 <span className="text-emerald-400 font-mono">Formula: 40% Fiks + 40% Savdo + 20% KPI</span>
               </div>
 
@@ -592,10 +617,10 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
                   <div className="text-slate-400 font-semibold mb-1">2. Savdo Bonusi (40%):</div>
                   <div className="text-base font-bold text-emerald-400">
-                    +${Math.round(1000 * (auditData.netMargin / 100) * 0.09)} /har $1,000 ga
+                    +${Math.round(1000 * ((data.netMargin || 30) / 100) * 0.09)} /har $1,000 ga
                   </div>
                   <p className="text-[11px] text-slate-400 mt-1">
-                    Zararsizlik aylanmasi (${auditData.breakEvenRevenue.toLocaleString()}) dan oshgan har $1,000 savdodan sof marjaning 9% i bonus qilib beriladi.
+                    Zararsizlik aylanmasi (${fmt(data.breakEvenRevenue)}) dan oshgan har $1,000 savdodan sof marjaning 9% i bonus qilib beriladi.
                   </p>
                 </div>
 
@@ -682,7 +707,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             <div className="px-4 py-2.5 rounded-2xl bg-blue-500/15 border border-blue-500/30 text-blue-300">
               <div className="text-[10px] uppercase font-bold text-blue-400">Oylik tejaladigan mablag':</div>
               <div className="text-lg sm:text-xl font-black text-emerald-400">
-                +${simulatedSavingsMonthly.toLocaleString()} <span className="text-xs text-slate-400 font-normal">/oy</span>
+                +${fmt(simulatedSavingsMonthly)} <span className="text-xs text-slate-400 font-normal">/oy</span>
               </div>
             </div>
           </div>
@@ -786,13 +811,13 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               </p>
             </div>
             <div className="mt-3 pt-2 border-t border-slate-800/80 text-xs font-bold text-emerald-400">
-              +${Math.round(auditData.potentialLtvMonthlyProfit || (baseTotalLoss * 0.18))} /oy qayta sotuv
+              +${Math.round(data.potentialLtvMonthlyProfit || (baseTotalLoss * 0.18))} /oy qayta sotuv
             </div>
           </button>
         </div>
       </div>
 
-      {/* ⭐ 5-O'ZGARISH: 2 XIL YO'L: O'ZIM BAJARAMAN vs MUTAXASSIS BILAN (XOLIS TAQQOSLASH) ⭐ */}
+      {/* 2 XIL YO'L: O'ZIM BAJARAMAN vs MUTAXASSIS BILAN (XOLIS TAQQOSLASH) */}
       <div className="space-y-4">
         <div className="text-center max-w-2xl mx-auto">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/30 text-indigo-400 text-xs font-bold uppercase mb-2">
@@ -916,7 +941,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             B-Blok: Kerakli Uskunalar va Dasturiy Arxitektura
           </div>
           <h3 className="text-lg sm:text-2xl font-bold text-white tracking-tight">
-            "{auditData.industry.name}" Uchun Texnik Jihozlar
+            "{industry.name}" Uchun Texnik Jihozlar
           </h3>
           <p className="text-xs sm:text-sm text-slate-400 mt-1">
             Bozorda minglab ortiqcha jihozlar taklif etiladi — sizga faqat quyidagi asosiy uskunalar kifoya:
@@ -935,11 +960,11 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 Sohaviy Dasturiy Arxitektura
               </h4>
               <p className="text-xs text-slate-300 mt-2 leading-relaxed">
-                {auditData.industry.softwareTip}
+                {industry.softwareTip || "Kassa va ombor hisobi uchun zamonaviy dastur."}
               </p>
 
               <div className="mt-4 space-y-2.5 text-xs">
-                {auditData.softwareRecommendations.slice(0, 3).map((soft, sIdx) => (
+                {(data.softwareRecommendations || []).slice(0, 3).map((soft, sIdx) => (
                   <div key={sIdx} className="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
                     <div className="flex items-center justify-between text-white font-semibold">
                       <span>{soft.name}</span>
@@ -1135,7 +1160,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
       {activeTab === 'software' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {auditData.softwareRecommendations.map((soft, sIdx) => (
+            {(data.softwareRecommendations || []).map((soft, sIdx) => (
               <div
                 key={sIdx}
                 className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between"
@@ -1178,11 +1203,11 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                   <div className="flex items-center justify-between mt-1">
                     <div>
                       <span className="text-xs text-slate-400">Tizimli biznesda: </span>
-                      <strong className="text-emerald-400 text-base">{auditData.requiredLeadsIdeal} ta</strong>
+                      <strong className="text-emerald-400 text-base">{data.requiredLeadsIdeal || 50} ta</strong>
                     </div>
                     <div>
                       <span className="text-xs text-slate-400">Hozirgi holatda: </span>
-                      <strong className="text-red-400 text-base">{auditData.realRequiredLeads} ta</strong>
+                      <strong className="text-red-400 text-base">{data.realRequiredLeads || 80} ta</strong>
                     </div>
                   </div>
                 </div>
@@ -1192,15 +1217,15 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                   <div className="flex items-center justify-between mt-1">
                     <div>
                       <span className="text-xs text-slate-400">Ideal: </span>
-                      <strong className="text-emerald-400 text-base">${auditData.optimalBudgetIdeal.toLocaleString()}</strong>
+                      <strong className="text-emerald-400 text-base">${fmt(data.optimalBudgetIdeal)}</strong>
                     </div>
                     <div>
                       <span className="text-xs text-slate-400">Hozirgi real: </span>
-                      <strong className="text-amber-400 text-base">${auditData.realOptimalBudget.toLocaleString()}</strong>
+                      <strong className="text-amber-400 text-base">${fmt(data.realOptimalBudget)}</strong>
                     </div>
                   </div>
                   <div className="mt-2 text-xs text-amber-400 font-medium">
-                    ⚠️ Byudjet farqi (yo'qotish): +${auditData.monthlyWastedMarketing.toLocaleString()}
+                    ⚠️ Byudjet farqi (yo'qotish): +${fmt(data.monthlyWastedMarketing)}
                   </div>
                 </div>
               </div>
@@ -1215,22 +1240,22 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
 
                 <div className="space-y-3 text-xs text-slate-300">
                   <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono">
-                    <span className="text-blue-400">Kerakli mijozlar</span> = ${auditData.targetRevenue} / ${auditData.averageCheck} = <span className="text-white font-bold">{auditData.requiredCustomers} ta</span>
+                    <span className="text-blue-400">Kerakli mijozlar</span> = ${fmt(data.targetRevenue)} / ${fmt(data.averageCheck)} = <span className="text-white font-bold">{data.requiredCustomers || 166} ta</span>
                   </div>
 
                   <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono">
-                    <span className="text-cyan-400">Kerakli lidlar</span> = {auditData.requiredCustomers} / {auditData.conversionRate}% = <span className="text-white font-bold">{auditData.requiredLeadsIdeal} ta</span>
+                    <span className="text-cyan-400">Kerakli lidlar</span> = {data.requiredCustomers || 166} / {data.conversionRate || 20}% = <span className="text-white font-bold">{data.requiredLeadsIdeal || 830} ta</span>
                   </div>
 
                   <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono">
-                    <span className="text-emerald-400">CPL (Lid narxi)</span> = ${auditData.baseCpl} (Soha: {auditData.industry.name})
+                    <span className="text-emerald-400">CPL (Lid narxi)</span> = ${data.baseCpl || 1.5} (Soha: {industry.name})
                   </div>
                 </div>
               </div>
 
               <div className="mt-5 p-4 rounded-2xl bg-blue-950/30 border border-blue-900/40 text-xs text-slate-300">
                 <span className="font-bold text-white block mb-1">💡 Xulosa:</span>
-                Dastur optimallashtirilib, kassa va savdo nazoratga olinsa, oylik <strong className="text-emerald-400">${auditData.totalMonthlyLoss.toLocaleString()}</strong> tejaladi!
+                Dastur optimallashtirilib, kassa va savdo nazoratga olinsa, oylik <strong className="text-emerald-400">${fmt(data.totalMonthlyLoss)}</strong> tejaladi!
               </div>
             </div>
           </div>
@@ -1241,7 +1266,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
       {activeTab === 'roadmap' && (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {auditData.roadmap.map((phase, idx) => (
+            {(data.roadmap || []).map((phase, idx) => (
               <div
                 key={idx}
                 className="bg-slate-900/70 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden"
@@ -1267,11 +1292,27 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 </div>
 
                 <div className="mt-6 pt-3 border-t border-slate-800 text-[11px] text-slate-500 font-medium">
-                  Mas'ul: {rawFormData.fullName || "Biznes egasi"} & Zoirjon Jalolov
+                  Mas'ul: {safeRaw.fullName || "Biznes egasi"} & Zoirjon Jalolov
                 </div>
               </div>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Pastki Katta Harakat Tugmasi: Yangi Tadbirkor Uchun Qaytadan Boshlash */}
+      {onReset && (
+        <div className="pt-6 border-t border-slate-800 text-center no-print">
+          <button
+            onClick={onReset}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-8 py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-sm sm:text-base shadow-xl shadow-amber-500/20 transition-all transform hover:scale-[1.01] active:scale-[0.99] cursor-pointer"
+          >
+            <RotateCcw className="w-5 h-5 text-slate-950" />
+            <span>Yangi Tadbirkor Uchun Qaytadan Boshlash (Formani Tozalash) 🔄</span>
+          </button>
+          <p className="text-xs text-slate-500 mt-2">
+            Barcha tanlangan parametrlar va shaxsiy ma'lumotlar tozalanib, yangi auditga o'tiladi.
+          </p>
         </div>
       )}
     </div>
