@@ -25,8 +25,18 @@ export function Header({ currentStep, totalSteps, isSubmitted, onReset, leadsCou
           </div>
         </div>
 
-        {/* Right Actions: Admin Lead Base + Status */}
-        <div className="flex items-center space-x-2.5 sm:space-x-3">
+        {/* Right Actions: Yangilash + Admin Lead Base + Status */}
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Yangilash tugmasi (Doimiy yuqorida turadi) */}
+          <button
+            onClick={onReset}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-xs font-semibold text-slate-200 hover:text-white transition-all shadow-sm cursor-pointer"
+            title="Barcha ma'lumotlarni tozalab, auditni eng boshidan boshlash"
+          >
+            <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+            <span>Yangilash</span>
+          </button>
+
           {/* Admin Leads Button (Protected with Password) */}
           <button
             onClick={onOpenAdmin}
@@ -43,22 +53,14 @@ export function Header({ currentStep, totalSteps, isSubmitted, onReset, leadsCou
           {!isSubmitted ? (
             <div className="flex items-center space-x-2 bg-slate-800/80 border border-slate-700/60 px-3 py-1.5 rounded-full text-xs font-medium text-slate-300">
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-ping"></span>
-              <span>Bosqich {currentStep} / {totalSteps}</span>
+              <span className="hidden sm:inline">Bosqich</span>
+              <span>{currentStep}/{totalSteps}</span>
             </div>
           ) : (
-            <div className="flex items-center space-x-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Audit tayyor
-              </span>
-              <button
-                onClick={onReset}
-                title="Qayta test topshirish"
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white transition-colors cursor-pointer"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
-            </div>
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <ShieldCheck className="w-3.5 h-3.5" />
+              Audit tayyor
+            </span>
           )}
         </div>
       </div>
