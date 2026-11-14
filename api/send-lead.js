@@ -1,12 +1,16 @@
-// Vercel Serverless Function: Bot tokeni brauzerga ko'rinmasdan server tomonda xavfsiz ishlaydi
+// Vercel Serverless Function: Bot tokeni faqat Vercel Environment Variables dan olinadi
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Tokenlar Vercel Environment Variables dan olinadi yoki zaxira tokendan foydalaniladi
-  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN || "9044784064:AAFrfUzq4GbU1EluoLQM-zw-FaxLMJ0fKh8";
-  const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID || "397814699";
+  // Tokenlar maxfiy ravishda Vercel Environment Variables dan olinadi
+  const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+  const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
+    return res.status(500).json({ error: 'Telegram sozlamalari (env) o\'rnatilmagan' });
+  }
 
   const leadData = req.body;
 
@@ -68,4 +72,3 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Telegramga yuborishda xatolik yuz berdi' });
   }
 }
-
