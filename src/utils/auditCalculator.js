@@ -314,12 +314,23 @@ export function calculateBusinessAudit(formData) {
 
   // 4. CHUQUR MOLIYAVIY MATEMATIKA (PRO 3.0 & PRO 4.0)
 
-  // A. Reklama byudjeti farqi
-  const penaltyMultiplier = 1 + (totalPenaltyPercentage / 100);
-  const realRequiredLeads = Math.ceil(requiredLeadsIdeal * (1 + (totalPenaltyPercentage * 0.60 / 100)));
-  const realMinBudget = Math.round(minBudgetIdeal * penaltyMultiplier);
-  const realOptimalBudget = Math.round(optimalBudgetIdeal * penaltyMultiplier);
-  const monthlyWastedMarketing = Math.round(realOptimalBudget - optimalBudgetIdeal);
+  // A. Jarimalar chegarasi (Cap: max 50%) & "Sarafan" mantiqi
+  const cappedPenaltyPercentage = Math.min(50, totalPenaltyPercentage);
+  const isSarafanOnly = (selectedPlatforms.length === 1 && (selectedPlatforms[0] === 'organic' || selectedPlatforms[0] === 'sarafan')) ||
+    (formData.leadChannel === 'referral_only');
+
+  const penaltyMultiplier = 1 + (cappedPenaltyPercentage / 100);
+  const realRequiredLeads = isSarafanOnly 
+    ? requiredLeadsIdeal 
+    : Math.ceil(requiredLeadsIdeal * (1 + (cappedPenaltyPercentage * 0.40 / 100)));
+
+  const realMinBudget = isSarafanOnly ? 0 : Math.round(minBudgetIdeal * penaltyMultiplier);
+  const realOptimalBudget = isSarafanOnly ? 0 : Math.round(optimalBudgetIdeal * penaltyMultiplier);
+  
+  // Realistik reklama zarari ($0 agar sarafan bo'lsa, aks holda me'yorida)
+  const monthlyWastedMarketing = isSarafanOnly 
+    ? 0 
+    : Math.min(750, Math.max(0, Math.round(realOptimalBudget - optimalBudgetIdeal)));
 
   // B. Yo'qotilgan Sof Foyda (Lost Net Profit)
   const lostCustomersCount = Math.max(0, Math.round((realRequiredLeads - requiredLeadsIdeal) * (conversionRate / 100)));
@@ -461,7 +472,21 @@ export function calculateBusinessAudit(formData) {
   const aiMonthlySavedHours = formData.aiUsageStatus !== 'integrated' ? 35 : 5;
   const aiDecisionLossMonthly = formData.aiUsageStatus !== 'integrated' ? Math.round(targetRevenue * 0.07) : 0;
 
-  // Q. Zararsizlik Nuqtasi (Break-Even Point)
+  // Q. Ish haqi fondi (FOT) samaradorligi (Norma: 8-15%)
+  const estimatedFot = Math.max(Math.round(employeesCount * 280), Math.round(fixedCosts * 0.60));
+  const fotRatioPercent = Number(((estimatedFot / targetRevenue) * 100).toFixed(1));
+  const isFotHigh = fotRatioPercent > 18;
+  const fotDiagnosis = isFotHigh 
+    ? `⚠️ Shtat xarajatingiz me'yordan oshib ketgan (${fotRatioPercent}%). Fiks oylikni kamaytirib, KPI va sotuv foiziga o'ting.`
+    : `Shtat fondi me'yorda (${fotRatioPercent}%).`;
+
+  // R. Kredit / Investitsiya Xavfsizlik Filtri
+  const isCreditDangerous = Boolean(netMargin < 18 || deadStockSum > (targetRevenue * 0.30));
+  const creditWarningMessage = isCreditDangerous 
+    ? "⚠️ Hozirgi holatda bank krediti yoki qarz olish xavfli! Avval ombordagi muzlagan tovarlarni soting."
+    : null;
+
+  // S. Zararsizlik Nuqtasi (Break-Even Point)
   const breakEvenRevenue = Math.round(fixedCosts / (netMargin / 100));
   const breakEvenDay = Math.min(30, Math.max(1, Math.round((breakEvenRevenue / targetRevenue) * 30)));
 
@@ -685,6 +710,15 @@ export function calculateBusinessAudit(formData) {
     dpoDays,
     cccTotalDays,
     cashFreedUp15Days,
+    // Yangi optimallashtirilgan ko'rsatkichlar:
+    isSarafanOnly,
+    estimatedFot,
+    fotRatioPercent,
+    isFotHigh,
+    fotDiagnosis,
+    isCreditDangerous,
+    creditWarningMessage,
+    cappedPenaltyPercentage,
     scores: {
       overall: overallScore,
       marketing: marketingScore,

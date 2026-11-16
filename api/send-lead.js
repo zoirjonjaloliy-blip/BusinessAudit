@@ -101,18 +101,19 @@ ${specialIndustryTag}
 • <b>Tarozi integratsiyasi:</b> ${leadData.fraudScaleIntegration === 'direct_integrated' ? 'Avtomat ulangan' : 'Qo\'lda teriladi'}
 • <b>Prixod ustamasi:</b> ${leadData.fraudPriceEntry === 'manager_office' ? 'Ofis kiritadi' : 'Kassir kiritadi'}
 
-👥 <b>UNIT-PRODUCTIVITY:</b>
+👥 <b>UNIT-PRODUCTIVITY & FOT:</b>
 • <b>Xodimlar:</b> ${leadData.employeesCount || "—"} nafar ($${(leadData.revenuePerEmployee || 0).toLocaleString()} /xodim)
+• <b>FOT ulushi:</b> ${leadData.fotRatioPercent || "—"}% ${leadData.isFotHigh ? "⚠️ (Shtat xarajati yuqori!)" : "✅ (Me'yorda)"}
 • <b>Maydon:</b> ${leadData.businessAreaSqM || "—"} kv.m ($${(leadData.revenuePerSqM || 0).toLocaleString()} /kv.m)
 • <b>Maksimal Chegirma Limiti:</b> ${leadData.maxAllowedDiscountPercent || 0}% dan oshmasligi shart
-
+${leadData.isCreditDangerous ? "🚨 <b>KREDIT XAVFI:</b> Hozirgi holatda kredit olish xavfli (marja past yoki nelikvid katta)!\n" : ""}
 💰 <b>MOLIYAVIY RENTGEN RAQAMLARI:</b>
 • <b>Oylik maqsad:</b> $${leadData.targetRevenue?.toLocaleString() || 0}
 • <b>O'rtacha chek:</b> $${leadData.averageCheck || 0}
 • <b>Doimiy xarajatlar:</b> $${leadData.fixedCosts?.toLocaleString() || 0}/oy
 • ⚠️ <b>Umumiy oylik zarar:</b> $${(leadData.totalMonthlyLoss || leadData.monthlyWastedMoney)?.toLocaleString() || 0} /oy ($${(leadData.totalYearlyLoss || leadData.yearlyWastedMoney)?.toLocaleString() || 0} /yil)
   ↳ <i>Yo'qotilgan sof foyda:</i> $${leadData.lostNetProfitMonthly?.toLocaleString() || 0}/oy
-  ↳ <i>Reklama behuda ketishi:</i> $${leadData.monthlyWastedMarketing?.toLocaleString() || 0}/oy
+  ↳ <i>Reklama behuda ketishi:</i> ${leadData.isSarafanOnly ? "$0 (Faqat sarafan)" : `$${leadData.monthlyWastedMarketing?.toLocaleString() || 0}/oy`}
   ↳ <i>Kamomad/o'g'irlik:</i> $${leadData.inventoryShrinkLossMonthly?.toLocaleString() || 0}/oy
   ↳ <i>Out-of-Stock (Talab yo'qotish):</i> $${leadData.outOfStockLossMonthly?.toLocaleString() || 0}/oy
 • ⏱️ <b>Pul Aylanish Sikli (CCC):</b> ${leadData.cccTotalDays || 30} kun (15 kunga qisqartirilsa +$${(leadData.cashFreedUp15Days || 0).toLocaleString()} bo'shaydi)

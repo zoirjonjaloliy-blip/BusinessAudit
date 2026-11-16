@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
+import { WelcomeDisclaimerModal } from './components/WelcomeDisclaimerModal';
 import { StepBusinessProfile } from './components/StepBusinessProfile';
 import { StepAutomationSoftware } from './components/StepAutomationSoftware';
 import { StepMarketingTraffic } from './components/StepMarketingTraffic';
@@ -114,6 +115,31 @@ export default function App() {
   const [auditResult, setAuditResult] = useState(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
+  // 1-QADAM: Welcome Disclaimer holati
+  const [showDisclaimer, setShowDisclaimer] = useState(() => {
+    try {
+      return !localStorage.getItem('biznestahlili_disclaimer_accepted');
+    } catch (e) {
+      return true;
+    }
+  });
+
+  const handleAcceptDisclaimer = () => {
+    setShowDisclaimer(false);
+    try {
+      localStorage.setItem('biznestahlili_disclaimer_accepted', 'true');
+    } catch (e) {}
+  };
+
+  // 3-QADAM: Avvalgi audit natijasi bilan solishtirish
+  const [previousAudit, setPreviousAudit] = useState(() => {
+    try {
+      const saved = localStorage.getItem('biznestahlili_last_audit');
+      if (saved) return JSON.parse(saved);
+    } catch (e) {}
+    return null;
+  });
+
   // Saqlash faqat to'ldirish paytida (agar audit topshirilmagan bo'lsa)
   useEffect(() => {
     if (!isSubmitted) {
@@ -169,7 +195,21 @@ export default function App() {
     // 2. Mahalliy bazaga ham saqlash
     setLeads((prev) => [newLead, ...prev]);
 
-    // 3. Telefondan keshni tozalash va formani bo'shatish (keyingi foydalanuvchi uchun)
+    // 3. Avvalgi audit solishtiruvi uchun saqlash
+    try {
+      const prev = localStorage.getItem('biznestahlili_last_audit');
+      if (prev) {
+        setPreviousAudit(JSON.parse(prev));
+      }
+      localStorage.setItem('biznestahlili_last_audit', JSON.stringify({
+        score: result.scores?.overall || 50,
+        date: new Date().toLocaleDateString('uz-UZ'),
+        businessName: leadSnapshot.businessName || 'Biznesingiz',
+        totalMonthlyLoss: result.totalMonthlyLoss || 0
+      }));
+    } catch (e) {}
+
+    // 4. Telefondan keshni tozalash va formani bo'shatish (keyingi foydalanuvchi uchun)
     try {
       localStorage.removeItem('biz_audit_data');
     } catch (e) {}
@@ -313,10 +353,17 @@ export default function App() {
                 setCurrentStep(6);
               }}
               onReset={handleReset}
+              previousAudit={previousAudit}
             />
           </ErrorBoundary>
         )}
       </main>
+
+      {/* 1-QADAM: Welcome Disclaimer Modal */}
+      <WelcomeDisclaimerModal
+        isOpen={showDisclaimer && !isSubmitted}
+        onAccept={handleAcceptDisclaimer}
+      />
 
       {/* Admin Leads Modal (Parol bilan himoyalangan: 19990127) */}
       <AdminLeadsModal

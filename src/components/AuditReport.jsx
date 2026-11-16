@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { calculateBusinessAudit } from '../utils/auditCalculator';
 
-export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnlock, onReset }) {
+export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnlock, onReset, previousAudit = null }) {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'software' | 'funnel' | 'roadmap'
   const [activeDiyTab, setActiveDiyTab] = useState('debt_scripts'); // 'debt_scripts' | 'sales_scripts' | 'kpi_calc' | 'revision_checklist'
   const [copiedId, setCopiedId] = useState(null);
@@ -143,7 +143,22 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
       `🏥 Salomatlik indeksi: ${data.scores?.overall || 60}/100\n\n` +
       `Xolis konsalting & avtomatlashtirish: BDM kompaniyasi (10 yillik tajribaga ega) (+998995160021, @Jalolov_IST)`
     );
-    window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${text}`, '_blank');
+    window.open(`https://t.me/share/url?url=https://biznestahlili.uz&text=${text}`, '_blank');
+  };
+
+  const handleSharePartnerTelegram = () => {
+    const text = encodeURIComponent(
+      `✈️ Hurmatli hamkor / buxgalter!\n\n` +
+      `BiznesTahlili.uz orqali korxonamiz ("${safeRaw.businessName || "Biznes"}") diagnostika qilindi:\n\n` +
+      `📊 Salomatlik Indeksi: ${data.scores?.overall || 60}/100\n` +
+      `🎯 Oylik maqsad: $${fmt(data.targetRevenue)}\n` +
+      `⚠️ Aniqlangan oylik yo'qotishlar: ~$${fmt(data.totalMonthlyLoss)}/oy\n` +
+      `🧊 Ombordagi muzlagan tovar (nelikvid): $${fmt(data.deadStockSum)}\n` +
+      `📅 Zararsizlik kuni: Oyning ${data.breakEvenDay || 15}-kuni\n` +
+      `${data.isCreditDangerous ? "🚨 Xulosa: Hozirgi holatda bank krediti olish xavfli, avval omborni naqdga aylantirish kerak!\n" : ""}` +
+      `\nTo'liq diagnostika xulosasi bilan tanishish: https://biznestahlili.uz`
+    );
+    window.open(`https://t.me/share/url?url=https://biznestahlili.uz&text=${text}`, '_blank');
   };
 
   return (
@@ -204,7 +219,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             </div>
           </div>
 
-          <div className="flex items-center gap-2 no-print">
+          <div className="flex items-center gap-2 flex-wrap no-print">
             <button
               onClick={handlePrint}
               className="flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold border border-slate-700 transition-all cursor-pointer"
@@ -219,9 +234,64 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               <Share2 className="w-4 h-4" />
               <span>Ulashish</span>
             </button>
+            <button
+              onClick={handleSharePartnerTelegram}
+              className="w-full sm:w-auto flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-500 hover:to-cyan-500 text-white text-xs sm:text-sm font-bold shadow-lg shadow-teal-500/25 transition-all cursor-pointer"
+              title="Natijani hamkor yoki buxgalterga Telegramda yuborish"
+            >
+              <Send className="w-4 h-4" />
+              <span>✈️ Hamkor / Buxgalterga yuborish</span>
+            </button>
           </div>
         </div>
       </div>
+
+      {/* 3-QADAM: Avvalgi Audit bilan Solishtirish (Dinamika) */}
+      {previousAudit && typeof previousAudit.score === 'number' && (
+        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-lg">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600/20 text-indigo-400 flex items-center justify-center shrink-0">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                📈 Audit Dinamikasi (Oldingi natija bilan solishtirish):
+              </div>
+              <div className="text-xs sm:text-sm font-semibold text-white mt-0.5">
+                Oldingi natijangiz: <span className="text-slate-300 font-bold">{previousAudit.score} ball</span> ({previousAudit.date || "Avvalgi"}) → Hozirgi natija: <span className="text-cyan-400 font-bold">{data.scores?.overall || 50} ball</span>
+              </div>
+            </div>
+          </div>
+          <div className="shrink-0">
+            {(data.scores?.overall || 50) >= previousAudit.score ? (
+              <span className="px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-extrabold text-xs">
+                ▲ +{(data.scores?.overall || 50) - previousAudit.score} ball o'sish!
+              </span>
+            ) : (
+              <span className="px-3 py-1 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-300 font-extrabold text-xs">
+                ▼ {(data.scores?.overall || 50) - previousAudit.score} ball pasayish
+              </span>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 3-QADAM: Kredit / Investitsiya Xavfsizlik Filtri */}
+      {data.isCreditDangerous && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-rose-950/30 border-2 border-rose-500/50 flex flex-col sm:flex-row items-start sm:items-center gap-3.5 shadow-lg shadow-rose-500/10">
+          <div className="w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/30">
+            <AlertOctagon className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-rose-400 mb-0.5">
+              <span>⚠️ Kredit / Investitsiya Xavfsizlik Filtri</span>
+            </div>
+            <p className="text-xs sm:text-sm text-slate-200 font-medium">
+              <strong className="text-rose-300">DIQQAT: Hozirgi holatda bank krediti yoki yangi qarz olish xavfli!</strong> {data.netMargin < 18 ? `Sof marjangiz (${data.netMargin}%) kredit foiz stavkasidan past.` : ''} {data.deadStockSum > 0 ? `Avval ombordagi $${fmt(data.deadStockSum)} lik muzlagan tovarlarni soting va zararlarni to'xtating.` : ''}
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* XOLIS SHIFOKOR (ANTI-SALE) ALGORITMI */}
       {isAntiSaleRecommended ? (
@@ -287,9 +357,11 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                   <span className="text-slate-400">Boy berilgan sof foyda:</span>
                   <span className="font-semibold text-white">${fmt(data.lostNetProfitMonthly)}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-slate-400">Reklama behuda ketishi:</span>
-                  <span className="font-semibold text-white">${fmt(data.monthlyWastedMarketing)}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-400">Reklama yo'qotishi:</span>
+                  <span className={`font-semibold ${data.isSarafanOnly ? 'text-emerald-400 text-[11px]' : 'text-white'}`}>
+                    {data.isSarafanOnly ? "$0 (Faqat Sarafan)" : `$${fmt(data.monthlyWastedMarketing)}`}
+                  </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-slate-400">Kamomad va o'g'irlik:</span>
@@ -298,6 +370,10 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               </div>
             </div>
             <div className="mt-3 pt-2 text-[10px] text-red-400/90 font-medium bg-red-950/40 px-2 py-1 rounded">
+              {data.isSarafanOnly 
+                ? "💡 Reklama yo'qotishi $0 (sarafandasiz). Asosiy yo'qotishlar ombor nelikvidi, kamomad va nasiyalarga bog'liq."
+                : "⚠️ Tizimsizlik sababli har oy ushbu summa boy berilmoqda."}
+            </div>
               ⚠️ Tizimsizlik sababli har oy ushbu summa boy berilmoqda.
             </div>
           </div>
@@ -761,7 +837,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
               <div className="text-xs font-bold text-slate-400 uppercase">1 Xodimga Oylik Savdo:</div>
               <div className="text-2xl sm:text-3xl font-black text-emerald-400 mt-1">
@@ -794,7 +870,35 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 Maydon hajmi: <strong>{data.businessAreaSqM} kv.m</strong>
               </div>
             </div>
+
+            {/* 3-QADAM: Ish Haqi Fondi (FOT) Samaradorligi */}
+            <div className={`p-4 rounded-2xl border ${data.isFotHigh ? 'bg-amber-950/30 border-amber-500/50' : 'bg-slate-950 border-slate-800'}`}>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-400 uppercase">Ish Haqi Fondi (FOT):</span>
+                <span className={`text-[10px] font-extrabold px-1.5 py-0.5 rounded ${data.isFotHigh ? 'bg-amber-500/20 text-amber-300' : 'bg-emerald-500/20 text-emerald-300'}`}>
+                  Norma: 8-15%
+                </span>
+              </div>
+              <div className={`text-2xl sm:text-3xl font-black mt-1 ${data.isFotHigh ? 'text-amber-400' : 'text-emerald-400'}`}>
+                {data.fotRatioPercent || 12}%
+                <span className="text-xs text-slate-400 font-normal"> savdodan</span>
+              </div>
+              <div className="text-[11px] text-slate-300 mt-1">
+                Taxminiy fond: <strong>~${fmt(data.estimatedFot)}/oy</strong>
+              </div>
+            </div>
           </div>
+
+          {/* FOT Me'yordan oshgan ogohlantirishi */}
+          {data.isFotHigh && (
+            <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-500/60 text-xs sm:text-sm text-amber-200 flex items-start gap-2.5 shadow-sm">
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <strong className="text-amber-300">Shtat Xarajati Ogohlantirishi: </strong>
+                Shtat xarajatining umumiy savdodagi ulushi me'yordan oshib ketgan ({data.fotRatioPercent}% &gt; 18%). Fiks oylikni kamaytirib, xodimlarni KPI va sotuv foiziga o'ting.
+              </div>
+            </div>
+          )}
 
           {/* Tashxis */}
           <div className="p-3.5 rounded-xl bg-blue-950/30 border border-blue-800/60 text-xs sm:text-sm text-blue-200 flex items-start gap-2.5">
@@ -2047,19 +2151,27 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
 
                 <div className="p-4 rounded-2xl bg-slate-800/40 border border-slate-700/60">
                   <div className="text-xs text-slate-400">Optimal reklama byudjeti (Tavsiya etiladi):</div>
-                  <div className="flex items-center justify-between mt-1">
-                    <div>
-                      <span className="text-xs text-slate-400">Ideal: </span>
-                      <strong className="text-emerald-400 text-base">${fmt(data.optimalBudgetIdeal)}</strong>
+                  {data.isSarafanOnly ? (
+                    <div className="mt-2 p-2.5 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-xs font-semibold text-emerald-300">
+                      ✓ Reklama byudjeti yo'qotishi: $0 (Siz faqat tavsiya va sarafan orqali ishlaysiz)
                     </div>
-                    <div>
-                      <span className="text-xs text-slate-400">Hozirgi real: </span>
-                      <strong className="text-amber-400 text-base">${fmt(data.realOptimalBudget)}</strong>
-                    </div>
-                  </div>
-                  <div className="mt-2 text-xs text-amber-400 font-medium">
-                    ⚠️ Byudjet farqi (yo'qotish): +${fmt(data.monthlyWastedMarketing)}
-                  </div>
+                  ) : (
+                    <>
+                      <div className="flex items-center justify-between mt-1">
+                        <div>
+                          <span className="text-xs text-slate-400">Ideal: </span>
+                          <strong className="text-emerald-400 text-base">${fmt(data.optimalBudgetIdeal)}</strong>
+                        </div>
+                        <div>
+                          <span className="text-xs text-slate-400">Hozirgi real: </span>
+                          <strong className="text-amber-400 text-base">${fmt(data.realOptimalBudget)}</strong>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-amber-400 font-medium">
+                        ⚠️ Byudjet farqi (yo'qotish): +${fmt(data.monthlyWastedMarketing)}
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
