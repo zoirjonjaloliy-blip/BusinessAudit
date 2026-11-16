@@ -62,6 +62,34 @@ export const BLANK_FORM_DATA = {
 };
 
 export default function App() {
+  const [theme, setTheme] = useState(() => {
+    try {
+      return localStorage.getItem('biznestahlili_theme') || localStorage.getItem('biznesaudit_theme') || 'dark';
+    } catch (e) {
+      return 'dark';
+    }
+  });
+
+  // Rejimni (Kungi / Tungi) qo'llash va saqlash
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'light') {
+      root.classList.remove('dark');
+      root.classList.add('light');
+    } else {
+      root.classList.remove('light');
+      root.classList.add('dark');
+    }
+    try {
+      localStorage.setItem('biznestahlili_theme', theme);
+      localStorage.setItem('biznesaudit_theme', theme);
+    } catch (e) {}
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   const [formData, setFormData] = useState(() => {
     try {
       const saved = localStorage.getItem('biz_audit_data');
@@ -195,7 +223,9 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-blue-600 selection:text-white">
+    <div className={`min-h-screen flex flex-col font-sans selection:bg-blue-600 selection:text-white transition-colors duration-200 ${
+      theme === 'light' ? 'bg-slate-50 text-slate-900' : 'bg-slate-950 text-slate-100'
+    }`}>
       {/* Header */}
       <Header
         currentStep={currentStep}
@@ -204,6 +234,8 @@ export default function App() {
         onReset={handleReset}
         leadsCount={leads.length}
         onOpenAdmin={() => setIsAdminOpen(true)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Content Area */}
@@ -297,7 +329,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500 no-print">
-        <p>© {new Date().getFullYear()} BiznesAudit.uz — Xolis Biznes-Laboratoriya va Yechimlar Markazi. Dasturlash va avtomatlashtirish: BDM kompaniyasi (10 yillik tajribaga ega).</p>
+        <p>© {new Date().getFullYear()} BiznesTahlili.uz — Xolis Biznes-Laboratoriya va Yechimlar Markazi. Dasturlash va avtomatlashtirish: BDM kompaniyasi (10 yillik tajribaga ega).</p>
       </footer>
     </div>
   );

@@ -80,7 +80,7 @@ export default async function handler(req, res) {
     : '';
 
   const message = `
-🔥 <b>YANGI TADBIRKOR AUDITI! (PRO 5.0 Mikro-Rentgen & Anti-Fraud)</b>
+🔥 <b>YANGI TADBIRKOR BIZNES TAHLILI! (BiznesTahlili.uz PRO 5.0)</b>
 ━━━━━━━━━━━━━━━━━
 👤 <b>Ismi:</b> ${leadData.fullName || "Noma'lum"}
 🏢 <b>Biznes nomi:</b> ${leadData.businessName || "Kiritilmagan"}

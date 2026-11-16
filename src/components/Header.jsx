@@ -1,9 +1,9 @@
 import React from 'react';
 import { Activity, ShieldCheck, RotateCcw } from 'lucide-react';
 
-export function Header({ currentStep, totalSteps, isSubmitted, onReset }) {
+export function Header({ currentStep, totalSteps, isSubmitted, onReset, theme = 'dark', onToggleTheme }) {
   return (
-    <header className="border-b border-slate-800 bg-slate-950/85 backdrop-blur-md sticky top-0 z-40">
+    <header className="border-b border-slate-800 bg-slate-950/85 backdrop-blur-md sticky top-0 z-40 transition-colors duration-200">
       <div className="max-w-6xl mx-auto px-4 py-3 sm:py-3.5 flex items-center justify-between">
         {/* Brand */}
         <div className="flex items-center space-x-3 cursor-pointer" onClick={onReset}>
@@ -13,7 +13,7 @@ export function Header({ currentStep, totalSteps, isSubmitted, onReset }) {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="text-base sm:text-xl font-extrabold text-white tracking-tight">
-                BiznesAudit<span className="text-cyan-400">.uz</span>
+                BiznesTahlili<span className="text-cyan-400">.uz</span>
               </h1>
               <span className="text-[10px] sm:text-xs uppercase font-extrabold bg-gradient-to-r from-emerald-500/20 via-cyan-500/20 to-blue-500/20 text-cyan-300 border border-cyan-400/30 px-2.5 py-0.5 rounded-full shadow-sm">
                 PRO 5.0 • 360° RENTGEN & ANTI-FRAUD
@@ -25,8 +25,34 @@ export function Header({ currentStep, totalSteps, isSubmitted, onReset }) {
           </div>
         </div>
 
-        {/* Right Actions: Yangilash + Status (Admin Baza olib tashlangan) */}
+        {/* Right Actions: Kungi/Tungi + Yangilash + Status */}
         <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* Tungi / Kungi rejim tugmasi */}
+          <button
+            onClick={onToggleTheme}
+            type="button"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-800/90 hover:bg-slate-700 border border-slate-600/80 text-xs sm:text-sm font-bold text-white transition-all shadow-sm cursor-pointer"
+            title={theme === 'dark' ? "Kungi rejimga o'tish (yorqin fon, to'q yozuvlar)" : "Tungi rejimga o'tish (qora fon)"}
+          >
+            {theme === 'dark' ? (
+              <>
+                <svg className="w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="4"/>
+                  <path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/>
+                  <path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>
+                </svg>
+                <span className="hidden sm:inline">Kungi</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-4 h-4 text-indigo-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                </svg>
+                <span className="hidden sm:inline">Tungi</span>
+              </>
+            )}
+          </button>
+
           {/* Yangilash tugmasi (Doimiy yuqorida turadi) */}
           <button
             onClick={onReset}

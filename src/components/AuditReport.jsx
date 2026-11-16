@@ -135,7 +135,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
 
   const handleShareTelegram = () => {
     const text = encodeURIComponent(
-      `📊 BiznesAudit.uz (Anti-Sale & DIY Edition) Diagnostikasi:\n` +
+      `📊 BiznesTahlili.uz (Anti-Sale & DIY Edition) Diagnostikasi:\n` +
       `👤 Tadbirkor: ${safeRaw.fullName || "Mijoz"} (${safeRaw.businessName || "Korxona"})\n` +
       `🎯 Oylik maqsad: $${fmt(data.targetRevenue)}\n` +
       `⚠️ Umumiy yo'qotish rezervi: $${fmt(data.totalMonthlyLoss)}/oy\n` +

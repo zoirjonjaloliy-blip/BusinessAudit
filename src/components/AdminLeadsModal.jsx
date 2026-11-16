@@ -157,7 +157,7 @@ export function AdminLeadsModal({ isOpen, onClose, leads, onDeleteLead, onClearA
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `Biznes_Audit_Lidlar_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `Biznes_Tahlili_Lidlar_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
