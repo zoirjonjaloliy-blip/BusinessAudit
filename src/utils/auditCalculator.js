@@ -589,9 +589,4 @@ export function calculateBusinessAudit(formData) {
     softwareRecommendations,
     roadmap
   };
-    riskLevel,
-    riskColor,
-    softwareRecommendations,
-    roadmap
-  };
 }
