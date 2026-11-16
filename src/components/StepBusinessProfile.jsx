@@ -61,6 +61,26 @@ export function StepBusinessProfile({ formData, onChange, onNext, onPrev }) {
         </p>
       </div>
 
+      {/* 1-QADAM: Sayt boshidagi ogohlantirish (Welcome Trust Alert Banner) */}
+      <div className="bg-gradient-to-r from-blue-950/70 via-slate-900/90 to-cyan-950/70 border-2 border-cyan-500/40 rounded-2xl p-4 sm:p-5 shadow-lg relative overflow-hidden">
+        <div className="flex items-start gap-3.5">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-md shadow-blue-500/20 shrink-0 mt-0.5">
+            <span className="text-xl">🎯</span>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-sm sm:text-base font-black text-white leading-snug">
+              Hurmatli tadbirkor, to'g'ri tashxis — aniq raqamlardan boshlanadi!
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1.5 leading-relaxed">
+              Biznesingizdagi yashirin teshiklar, ombor holati va aniq yo'qotishlarni hisoblab berishimiz uchun quyidagi savollarga o'zingizning haqiqiy va taxminiy real raqamlaringiz bilan javob berishingizni so'raymiz. Ma'lumotlar qancha aniq kiritilsa, tizim shunchalik mukammal <strong className="text-cyan-300">"Moliyaviy Rentgen"</strong> va <strong className="text-blue-300">30 kunlik amaliy reja</strong> taqdim etadi. Barcha ma'lumotlar mutlaqo xavfsiz va konfidensial saqlanadi.
+            </p>
+            <div className="mt-2.5 flex items-center gap-2 text-[11px] sm:text-xs text-emerald-400 font-semibold">
+              <span>🛡️ Xolis laboratoriya: reklama yoki dastur sotish majburiyati yo'q</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* 1-savol: Boshqaruvdagi rol */}
       <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 sm:p-6 shadow-lg">
         <label className="block text-base font-bold text-white mb-3">

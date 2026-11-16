@@ -115,20 +115,11 @@ export default function App() {
   const [auditResult, setAuditResult] = useState(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
-  // 1-QADAM: Welcome Disclaimer holati
-  const [showDisclaimer, setShowDisclaimer] = useState(() => {
-    try {
-      return !localStorage.getItem('biznestahlili_disclaimer_accepted');
-    } catch (e) {
-      return true;
-    }
-  });
+  // 1-QADAM: Welcome Disclaimer holati (har safar saytga kirganda 1-bosqichda chiqadi)
+  const [showDisclaimer, setShowDisclaimer] = useState(true);
 
   const handleAcceptDisclaimer = () => {
     setShowDisclaimer(false);
-    try {
-      localStorage.setItem('biznestahlili_disclaimer_accepted', 'true');
-    } catch (e) {}
   };
 
   // 3-QADAM: Avvalgi audit natijasi bilan solishtirish
@@ -256,8 +247,10 @@ export default function App() {
     setIsSubmitted(false);
     setIsUnlocked(false);
     setAuditResult(null);
+    setShowDisclaimer(true);
     try {
       localStorage.removeItem('biz_audit_data');
+      localStorage.removeItem('biznestahlili_disclaimer_accepted');
     } catch (e) {}
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
