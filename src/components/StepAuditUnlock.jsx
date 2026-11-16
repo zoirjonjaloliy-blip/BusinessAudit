@@ -144,7 +144,7 @@ export function StepAuditUnlock({ formData = {}, onChange, onUnlock, onDemo, onP
                 required
                 value={formData.fullName || ''}
                 onChange={(e) => onChange({ fullName: e.target.value })}
-                placeholder="Masalan: Shokir Jalolov"
+                placeholder="Masalan: Alisher Qodirov"
                 className="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-white font-medium text-xs sm:text-sm focus:border-emerald-400 focus:outline-none focus:ring-1 focus:ring-emerald-400 placeholder:text-slate-600"
               />
             </div>

@@ -297,7 +297,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500 no-print">
-        <p>© {new Date().getFullYear()} BiznesAudit.uz — Xolis Biznes-Laboratoriya va Yechimlar Markazi. Dasturlash va avtomatlashtirish: Zoirjon Jalolov.</p>
+        <p>© {new Date().getFullYear()} BiznesAudit.uz — Xolis Biznes-Laboratoriya va Yechimlar Markazi. Dasturlash va avtomatlashtirish: BDM kompaniyasi (10 yillik tajribaga ega).</p>
       </footer>
     </div>
   );

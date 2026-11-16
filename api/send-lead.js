@@ -72,7 +72,7 @@ export default async function handler(req, res) {
 
   const isPitchNeeded = isPharmacy || isClinic || leadData.abcAnalysisStatus !== 'automated' || leadData.financialReportsStatus !== 'full_reports';
   const autoPitchBlock = isPitchNeeded
-    ? `\n💡 <b>SOTUV UCHUN ZOIRJONGA PODSKAZKA (AUTO-PITCH):</b>\n🎯 <i>${
+    ? `\n💡 <b>SOTUV UCHUN BDM MUTAXASSISIGA PODSKAZKA (AUTO-PITCH):</b>\n🎯 <i>${
         isPharmacy ? "Mijozga 1C: Dorixona orqali srok godnosti tugayotgan dorilarni FIFO bo'yicha sotish va 1 pachkani blisterga bo'lishda kamomadni yo'qotishni taklif qiling!" :
         isClinic ? "Mijozga 1C: Tibbiyot orqali elektron navbat o'rnatib, shifokor cho'ntagiga pul ketishini to'xtatish va yo'llanma beruvchi (napravitel) vrachlar keshbekini avtomatlashtirishni taklif qiling!" :
         "Mijozga 1C orqali omboridagi nelikvid tovarlarni aniqlab berish, kassa bekor qilishlarini Telegramga qizil signal qilib chiqarish va AI-Balans hisobotini taklif qiling!"

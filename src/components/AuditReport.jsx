@@ -141,7 +141,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
       `⚠️ Umumiy yo'qotish rezervi: $${fmt(data.totalMonthlyLoss)}/oy\n` +
       `📅 Zararsizlik kuni: Oyning ${data.breakEvenDay || 15}-kuni\n` +
       `🏥 Salomatlik indeksi: ${data.scores?.overall || 60}/100\n\n` +
-      `Xolis konsalting & avtomatlashtirish: Zoirjon Jalolov (+998995160021, @Jalolov_IST)`
+      `Xolis konsalting & avtomatlashtirish: BDM kompaniyasi (10 yillik tajribaga ega) (+998995160021, @Jalolov_IST)`
     );
     window.open(`https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${text}`, '_blank');
   };
@@ -1715,7 +1715,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  🚀 2-Yo'l: Zoirjon Jalolov bilan "Pod Klyuch"
+                  🚀 2-Yo'l: BDM kompaniyasi bilan "Pod Klyuch"
                 </span>
                 <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
                   ROI: ~1.5 oyda o'zini oqlaydi
@@ -1723,7 +1723,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               </div>
 
               <h4 className="text-lg font-bold text-white">
-                5+ yillik amaliyotchi mutaxassis bilan to'liq avtomatlashtirish
+                10 yillik tajribaga ega BDM kompaniyasi mutaxassislari bilan to'liq avtomatlashtirish
               </h4>
 
               <div className="space-y-2.5 text-xs text-slate-300">
@@ -1976,7 +1976,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                   3
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white">Zoirjon Jalolov bilan individual sozlash yoki dastur o'rnatish</h4>
+                  <h4 className="text-sm font-bold text-white">BDM kompaniyasi (10 yillik tajriba) bilan individual sozlash yoki dastur o'rnatish</h4>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                     {hasSoftware
                       ? "Mavjud dasturingizni professional audit qilib, individual xatoliklarni to'g'rilang va xodimlarni o'qiting."
@@ -2125,7 +2125,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 </div>
 
                 <div className="mt-6 pt-3 border-t border-slate-800 text-[11px] text-slate-500 font-medium">
-                  Mas'ul: {safeRaw.fullName || "Biznes egasi"} & Zoirjon Jalolov
+                  Mas'ul: {safeRaw.fullName || "Biznes egasi"} & BDM kompaniyasi (10 yillik tajriba)
                 </div>
               </div>
             ))}
