@@ -374,8 +374,6 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 ? "💡 Reklama yo'qotishi $0 (sarafandasiz). Asosiy yo'qotishlar ombor nelikvidi, kamomad va nasiyalarga bog'liq."
                 : "⚠️ Tizimsizlik sababli har oy ushbu summa boy berilmoqda."}
             </div>
-              ⚠️ Tizimsizlik sababli har oy ushbu summa boy berilmoqda.
-            </div>
           </div>
 
           {/* KARTA 2: Ombor va Nasiya Muzlatkichlari */}
