@@ -1,7 +1,7 @@
 import React from 'react';
 import { 
   CheckCircle2, AlertTriangle, XCircle, BookOpen, AlertOctagon, 
-  Package, Clock, ShieldAlert, Sparkles 
+  Package, Clock, ShieldAlert, Sparkles, BarChart3, BrainCircuit, Layers
 } from 'lucide-react';
 import { INDUSTRY_BENCHMARKS } from '../data/industryBenchmarks';
 
@@ -298,7 +298,7 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
         </div>
       </div>
 
-      {/* 5. Kunlik operatsionkaga ketadigan vaqt (PRO 3.0) */}
+      {/* 5. Kunlik operatsionkaga ketadigan vaqt */}
       <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
         <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
           <Clock className="w-4 h-4 text-purple-400" />
@@ -342,6 +342,170 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           >
             <div className="font-semibold text-xs sm:text-sm text-red-400 mb-1">Kuniga 5+ soat</div>
             <div className="text-[11px] text-slate-400">Butunlay operatsionkaga bog'lanib qolganman</div>
+          </button>
+        </div>
+      </div>
+
+      {/* 6. Ombor va Tovarlar Analitikasi (ABC / XYZ tahlil) (PRO 4.0) */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <BarChart3 className="w-4 h-4 text-emerald-400" />
+          6. Ombor va Tovarlar Analitikasi (ABC / XYZ tahlil):
+        </label>
+        <p className="text-xs text-slate-400 mb-3">
+          Qaysi 20% mahsulot 80% sof foyda keltirishini va qaysi tovarlar 60 kundan ortiq muzlab yotganini (Nelikvid) aniq bilasizmi?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => onChange({ abcAnalysisStatus: 'automated' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.abcAnalysisStatus === 'automated'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-emerald-400">Dasturda avtomatik</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">1C/POS da ABC-tahlil va muzlagan tovarlar ro'yxati chiqadi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ abcAnalysisStatus: 'approximate' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.abcAnalysisStatus === 'approximate'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-amber-400">Taxminan bilaman</span>
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">Ko'z bilan chamalab tovar buyurtma qilamiz (+12% yo'qotish)</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ abcAnalysisStatus: 'none' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.abcAnalysisStatus === 'none'
+                ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-red-400">Bilmayman / Qilinmaydi</span>
+              <XCircle className="w-4 h-4 text-red-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">ABC-tahlil yo'q, faqat tugagan tovarni olaveramiz (+25% muzlash)</div>
+          </button>
+        </div>
+      </div>
+
+      {/* 7. Xarid va Ta'minotchilar Prognozi (Auto-Ordering) (PRO 4.0) */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <Layers className="w-4 h-4 text-indigo-400" />
+          7. Xarid va Ta'minotchilar Prognozi (Auto-Ordering / Min-Max):
+        </label>
+        <p className="text-xs text-slate-400 mb-3">
+          Yangi tovar xarid qilayotganda yoki xomashyo olayotganda miqdorni qanday belgilaysiz?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => onChange({ autoOrderingStatus: 'automated' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.autoOrderingStatus === 'automated'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-emerald-400">Dasturiy prognoz (Min-Max)</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">Dastur oldingi savdo tezligiga qarab kerakli miqdorni o'zi hisoblaydi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ autoOrderingStatus: 'out_of_stock_risk' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.autoOrderingStatus === 'out_of_stock_risk'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-amber-400">Og'zaki / Tugasa keyin olinadi</span>
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">Sotuvchi aytganda olinadi (A-toifa tovar tugab, 8-12% savdo boy beriladi)</div>
+          </button>
+        </div>
+      </div>
+
+      {/* 8. Sun'iy Intellekt (AI) va Avto-Hisobotlardan foydalanish (PRO 4.0) */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <BrainCircuit className="w-4 h-4 text-cyan-400" />
+          8. Sun'iy Intellekt (AI) va Avtomatik Telegram-bot Analitikasi:
+        </label>
+        <p className="text-xs text-slate-400 mb-3">
+          Biznesingizda Sun'iy Intellekt (AI) va avtomatik Telegram-bot analitikasidan foydalanasizmi?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => onChange({ aiUsageStatus: 'integrated' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.aiUsageStatus === 'integrated'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-emerald-400">AI va Telegram bot ulangan</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">1C/POS ga AI ulangan: har kechqurun tahliliy xulosa keladi (+20 ball)</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ aiUsageStatus: 'basic_chat' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.aiUsageStatus === 'basic_chat'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-amber-400">Faqat oddiy chatda</span>
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">ChatGPT dan post yoki g'oyalar uchun foydalanaman, bazaga ulanmagan</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ aiUsageStatus: 'none' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.aiUsageStatus === 'none'
+                ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-red-400">Ishlatmayman</span>
+              <XCircle className="w-4 h-4 text-red-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">AI orqali savdo va omborni tahlil qilish mumkinligini bilmasdim</div>
           </button>
         </div>
       </div>

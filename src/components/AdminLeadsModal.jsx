@@ -119,7 +119,11 @@ export function AdminLeadsModal({ isOpen, onClose, leads, onDeleteLead, onClearA
       "Dastur Holati",
       "Qarzlar Holati",
       "CRM",
-      "Salomatlik Balli"
+      "ABC Tahlil",
+      "Moliyaviy Balans",
+      "AI Holati",
+      "Salomatlik Balli",
+      "BI Balli"
     ];
 
     const rows = leads.map((item) => [
@@ -131,11 +135,15 @@ export function AdminLeadsModal({ isOpen, onClose, leads, onDeleteLead, onClearA
       `"${item.industry?.name || ''}"`,
       item.targetRevenue || '',
       item.averageCheck || '',
-      item.monthlyWastedMoney || '',
+      item.totalMonthlyLoss || item.monthlyWastedMoney || '',
       `"${item.accountingSoftware === 'software' ? "Dastur bor" : item.accountingSoftware === 'excel' ? "Excel" : "Daftarda"}"`,
       `"${item.debtTracking === 'software' ? "Dasturda" : item.debtTracking === 'paper' ? "Qarz daftari" : "Hisobsiz"}"`,
       `"${item.hasCrm === 'yes' ? "CRM bor" : "CRM yo'q"}"`,
-      item.scores?.overall || ''
+      `"${item.abcAnalysisStatus === 'automated' ? "ABC bor" : item.abcAnalysisStatus === 'approximate' ? "Taxminan" : "ABC yo'q"}"`,
+      `"${item.financialReportsStatus === 'full_reports' ? "3 hisobot bor" : item.financialReportsStatus === 'cash_only' ? "Faqat kassa" : "Moliyaviy ko'rlik"}"`,
+      `"${item.aiUsageStatus === 'integrated' ? "AI ulangan" : item.aiUsageStatus === 'basic_chat' ? "Faqat chat" : "AI yo'q"}"`,
+      item.scores?.overall || '',
+      item.scores?.bi || ''
     ]);
 
     const csvContent = "\uFEFF" + [headers.join(','), ...rows.map(e => e.join(','))].join('\n');

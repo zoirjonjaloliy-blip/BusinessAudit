@@ -90,6 +90,9 @@ export function StepAuditUnlock({ formData = {}, onChange, onUnlock, onDemo, onP
               }`}>
                 {preview.riskLevel || 'Tahlil qilindi'}
               </span>
+              <span className="ml-1.5 px-2 py-0.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-[10px] font-extrabold uppercase tracking-wider">
+                BI & AI: {preview.scores?.bi || 50}%
+              </span>
             </div>
           </div>
 

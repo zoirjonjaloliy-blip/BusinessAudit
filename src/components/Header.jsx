@@ -15,8 +15,8 @@ export function Header({ currentStep, totalSteps, isSubmitted, onReset, leadsCou
               <h1 className="text-base sm:text-lg font-bold text-white tracking-tight">
                 BiznesAudit<span className="text-blue-500">.uz</span>
               </h1>
-              <span className="text-[10px] uppercase font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded-full">
-                Anti-Sale & DIY
+              <span className="text-[10px] uppercase font-bold bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                PRO 4.0 • AI & CFO
               </span>
             </div>
             <p className="text-xs text-slate-400 hidden sm:block">

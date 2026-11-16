@@ -24,6 +24,12 @@ export const BLANK_FORM_DATA = {
   inventoryStatus: '',
   fiscalMarking: '',
   dailyOperationalHours: '',
+  // PRO 4.0 Yangi Boshqaruv, Moliyaviy Balans & AI maydonlari:
+  abcAnalysisStatus: '',
+  autoOrderingStatus: '',
+  aiUsageStatus: '',
+  financialReportsStatus: '',
+  unitEconomicsStatus: '',
   platforms: [],
   platform: '',
   socialStatus: '',

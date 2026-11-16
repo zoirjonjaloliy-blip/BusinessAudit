@@ -1,5 +1,8 @@
 import React from 'react';
-import { DollarSign, Percent, Receipt, PieChart, Sparkles, Building, Landmark, Package } from 'lucide-react';
+import { 
+  DollarSign, Percent, Receipt, PieChart, Sparkles, Building, Landmark, Package, 
+  Scale, FileSpreadsheet, CheckCircle2, AlertTriangle, XCircle, TrendingUp 
+} from 'lucide-react';
 import { INDUSTRY_BENCHMARKS } from '../data/industryBenchmarks';
 
 export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
@@ -190,6 +193,110 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
           <p className="text-[11px] text-slate-400 mt-2">
             Hozirda javonlarda/omborda muzlab turgan umumiy tovar qiymati
           </p>
+        </div>
+      </div>
+
+      {/* 7. Moliyaviy Balans va 3 ta Asosiy Hisobot (P&L, Cash Flow, Balans) (PRO 4.0) */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <Scale className="w-4 h-4 text-emerald-400" />
+          7. Moliyaviy Balans va 3 ta Asosiy Hisobot (P&L, Cash Flow, Balans):
+        </label>
+        <p className="text-xs text-slate-400 mb-3">
+          Kassadagi puldan tashqari, biznesingizning haqiqiy Balansini (Aktivlar, Nasiyalar, Sof Foyda - P&L) har oy yakunida ko'ra olasizmi?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <button
+            type="button"
+            onClick={() => onChange({ financialReportsStatus: 'full_reports' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.financialReportsStatus === 'full_reports'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-emerald-400">Ha, 3 ta hisobot bor</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">P&L (Foyda/Zarar), Cash Flow va Balans avtomatik shakllanadi (0% xavf)</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ financialReportsStatus: 'cash_only' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.financialReportsStatus === 'cash_only'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-amber-400">Faqat tushum/xarajat</span>
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">Kassani yozaman, lekin Balans hisobotim yo'q (+10% kassa uzilishi xavfi)</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ financialReportsStatus: 'blind' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.financialReportsStatus === 'blind'
+                ? 'bg-red-600/15 border-red-500 text-white ring-1 ring-red-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-red-400">Kassada pul bo'lsa yetarli</span>
+              <XCircle className="w-4 h-4 text-red-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">Pulim qayerdaligini aniq bilmayman (Moliyaviy ko'rlik: 40% foyda muzlagan)</div>
+          </button>
+        </div>
+      </div>
+
+      {/* 8. Unit-Iqtisodiyot va Haqiqiy Sof Foyda (Tannarx tahlili) (PRO 4.0) */}
+      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
+          <FileSpreadsheet className="w-4 h-4 text-cyan-400" />
+          8. Unit-Iqtisodiyot va Tovar Rentabelligi (Haqiqiy Tannarx):
+        </label>
+        <p className="text-xs text-slate-400 mb-3">
+          Ustiga qo'yilgan foizni emas, balki yo'l kira, brak, bonus va xarajatlardan so'ng qoladigan HAQIQIY SOF FOYDANI bilasizmi?
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => onChange({ unitEconomicsStatus: 'detailed' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.unitEconomicsStatus === 'detailed'
+                ? 'bg-emerald-600/15 border-emerald-500 text-white ring-1 ring-emerald-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-emerald-400">Ha, to'liq rentabellik ko'rinadi</span>
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">Har bir tovar va partiya bo'yicha sof foyda 1C/POS tizimida aniq hisoblanadi</div>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onChange({ unitEconomicsStatus: 'markup_only' })}
+            className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+              formData.unitEconomicsStatus === 'markup_only'
+                ? 'bg-amber-600/15 border-amber-500 text-white ring-1 ring-amber-500'
+                : 'bg-slate-800/40 border-slate-700/50 text-slate-300 hover:bg-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-1">
+              <span className="font-semibold text-xs sm:text-sm text-amber-400">Faqat ustama foizni (natsenka)</span>
+              <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+            </div>
+            <div className="text-[11px] text-slate-400">Natsenkani bilaman, umumiy xarajatlarni esa faqat oy oxirida ko'zda tutaman</div>
+          </button>
         </div>
       </div>
 

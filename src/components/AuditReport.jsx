@@ -6,7 +6,8 @@ import {
   User, Building, Phone, Calendar, Laptop, Send, Award, Check,
   Sliders, AlertOctagon, CheckCircle2, ChevronRight,
   Package, Clock, CheckSquare, Square, Flame, Activity, FileText,
-  Copy, Lock, Unlock, HelpCircle, ArrowUpRight
+  Copy, Lock, Unlock, HelpCircle, ArrowUpRight,
+  BrainCircuit, BarChart3, Scale, Bot
 } from 'lucide-react';
 import { calculateBusinessAudit } from '../utils/auditCalculator';
 
@@ -371,6 +372,269 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
         </div>
       </div>
 
+      {/* ⭐ PRO 4.0: CFO & AI ANALITIKA MARKAZI ⭐ */}
+      <div className="bg-gradient-to-b from-slate-900 via-indigo-950/40 to-slate-900 border-2 border-cyan-500/40 rounded-3xl p-5 sm:p-7 space-y-6 relative overflow-hidden shadow-2xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+          <div>
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-300 text-xs font-extrabold uppercase tracking-wider mb-1.5">
+              <BrainCircuit className="w-4 h-4 text-cyan-400" />
+              PRO 4.0: CFO & AI Analitika Markazi
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+              Moliyaviy Balans, Pareto (ABC) Matritsasi va AI-Direktor Rentgeni
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-300 mt-1">
+              Biznesni ko'z bilan chamalab emas, 3 ta asosiy hisobot (P&L, Cash Flow, Balans) va Sun'iy Intellekt yordamida boshqarish tahlili:
+            </p>
+          </div>
+
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="p-3 rounded-2xl bg-slate-950/80 border border-cyan-500/40 text-right">
+              <div className="text-[10px] uppercase font-bold text-slate-400">Boshqaruv Intellekti (BI):</div>
+              <div className="text-2xl font-black text-cyan-400">
+                {data.scores?.bi || 50}<span className="text-sm text-slate-500 font-semibold">/100</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 1-MODUL: ABC-TAHLIL VA OMBOR MATRITSASI (PARETO 80/20) */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <BarChart3 className="w-5 h-5 text-emerald-400" />
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                1-Modul: Pareto Matritsasi (ABC-Tahlil) va Ombor Rentgeni
+              </h3>
+            </div>
+            <span className="text-xs text-slate-400">Jami ombor zaxirasi: ${fmt(data.inventoryCapital)}</span>
+          </div>
+          <p className="text-xs text-slate-300">
+            Ombordagi tovarlarning 20% i korxonaga 80% sof foydani olib keladi. Qolgan 50% tovar esa aylanma pulni muzlatib yotadi:
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+            {/* A-Guruh */}
+            <div className="p-4 rounded-2xl bg-emerald-950/20 border-2 border-emerald-500/50 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-extrabold uppercase">
+                    🟢 A-Guruh (Oltin Lokomotivlar)
+                  </span>
+                  <span className="text-xs font-black text-emerald-400">80% Savdo</span>
+                </div>
+                <div className="text-xl sm:text-2xl font-black text-white mt-1">
+                  ${fmt(data.groupA_Stock)}
+                  <span className="text-xs font-normal text-slate-400"> (20% tovar)</span>
+                </div>
+                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                  <strong className="text-emerald-300">Qat'iy qoida:</strong> Bu tovarlar omborda 1 soat ham tugab qolmasligi SHART! Dasturda bularga <strong>'Minimal Qoldiq'</strong> signali o'rnatiladi.
+                </p>
+              </div>
+              <div className="mt-3 pt-2 border-t border-emerald-900/40 text-[11px] text-emerald-400 font-semibold">
+                ✓ 1C/POS da doimiy auto-monitoringda bo'ladi
+              </div>
+            </div>
+
+            {/* B-Guruh */}
+            <div className="p-4 rounded-2xl bg-amber-950/20 border-2 border-amber-500/40 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-xs font-extrabold uppercase">
+                    🟡 B-Guruh (Barqaror O'rtamiyonalar)
+                  </span>
+                  <span className="text-xs font-black text-amber-400">15% Savdo</span>
+                </div>
+                <div className="text-xl sm:text-2xl font-black text-white mt-1">
+                  ${fmt(data.groupB_Stock)}
+                  <span className="text-xs font-normal text-slate-400"> (30% tovar)</span>
+                </div>
+                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                  <strong className="text-amber-300">Tavsiya:</strong> Bularni haftada 1 marta nazorat qiling va A-guruh tovarlari yonida kassada qo'shimcha (Cross-sell) qilib taklif eting.
+                </p>
+              </div>
+              <div className="mt-3 pt-2 border-t border-amber-900/40 text-[11px] text-amber-400 font-semibold">
+                ✓ Haftalik partiya buyurtmasi yetarli
+              </div>
+            </div>
+
+            {/* C-Guruh */}
+            <div className="p-4 rounded-2xl bg-red-950/20 border-2 border-red-500/50 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="px-2.5 py-0.5 rounded-full bg-red-500/20 text-red-300 text-xs font-extrabold uppercase">
+                    🔴 C-Guruh (Pul Yutkichlar)
+                  </span>
+                  <span className="text-xs font-black text-red-400">Atigi 5% Savdo</span>
+                </div>
+                <div className="text-xl sm:text-2xl font-black text-white mt-1">
+                  ${fmt(data.groupC_Stock)}
+                  <span className="text-xs font-normal text-slate-400"> (50% tovar)</span>
+                </div>
+                <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                  <strong className="text-red-300">Aniq raqam:</strong> Omborda taxminan <strong className="text-white">${fmt(data.deadStockCGroup)}</strong> pulingiz nelikvid tovarlarda muzlab yotibdi! Ularni tezda sotib, naqdga aylantiring.
+                </p>
+              </div>
+              <div className="mt-3 pt-2 border-t border-red-900/40 text-[11px] text-red-400 font-semibold">
+                ⚠️ Yangi tovar olishdan oldin bu tovarlar to'xtatiladi
+              </div>
+            </div>
+          </div>
+
+          {/* Out-of-Stock ogohlantirishi */}
+          {data.outOfStockLossMonthly > 0 && (
+            <div className="p-3.5 rounded-xl bg-amber-950/30 border border-amber-500/40 flex items-center justify-between gap-3 text-xs text-amber-200">
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                <span>
+                  <strong>"Out-of-Stock" boy berilgan talab:</strong> A-toifa tovarlar vaqtida buyurtma qilinmagani sababli oylik taxminan <strong className="text-white">${fmt(data.outOfStockLossMonthly)} /oy</strong> aylanma xaridorlar bilan birga raqobatchilarga ketmoqda!
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 2-MODUL: 3 TA ASOSIY MOLIYAVIY HISOBOT */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center gap-2">
+            <Scale className="w-5 h-5 text-indigo-400" />
+            <h3 className="text-base sm:text-lg font-bold text-white">
+              2-Modul: Tadbirkor Bilishi Shart Bo'lgan 3 Ta Moliyaviy Hisobot (Shifokor Tili)
+            </h3>
+          </div>
+          <p className="text-xs text-slate-300">
+            Kassadagi naqd pul — hali korxonaning sof foydasi emas. Haqiqiy moliyaviy manzara quyidagi 3 hisobot kesishuvida ko'rinadi:
+          </p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="flex items-center gap-2 text-cyan-400 text-xs font-bold uppercase tracking-wider">
+                <DollarSign className="w-4 h-4" />
+                <span>1. DDS (Cash Flow / Pul oqimi)</span>
+              </div>
+              <h4 className="text-sm font-bold text-white">
+                "Bugun cho'ntagingizda qancha pul bor?"
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Kassaga kirgan va chiqqan har bir so'm. <strong className="text-amber-300">Eslatma:</strong> Kassadagi pul — bu hali sizning foydangiz emas! Uning ichida tovar tan narxi, ijara, oylik va soliqlar yotadi.
+              </p>
+              <div className="text-[11px] text-cyan-300 pt-2 border-t border-slate-800">
+                Savol: "Xarajatlarni to'lashga naqd pul bormi?"
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+                <TrendingUp className="w-4 h-4" />
+                <span>2. P&L (Foyda va Zarar hisoboti)</span>
+              </div>
+              <h4 className="text-sm font-bold text-white">
+                "Bu oy biznesingiz haqiqatan qancha ishladi?"
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Sotilgan tovarlarning sof rentabelligi va barcha xarajatlar ayirilgandan so'ng qoladigan haqiqiy sof foyda. Tushum $20,000 bo'lsa ham, P&L orqali zarar ko'rayotganingiz fosh bo'lishi mumkin.
+              </p>
+              <div className="text-[11px] text-emerald-300 pt-2 border-t border-slate-800">
+                Savol: "Korxona foydada ishlayaptimi yoki zarardami?"
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="flex items-center gap-2 text-purple-400 text-xs font-bold uppercase tracking-wider">
+                <Scale className="w-4 h-4" />
+                <span>3. Balans Hisoboti (Balance Sheet)</span>
+              </div>
+              <h4 className="text-sm font-bold text-white">
+                "Ishlangan foydangiz qayerda turibdi?"
+              </h4>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Biznesingizning to'liq rentgeni: qancha pul ombordagi tovarda, qanchasi mijozlar nasiyasida, qanchasi jihozlarda va o'zingiz kimlardan qancha qarzdorsiz (Kreditorlik).
+              </p>
+              <div className="text-[11px] text-purple-300 pt-2 border-t border-slate-800">
+                Savol: "Mening boyligim va kapitalim qanchaga yetdi?"
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3.5 rounded-xl bg-indigo-950/40 border border-indigo-500/30 text-xs text-slate-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+            <span>
+              💡 <strong className="text-white">Xolis yechim:</strong> 1C: Korxona tizimida bu 3 ta hisobot buxgaltersiz ham 1 ta tugma bilan 2 soniyada avtomatik chiqadi.
+            </span>
+            {data.paperProfitTrapped > 0 && (
+              <span className="text-amber-300 font-semibold shrink-0">
+                ⚠️ Muzlagan 'qog'ozdagi foyda': ~${fmt(data.paperProfitTrapped)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* 3-MODUL: AI-DIREKTOR VA TELEGRAM-BOT ANALITIKASI (JONLI MOCKUP) */}
+        <div className="space-y-3 pt-2">
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <BrainCircuit className="w-5 h-5 text-cyan-400" />
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                3-Modul: Sun'iy Intellekt (AI) va Telegram-Bot Boshqaruvi
+              </h3>
+            </div>
+            <span className="text-[11px] px-2.5 py-0.5 rounded-full bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/30">
+              Jonli Telegram Namunasi
+            </span>
+          </div>
+          <p className="text-xs text-slate-300">
+            Zoirjon Jalolov tomonidan 1C / POS tizimingizga ulab beriladigan AI Telegram-bot har kuni soat 21:00 da rahbarga quyidagi formatda aqlli hisobot beradi:
+          </p>
+
+          {/* Telegram Chat Mockup */}
+          <div className="max-w-xl mx-auto rounded-3xl bg-slate-950 border-2 border-blue-500/40 p-4 sm:p-5 shadow-2xl space-y-3 font-sans">
+            <div className="flex items-center gap-3 pb-3 border-b border-slate-800">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-cyan-400 flex items-center justify-center text-white font-bold shadow-md">
+                🤖
+              </div>
+              <div className="flex-1">
+                <div className="text-sm font-bold text-white flex items-center gap-1.5">
+                  <span>AI-Biznes Tahlilchi (1C + Bot)</span>
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                </div>
+                <div className="text-[11px] text-cyan-400">Kechki soat 21:00 hisoboti — "{safeRaw.businessName || "Korxona"}"</div>
+              </div>
+              <span className="text-[10px] text-slate-500">21:00</span>
+            </div>
+
+            <div className="space-y-2 text-xs sm:text-[13px] text-slate-200 leading-relaxed font-mono bg-slate-900/90 p-4 rounded-2xl border border-slate-800">
+              <p>📊 <strong>Bugungi savdo:</strong> $1,450 (Kecha bilan solishtirganda +14%). Sof foyda: $320.</p>
+              <p className="text-amber-300">
+                ⚠️ <strong>AI Ogohlantirishi (Anomaliya):</strong> Bugun 2-kassada chek bekor qilishlar (otmena) soni odatdagidan 3 barobar ko'p bo'ldi — tekshirib ko'ring!
+              </p>
+              <p className="text-emerald-300">
+                📦 <strong>ABC-Ombor signali:</strong> Eng ko'p foyda keltiruvchi 4 ta "A-toifa" mahsulot omborda 2 kunga yetadigan qoldi. Ertaga buyurtma berish shart!
+              </p>
+              <p className="text-cyan-300">
+                ❄️ <strong>Muzlagan kapital:</strong> Ombordagi 12 xil tovar 45 kundan beri 1 dona ham sotilmadi (Jami: $840). Ularga 15% chegirma e'lon qilishni tavsiya qilaman.
+              </p>
+            </div>
+
+            <div className="text-right text-[10px] text-slate-500 pr-1">
+              ✓✓ Yetkazildi • 1C Enterprise AI Engine
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-300">
+            <div>
+              <strong className="text-white">Qimmat tahlilchi xodim yollash shart emas:</strong> 1C/POS bazangizga AI Telegram-bot o'rnatilgach, rahbar har oy 35+ soat strategik vaqtini tejaydi.
+            </div>
+            <button
+              type="button"
+              onClick={() => handleCopyText(`Men chakana/ulgurji savdo do'koni rahbariman. Mana mening tovarlar qoldig'im va oxirgi 60 kunlik sotuv jadvallarim: [Excel jadvalini tashlang]. Menga quyidagi tahlilni qilib ber:\n1. Pareto qonuni (ABC-tahlil) bo'yicha menga 80% daromad keltiruvchi eng muhim A-guruh tovarlarni ajratib ber;\n2. Oxirgi 45 kunda 1 dona ham sotilmagan C-guruh 'o'lik nelikvid' tovarlar ro'yxatini va ularda muzlab yotgan umumiy summani hisoblab ber;\n3. A-toifa tovarlarim tugab qolmasligi uchun keyingi oyga necha donadan buyurtma berishim kerakligini (Min-Max) hisoblab ber.`, 'ai_prompt_cfo')}
+              className="px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs flex items-center gap-1.5 transition-all shrink-0 cursor-pointer shadow-lg shadow-blue-500/20"
+            >
+              {copiedId === 'ai_prompt_cfo' ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5 text-white" />}
+              <span>{copiedId === 'ai_prompt_cfo' ? "Nusxalandi! ✓" : "ChatGPT uchun ABC-Promptni Nusxalash"}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       {/* O'ZBEKISTON BOZORI BENCHMARKI (TOP-10% LIDERLAR BILAN TAQQOSLASH) */}
       <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 sm:p-7 space-y-4">
         <div>
@@ -450,13 +714,14 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
           </div>
         </div>
 
-        {/* 4 ta Vkladka (Tablar) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2">
+        {/* 5 ta Vkladka (Tablar) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
           {[
-            { id: 'debt_scripts', label: "📋 Nasiyani Undirish Skriptlari", icon: FileText },
-            { id: 'sales_scripts', label: "🎯 Sotuv & Kassa 'Oltin Skripti'", icon: Flame },
-            { id: 'kpi_calc', label: "💰 Xodimlar KPI Formulari", icon: DollarSign },
-            { id: 'revision_checklist', label: "✅ 5 Qadamli Reviziya", icon: CheckSquare }
+            { id: 'debt_scripts', label: "📋 Nasiya Skriptlari", icon: FileText },
+            { id: 'sales_scripts', label: "🎯 Sotuv 'Oltin Skripti'", icon: Flame },
+            { id: 'kpi_calc', label: "💰 Xodimlar KPI", icon: DollarSign },
+            { id: 'revision_checklist', label: "✅ 5 Qadamli Reviziya", icon: CheckSquare },
+            { id: 'ai_prompts', label: "🤖 AI-Prompt & Balans", icon: BrainCircuit }
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeDiyTab === tab.id;
@@ -676,6 +941,74 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 </button>
               );
             })}
+          </div>
+        )}
+
+        {/* TAB 5: AI-Prompt va Balans Formulalari (PRO 4.0) */}
+        {activeDiyTab === 'ai_prompts' && (
+          <div className="space-y-4 animate-fadeIn">
+            <p className="text-xs text-slate-300">
+              Qimmat moliyachi yoki IT-mutaxassis yollamasdan, Sun'iy Intellekt va Excel yordamida mustaqil qo'llanadigan tayyor vositalar:
+            </p>
+
+            {/* Prompt 1 */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-cyan-400 bg-cyan-500/10 px-2.5 py-0.5 rounded-md">
+                  🤖 1-Instrument: Excel Omborini ABC-Tahlil Qilish uchun ChatGPT / Gemini Prompti
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleCopyText(`Men ${safeRaw.businessName || "chakana savdo"} do'koni rahbariman. Mana mening tovarlar qoldig'im va oxirgi 60 kunlik sotuv jadvallarim: [Excel jadvalingizni shu yerga tashlang].\nMenga quyidagi tahlilni aniq jadvallarda qilib ber:\n1. Pareto qonuni (ABC-tahlil) bo'yicha menga 80% daromad keltiruvchi eng muhim A-guruh tovarlarni ajratib ber;\n2. Oxirgi 45 kunda 1 dona ham sotilmagan C-guruh 'o'lik nelikvid' tovarlar ro'yxatini va ularda muzlab yotgan umumiy summani hisoblab ber;\n3. A-toifa tovarlarim tugab qolmasligi uchun keyingi oyga necha donadan buyurtma berishim kerakligini (Min-Max) hisoblab ber.`, 'prompt_abc_full')}
+                  className="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white flex items-center gap-1.5 transition-all shrink-0 cursor-pointer border border-slate-700"
+                >
+                  {copiedId === 'prompt_abc_full' ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5 text-cyan-400" />}
+                  <span>{copiedId === 'prompt_abc_full' ? "Nusxalandi! ✓" : "Promptni Nusxalash"}</span>
+                </button>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 font-mono text-xs text-slate-200 leading-relaxed">
+                "Men {safeRaw.businessName || "chakana savdo"} do'koni rahbariman. Mana mening tovarlar qoldig'im va oxirgi 60 kunlik sotuv jadvallarim: [Excel jadvalingizni shu yerga tashlang].<br />
+                Menga quyidagi tahlilni aniq jadvallarda qilib ber:<br />
+                1. Pareto qonuni (ABC-tahlil) bo'yicha menga 80% daromad keltiruvchi eng muhim A-guruh tovarlarni ajratib ber;<br />
+                2. Oxirgi 45 kunda 1 dona ham sotilmagan C-guruh 'o'lik nelikvid' tovarlar ro'yxatini va ularda muzlab yotgan umumiy summani hisoblab ber;<br />
+                3. A-toifa tovarlarim tugab qolmasligi uchun keyingi oyga necha donadan buyurtma berishim kerakligini (Min-Max) hisoblab ber."
+              </div>
+            </div>
+
+            {/* Formula 2: Balans va P&L Farqi */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-3">
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-purple-400 bg-purple-500/10 px-2.5 py-0.5 rounded-md">
+                ⚖️ 2-Instrument: Moliyaviy Balansning Oltin Tenglamasi
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 font-bold mb-1">AKTIVLAR (Mulk):</div>
+                  <div className="text-white font-mono text-[11px] leading-relaxed">
+                    Kassadagi Naqd pul + Ombordagi tovar qoldig'i + Mijozlarning nasiyalari (Debitorlik) + Jihozlar
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="text-slate-400 font-bold mb-1">MAJBURIYATLAR (Qarzlar):</div>
+                  <div className="text-amber-400 font-mono text-[11px] leading-relaxed">
+                    Ta'minotchilardan olingan nasiya tovarlar + Xodimlar oyligi + Ijara va soliq qarzdorliklari
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                  <div className="text-emerald-400 font-bold mb-1">XUSUSIY KAPITAL (Sof Boylik):</div>
+                  <div className="text-emerald-300 font-mono text-[11px] leading-relaxed">
+                    Aktivlar — Majburiyatlar = Sizning haqiqiy shaxsiy biznes kapitalingiz!
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-slate-400">
+                💡 Har oyning 1-sanasida Aktivlar va Majburiyatlar ayirmasini hisoblang. Agar Xususiy Kapital o'smayotgan bo'lsa, biznes faqat qarzlar hisobiga aylanayotgan bo'ladi.
+              </p>
+            </div>
           </div>
         )}
       </div>
