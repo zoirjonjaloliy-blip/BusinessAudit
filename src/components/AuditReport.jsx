@@ -38,6 +38,51 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
     setCheckedHardware((prev) => ({ ...prev, [id]: !prev[id] }));
   };
 
+  // PRO 5.0 Jonli Mini ABC-Analizator holati
+  const [abcItems, setAbcItems] = useState([
+    { name: "Lokomotiv Tovar 1", revenue: 4500, margin: 25 },
+    { name: "Mashhur Tovar 2", revenue: 3200, margin: 28 },
+    { name: "O'rtacha Tovar 3", revenue: 1400, margin: 30 },
+    { name: "Kuchsiz Tovar 4", revenue: 500, margin: 35 },
+    { name: "Qotib qolgan Tovar 5", revenue: 150, margin: 40 }
+  ]);
+
+  const loadAbcPreset = (type) => {
+    if (type === 'pharmacy') {
+      setAbcItems([
+        { name: "Antibiotiklar (Augmentin / Tseftriakson)", revenue: 3800, margin: 22 },
+        { name: "Kardiologiya va Qon bosimi dorilari", revenue: 3200, margin: 24 },
+        { name: "Mavsumiy Shamollash & Gripp kukunlari", revenue: 2100, margin: 28 },
+        { name: "Bolalar vitaminlari va Sirop", revenue: 900, margin: 35 },
+        { name: "Tibbiy kosmetika & Kam sotiladigan BAA", revenue: 250, margin: 45 }
+      ]);
+    } else if (type === 'construction') {
+      setAbcItems([
+        { name: "Sement M500 (Qopda)", revenue: 6500, margin: 15 },
+        { name: "Gipsokarton va Profil 60x27", revenue: 4200, margin: 24 },
+        { name: "Shpatlevka va Suvoq qorishmalari", revenue: 1900, margin: 30 },
+        { name: "Bo'yoqlar va Emulsiya", revenue: 800, margin: 35 },
+        { name: "Qimmat dekorativ plintus va lyustra", revenue: 220, margin: 45 }
+      ]);
+    } else if (type === 'clinic') {
+      setAbcItems([
+        { name: "MRT va MSKT Diagnostika tekshiruvi", revenue: 7500, margin: 45 },
+        { name: "Stomatologiya: Plomba va Terapevtik davolash", revenue: 4800, margin: 55 },
+        { name: "Klinik Qon va Gormon analizlari", revenue: 3100, margin: 38 },
+        { name: "Fizioterapiya va Massaj muolajalari", revenue: 1100, margin: 50 },
+        { name: "Kam talab qilinadigan ixtisoslashgan tahlillar", revenue: 300, margin: 30 }
+      ]);
+    } else {
+      setAbcItems([
+        { name: "Sut, Qatiq va Non mahsulotlari", revenue: 5200, margin: 16 },
+        { name: "Go'sht va Kolbasa mahsulotlari", revenue: 3900, margin: 22 },
+        { name: "Yog', Shakar va Un mahsulotlari", revenue: 2400, margin: 18 },
+        { name: "Shirinliklar va Ichimliklar", revenue: 1100, margin: 30 },
+        { name: "Ekzotik soslar va Muzlagan elita mahsulotlar", revenue: 280, margin: 35 }
+      ]);
+    }
+  };
+
   // Interaktiv simulyator (4 ta switch)
   const [simPosInstalled, setSimPosInstalled] = useState(!hasSoftware);
   const [simDebtFixed, setSimDebtFixed] = useState(!hasDebtTracking);
@@ -635,6 +680,264 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
         </div>
       </div>
 
+      {/* ⭐⭐⭐ PRO 5.0: MIKRO-OPERATSION RENTGEN, ANTI-FRAUD & MAXSUS SOHALAR MARKAZI ⭐⭐⭐ */}
+      <div className="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 border-2 border-rose-500/40 rounded-3xl p-5 sm:p-7 space-y-6 shadow-2xl relative overflow-hidden">
+        {/* Yuqori Sarlavha */}
+        <div className="border-b border-rose-500/20 pb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs sm:text-sm font-extrabold uppercase mb-2">
+            <ShieldAlert className="w-4 h-4 text-rose-400" />
+            ⭐ PRO 5.0: Mikro-Operatsion Rentgen & Anti-Fraud Markazi
+          </div>
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-white tracking-tight">
+            Kassa Xavfsizligi, Xodimlar Unumdorligi va Krizis Stress-Testi
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-300 mt-1">
+            Biznesingizning kassa o'g'riliklari, xodim va kvadrat metr samaradorligi hamda pul aylanish sikli (CCC) chuqur tahlili:
+          </p>
+        </div>
+
+        {/* 1-MODUL: ANTI-FRAUD DETEKTORI VA KASSA O'G'RILIKLARI */}
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <ShieldAlert className="w-5 h-5 text-rose-400" />
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                1-Modul: Anti-Fraud Detektori — Kassa va Ombor O'g'riliklari Xavfi
+              </h3>
+            </div>
+            <div className="px-3 py-1 rounded-lg bg-rose-950/60 border border-rose-800 text-xs text-rose-300 font-bold">
+              Aniqlangan Xavf: ~${fmt(data.fraudTotalMonthlyLoss || 450)} /oy
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Sxema 1: Soxta Vozvrat */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="text-rose-400 font-extrabold text-xs uppercase tracking-wider">
+                1. "Soxta Vozvrat" Sxemasi
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Mijoz naqd pul to'lab chekni olmay ketgach, kassir chekni bekor qilib (otmena/vozvrat) naqd pulni cho'ntakka uradi.
+              </p>
+              <div className="p-2.5 rounded-xl bg-rose-950/40 border border-rose-900/60 text-[11px] text-rose-200">
+                🛡️ <strong>1C Himoyasi:</strong> Har qanday chek bekor qilinishi faqat rahbar Telegramiga keladigan 1 martalik SMS/Bot tasdiq kodi bilan amalga oshiriladi.
+              </div>
+            </div>
+
+            {/* Sxema 2: Peresort & Srok */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="text-amber-400 font-extrabold text-xs uppercase tracking-wider">
+                2. "Peresort & Muddat Almashtirish"
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Qimmat va arzon tovar kodlari almashtirib uriladi yoki muddati o'tgan tovar 'spisaniya' qilinib, arzon sotib yuboriladi.
+              </p>
+              <div className="p-2.5 rounded-xl bg-amber-950/40 border border-amber-900/60 text-[11px] text-amber-200">
+                🛡️ <strong>1C Himoyasi:</strong> 2D skaner orqali seriya va srok avtomat tekshiriladi, qo'lda narx yoki tovar almashtirish imkoniyati bloklanadi.
+              </div>
+            </div>
+
+            {/* Sxema 3: Kassani chetlab o'tish */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="text-cyan-400 font-extrabold text-xs uppercase tracking-wider">
+                3. "Kassani Chetlab O'tish"
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Klinika, avtoservis yoki xizmat ko'rsatishda mijozdan to'lov cheksiz olinib, shifokor yoki usta cho'ntagiga ketishi.
+              </p>
+              <div className="p-2.5 rounded-xl bg-cyan-950/40 border border-cyan-900/60 text-[11px] text-cyan-200">
+                🛡️ <strong>1C Himoyasi:</strong> Shifokor xonasi yoki ustaxonaga faqat kassa cheki/QR-kod orqali kirish tartibi va avtomatik EMR joriy etiladi.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2-MODUL: XODIMLAR VA MAYDON (KV.M) SAMARADORLIGI RENTGENI */}
+        <div className="space-y-4 pt-3 border-t border-slate-800">
+          <div className="flex items-center gap-2">
+            <Users className="w-5 h-5 text-indigo-400" />
+            <h3 className="text-base sm:text-lg font-bold text-white">
+              2-Modul: Unit-Productivity — Xodim va Joy (Kv.m) Samaradorligi
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+              <div className="text-xs font-bold text-slate-400 uppercase">1 Xodimga Oylik Savdo:</div>
+              <div className="text-2xl sm:text-3xl font-black text-emerald-400 mt-1">
+                ${fmt(data.revenuePerEmployee)}
+                <span className="text-xs text-slate-400 font-normal"> /xodim</span>
+              </div>
+              <div className="text-[11px] text-slate-300 mt-1">
+                Soha normasi: <strong>~${fmt(data.benchmarkRevPerEmp)}</strong>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+              <div className="text-xs font-bold text-slate-400 uppercase">1 Xodimga Sof Foyda:</div>
+              <div className="text-2xl sm:text-3xl font-black text-cyan-400 mt-1">
+                ${fmt(data.profitPerEmployee)}
+                <span className="text-xs text-slate-400 font-normal"> /xodim</span>
+              </div>
+              <div className="text-[11px] text-slate-300 mt-1">
+                Jami shtat: <strong>{data.employeesCount} nafar</strong>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800">
+              <div className="text-xs font-bold text-slate-400 uppercase">1 Kv.m Maydon Rentabelligi:</div>
+              <div className="text-2xl sm:text-3xl font-black text-purple-400 mt-1">
+                ${fmt(data.revenuePerSqM)}
+                <span className="text-xs text-slate-400 font-normal"> /kv.m</span>
+              </div>
+              <div className="text-[11px] text-slate-300 mt-1">
+                Maydon hajmi: <strong>{data.businessAreaSqM} kv.m</strong>
+              </div>
+            </div>
+          </div>
+
+          {/* Tashxis */}
+          <div className="p-3.5 rounded-xl bg-blue-950/30 border border-blue-800/60 text-xs sm:text-sm text-blue-200 flex items-start gap-2.5">
+            <Activity className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+            <div>
+              <strong className="text-white">Unumdorlik Diagnostikasi: </strong>
+              {data.productivityDiagnosis}
+            </div>
+          </div>
+        </div>
+
+        {/* 3-MODUL: KRIZIS STRESS-TESTI VA MAKSIMAL CHEGIRMA CHEGARASI */}
+        <div className="space-y-4 pt-3 border-t border-slate-800">
+          <div className="flex items-center gap-2">
+            <AlertOctagon className="w-5 h-5 text-amber-400" />
+            <h3 className="text-base sm:text-lg font-bold text-white">
+              3-Modul: Krizis Stress-Testi va Maksimal Chegirma Chegarasi
+            </h3>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Ssenariy: -30% Mavsumiy tushish */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="flex items-center justify-between text-xs font-bold uppercase text-amber-400">
+                <span>Mavsumiy Inqiroz Ssenariysi (-30% Savdo)</span>
+                <TrendingDown className="w-4 h-4" />
+              </div>
+              <div className="text-lg font-bold text-white">
+                Daromad: ${fmt(data.crisisDropRevenue)} <span className="text-xs text-slate-400">(${fmt(data.targetRevenue)} dan tushsa)</span>
+              </div>
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Doimiy xarajatlar (${fmt(data.fixedCosts)}) to'langach, oylik natija:
+              </p>
+              <div className={`p-3 rounded-xl border text-xs sm:text-sm font-black flex items-center justify-between ${
+                data.isCrisisDeficit 
+                  ? 'bg-red-950/40 border-red-500/50 text-red-300'
+                  : 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300'
+              }`}>
+                <span>{data.isCrisisDeficit ? "🚨 KASSA UZILISHI XAVFI:" : "✅ BARQAROR REZERV:"}</span>
+                <span className="text-base sm:text-lg">
+                  {data.isCrisisDeficit ? `-$${fmt(Math.abs(data.crisisNetProfit))} /oy` : `+$${fmt(data.crisisNetProfit)} /oy`}
+                </span>
+              </div>
+            </div>
+
+            {/* Maksimal Chegirma Chegarasi */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2">
+              <div className="text-xs font-bold uppercase text-rose-400">
+                Qat'iy Qoida: Maksimal Ruxsat Etilgan Chegirma
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-rose-400">
+                {data.maxAllowedDiscountPercent}%
+                <span className="text-xs font-normal text-slate-300"> dan oshmasligi shart</span>
+              </div>
+              <div className="p-3 rounded-xl bg-rose-950/30 border border-rose-900/60 text-xs text-rose-200 leading-relaxed">
+                ⛔ <strong>Diqqat!</strong> Sizning biznesingizda xaridorga <strong>{data.maxAllowedDiscountPercent}% dan ortiq chegirma berish</strong> — to'g'ridan-to'g'ri o'z cho'ntagingizdan (zararga) sotish demakdir! Doimiy xarajatlar tushumni qoplamay qoladi.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 4-MODUL: PUL AYLANISH SIKLI (CASH CONVERSION CYCLE - CCC) */}
+        <div className="space-y-4 pt-3 border-t border-slate-800">
+          <div className="flex items-center gap-2">
+            <Clock className="w-5 h-5 text-cyan-400" />
+            <h3 className="text-base sm:text-lg font-bold text-white">
+              4-Modul: Pul Aylanish Sikli (CCC) — Muzlagan Naqd Pulni Chiqarish
+            </h3>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-center">
+              <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <div className="text-[11px] font-bold text-slate-400">1. Ombor Aylanishi (DIO):</div>
+                <div className="text-xl font-black text-white mt-0.5">{data.dioDays} kun</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <div className="text-[11px] font-bold text-slate-400">+ 2. Nasiya Qaytishi (DSO):</div>
+                <div className="text-xl font-black text-amber-400 mt-0.5">{data.dsoDays} kun</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900/80 border border-slate-800">
+                <div className="text-[11px] font-bold text-slate-400">- 3. Ta'minotchi To'lovi (DPO):</div>
+                <div className="text-xl font-black text-cyan-400 mt-0.5">{data.dpoDays} kun</div>
+              </div>
+              <div className="p-3 rounded-xl bg-indigo-950/40 border border-indigo-500/50">
+                <div className="text-[11px] font-bold text-indigo-300">= Pul Sikli (CCC):</div>
+                <div className="text-2xl font-black text-emerald-400 mt-0.5">{data.cccTotalDays} kun</div>
+              </div>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-emerald-950/30 border border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm text-emerald-200">
+              <div>
+                💡 <strong>Tadbirkorga Xulosa:</strong> Tovar omborga kirib, sotilib, puli qo'lingizga naqd bo'lib qaytib kelgungacha <strong>{data.cccTotalDays} kun</strong> o'tmoqda. 1C va ABC-tahlil orqali bu muddatni 15 kunga qisqartirsangiz:
+              </div>
+              <div className="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 text-emerald-300 font-extrabold text-sm shrink-0 whitespace-nowrap">
+                +${fmt(data.cashFreedUp15Days)} bo'shaydi
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 5-MODUL: DORIXONA YOKI KLINIKA BO'LSA MAXSUS BLOK */}
+        {safeRaw.industry === 'pharmacy' && (
+          <div className="p-5 rounded-2xl bg-emerald-950/30 border-2 border-emerald-500/50 space-y-3">
+            <div className="flex items-center gap-2 text-emerald-400 font-extrabold text-sm uppercase">
+              <span>💊 Dorixona Diagnostikasi Bo'yicha Xulosa</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-950 border border-emerald-900/60">
+                <div className="font-bold text-white mb-1">Muddati o'tgan dorilar (Srok godnosti):</div>
+                <div className="text-rose-400 font-bold">Zarar xavfi: ~${fmt(data.pharmacyExpiredLossMonthly || 150)} /oy</div>
+                <div className="text-slate-400 mt-1">1C FIFO moduli bilan bu zarar 0 ga tushiriladi.</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-emerald-900/60">
+                <div className="font-bold text-white mb-1">Blister (Plastinka) peresort kamomadi:</div>
+                <div className="text-amber-400 font-bold">Xavf: ~${fmt(data.pharmacyBlisterLossMonthly || 200)} /oy</div>
+                <div className="text-slate-400 mt-1">Dasturda 1 pachkani 0.1/0.5 bo'lib avtomat hisoblash joriy qilinadi.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {safeRaw.industry === 'clinic_medical' && (
+          <div className="p-5 rounded-2xl bg-cyan-950/30 border-2 border-cyan-500/50 space-y-3">
+            <div className="flex items-center gap-2 text-cyan-400 font-extrabold text-sm uppercase">
+              <span>🏥 Klinika va Diagnostika Diagnostikasi Bo'yicha Xulosa</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-950 border border-cyan-900/60">
+                <div className="font-bold text-white mb-1">Kassani chetlab o'tish (Vrach cho'ntagiga):</div>
+                <div className="text-rose-400 font-bold">Yo'qotish: ~${fmt(data.clinicCashBypassLossMonthly || 800)} /oy</div>
+                <div className="text-slate-400 mt-1">Elektron navbat va shifokor EMR tizimi orqali to'lov 100% markazlashadi.</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-cyan-900/60">
+                <div className="font-bold text-white mb-1">Reaktiv va tibbiy sarf materiallari:</div>
+                <div className="text-amber-400 font-bold">Isrof: ~${fmt(data.clinicMaterialLossMonthly || 350)} /oy</div>
+                <div className="text-slate-400 mt-1">Har bir tahlil va muolajaga qat'iy tex-karta bo'yicha avto-spisaniya sozlansin.</div>
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* O'ZBEKISTON BOZORI BENCHMARKI (TOP-10% LIDERLAR BILAN TAQQOSLASH) */}
       <div className="bg-slate-900/80 border border-slate-800 rounded-3xl p-5 sm:p-7 space-y-4">
         <div>
@@ -714,14 +1017,16 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
           </div>
         </div>
 
-        {/* 5 ta Vkladka (Tablar) */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+        {/* 7 ta Vkladka (Tablar) — PRO 5.0 Kengaytirilgan */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-2">
           {[
-            { id: 'debt_scripts', label: "📋 Nasiya Skriptlari", icon: FileText },
-            { id: 'sales_scripts', label: "🎯 Sotuv 'Oltin Skripti'", icon: Flame },
+            { id: 'debt_scripts', label: "📋 Nasiya Skripti", icon: FileText },
+            { id: 'sales_scripts', label: "🎯 Sotuv Skripti", icon: Flame },
             { id: 'kpi_calc', label: "💰 Xodimlar KPI", icon: DollarSign },
-            { id: 'revision_checklist', label: "✅ 5 Qadamli Reviziya", icon: CheckSquare },
-            { id: 'ai_prompts', label: "🤖 AI-Prompt & Balans", icon: BrainCircuit }
+            { id: 'revision_checklist', label: "✅ 5 Qadam Reviziya", icon: CheckSquare },
+            { id: 'ai_prompts', label: "🤖 AI-Prompt", icon: BrainCircuit },
+            { id: 'live_abc', label: "⚡ Jonli ABC-Kalkulyator", icon: BarChart3 },
+            { id: 'b2b_loyalty', label: "🤝 Hamkorlar & Vrachlar", icon: Award }
           ].map((tab) => {
             const Icon = tab.icon;
             const isActive = activeDiyTab === tab.id;
@@ -730,13 +1035,13 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveDiyTab(tab.id)}
-                className={`p-3 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center sm:justify-start gap-2 transition-all cursor-pointer border ${
+                className={`p-2.5 sm:p-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer border ${
                   isActive
-                    ? 'bg-blue-600 text-white border-blue-500 shadow-md shadow-blue-500/20'
-                    : 'bg-slate-950 text-slate-400 border-slate-800 hover:bg-slate-800 hover:text-white'
+                    ? 'bg-blue-600 text-white border-blue-400 shadow-md shadow-blue-500/25 ring-1 ring-blue-400'
+                    : 'bg-slate-950 text-slate-300 border-slate-800 hover:bg-slate-800 hover:text-white'
                 }`}
               >
-                <Icon className="w-4 h-4 shrink-0" />
+                <Icon className="w-3.5 h-3.5 shrink-0 text-cyan-400" />
                 <span className="truncate">{tab.label}</span>
               </button>
             );
@@ -1008,6 +1313,201 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               <p className="text-[11px] text-slate-400">
                 💡 Har oyning 1-sanasida Aktivlar va Majburiyatlar ayirmasini hisoblang. Agar Xususiy Kapital o'smayotgan bo'lsa, biznes faqat qarzlar hisobiga aylanayotgan bo'ladi.
               </p>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 6: ⚡ JONLI MINI ABC-ANALIZATOR (PRO 5.0 INTERAKTIV SUPER-INSTRUMENT) */}
+        {activeDiyTab === 'live_abc' && (() => {
+          const itemsWithProfit = abcItems.map((it) => ({
+            ...it,
+            profit: Math.round(Number(it.revenue || 0) * (Number(it.margin || 0) / 100))
+          })).sort((a, b) => b.profit - a.profit);
+
+          const totalAbcProfit = itemsWithProfit.reduce((sum, it) => sum + it.profit, 0) || 1;
+          let runningProfit = 0;
+
+          return (
+            <div className="space-y-4 animate-fadeIn">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-slate-800">
+                <div>
+                  <h4 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                    <span>⚡ Brauzer Ichida Jonli ABC-Tahlil Kalkulyatori</span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold uppercase">
+                      Real-Vaqtda
+                    </span>
+                  </h4>
+                  <p className="text-xs text-slate-300 mt-0.5">
+                    Bir tugma bilan sohangiz namunasini yuklang yoki o'z mahsulotlaringizni tekshiring:
+                  </p>
+                </div>
+
+                {/* Preset yuklash tugmalari */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <button
+                    type="button"
+                    onClick={() => loadAbcPreset('pharmacy')}
+                    className="px-2.5 py-1.5 rounded-lg bg-emerald-950/60 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    💊 Dorixona
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => loadAbcPreset('construction')}
+                    className="px-2.5 py-1.5 rounded-lg bg-amber-950/60 hover:bg-amber-900 border border-amber-500/40 text-amber-300 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    🧱 Qurilish
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => loadAbcPreset('market')}
+                    className="px-2.5 py-1.5 rounded-lg bg-blue-950/60 hover:bg-blue-900 border border-blue-500/40 text-blue-300 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    🛒 Minimarket
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => loadAbcPreset('clinic')}
+                    className="px-2.5 py-1.5 rounded-lg bg-cyan-950/60 hover:bg-cyan-900 border border-cyan-500/40 text-cyan-300 text-xs font-bold transition-all cursor-pointer"
+                  >
+                    🏥 Klinika
+                  </button>
+                </div>
+              </div>
+
+              {/* Jonli ABC Jadvali */}
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-800 text-slate-400 bg-slate-950/60">
+                      <th className="py-2.5 px-3 font-bold">Mahsulot / Dori / Xizmat</th>
+                      <th className="py-2.5 px-3 font-bold text-right">Oylik Savdo ($)</th>
+                      <th className="py-2.5 px-3 font-bold text-right">Marja (%)</th>
+                      <th className="py-2.5 px-3 font-bold text-right">Sof Foyda ($)</th>
+                      <th className="py-2.5 px-3 font-bold text-center">ABC Toifasi</th>
+                      <th className="py-2.5 px-3 font-bold min-w-[200px]">Tavsiya & Retsept</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {itemsWithProfit.map((it, idx) => {
+                      runningProfit += it.profit;
+                      const cumPercent = Math.round((runningProfit / totalAbcProfit) * 100);
+
+                      let category = "A";
+                      let badgeClass = "bg-emerald-500/20 text-emerald-300 border-emerald-500/40";
+                      let label = "🟢 A (Oltin Lokomotiv)";
+                      let action = "Doimiy qoldiq nazorati (Min-Max buyurtma). Aslo tugab qolmasin!";
+
+                      if (cumPercent > 92) {
+                        category = "C";
+                        badgeClass = "bg-red-500/20 text-red-300 border-red-500/40";
+                        label = "🔴 C (Nelikvid / Pul yutkich)";
+                        action = "Yangi partiya olmang! Chegirma yoki aksiya bilan naqd pulga aylantiring.";
+                      } else if (cumPercent > 78) {
+                        category = "B";
+                        badgeClass = "bg-amber-500/20 text-amber-300 border-amber-500/40";
+                        label = "🟡 B (O'rtamiyona)";
+                        action = "A-guruh yonida Cross-sell qiling, haftalik partiya yetarli.";
+                      }
+
+                      return (
+                        <tr key={idx} className="border-b border-slate-800/60 hover:bg-slate-800/40 transition-colors">
+                          <td className="py-3 px-3 font-bold text-white whitespace-nowrap">{it.name}</td>
+                          <td className="py-3 px-3 text-right font-mono text-slate-200">${it.revenue.toLocaleString()}</td>
+                          <td className="py-3 px-3 text-right font-mono text-slate-300">{it.margin}%</td>
+                          <td className="py-3 px-3 text-right font-mono font-bold text-emerald-400">${it.profit.toLocaleString()}</td>
+                          <td className="py-3 px-3 text-center whitespace-nowrap">
+                            <span className={`px-2 py-0.5 rounded-full border text-[11px] font-extrabold ${badgeClass}`}>
+                              {label}
+                            </span>
+                          </td>
+                          <td className="py-3 px-3 text-slate-300 text-[11px] leading-relaxed">{action}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-400 flex items-center justify-between">
+                <span>✓ Jami hisoblangan sof foyda: <strong className="text-emerald-400">${totalAbcProfit.toLocaleString()}</strong></span>
+                <span className="text-[11px] text-cyan-300">1C / POS dasturida bu tahlil har kuni kechqurun avtomat shakllanadi</span>
+              </div>
+            </div>
+          );
+        })()}
+
+        {/* TAB 7: HAMKORLAR, USTALAR VA VRACHLAR BONUS MATRITSASI (PRO 5.0) */}
+        {activeDiyTab === 'b2b_loyalty' && (
+          <div className="space-y-4 animate-fadeIn">
+            <div>
+              <h4 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                <span>🤝 B2B Hamkorlik va Yo'llanma (Napravitel) Rag'batlantirish Matritsasi</span>
+              </h4>
+              <p className="text-xs text-slate-300 mt-0.5">
+                Qurilishda — <strong>Ustalar/Prorablar</strong>, Klinikada — <strong>Yo'llanma beruvchi Vrachlar</strong>, Savdoda — <strong>Mijoz olib keluvchi agentlar</strong> uchun 3 darajali shaffof rag'batlantirish:
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Daraja 1 */}
+              <div className="p-4 rounded-2xl bg-slate-950 border border-amber-900/60 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-900/30 text-amber-300 border border-amber-700/50 text-xs font-bold uppercase">
+                    🥉 1-Daraja: Bronza
+                  </span>
+                  <span className="text-base font-black text-amber-400">3% Keshbek</span>
+                </div>
+                <div className="text-xs font-bold text-white">Yangi boshlagan ustalar / Shifokorlar</div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Oylik 1 dan 5 tagacha mijoz olib kelganda. Har bir mijoz to'lovidan 3% bonus yig'iladi.
+                </p>
+              </div>
+
+              {/* Daraja 2 */}
+              <div className="p-4 rounded-2xl bg-slate-950 border border-slate-600 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-200 border border-slate-600 text-xs font-bold uppercase">
+                    🥈 2-Daraja: Kumush
+                  </span>
+                  <span className="text-base font-black text-slate-200">5% Keshbek</span>
+                </div>
+                <div className="text-xs font-bold text-white">Faol hamkorlar (Oylik $2,000+ aylanma)</div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Doimiy bemor yoki buyurtmachi olib keluvchi shifokor/usta uchun oshirilgan stavka.
+                </p>
+              </div>
+
+              {/* Daraja 3 */}
+              <div className="p-4 rounded-2xl bg-slate-950 border border-yellow-500/60 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="px-2.5 py-0.5 rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/40 text-xs font-bold uppercase">
+                    🥇 3-Daraja: Oltin VIP
+                  </span>
+                  <span className="text-base font-black text-yellow-400">7% Keshbek</span>
+                </div>
+                <div className="text-xs font-bold text-white">TOP-Hamkorlar ($5,000+ aylanma)</div>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  Eksklyuziv hamkorlar: qo'shimcha sovg'alar va har oyning 1-sanasida avtomat to'lov.
+                </p>
+              </div>
+            </div>
+
+            {/* Qat'iy Qoidalar */}
+            <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 space-y-2.5 text-xs text-slate-300">
+              <div className="font-bold text-white text-xs sm:text-sm">Matritsaning 3 ta Qat'iy Qoidasi:</div>
+              <div className="flex items-start gap-2">
+                <span className="text-cyan-400 font-bold">1.</span>
+                <span><strong>Naqd vs Nasiya:</strong> Agar mijoz tovarni nasiyaga olsa, ustaga bonus 50% kam beriladi yoki faqat mijoz qarzini to'liq yopgan kuni hisobiga tushadi.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-cyan-400 font-bold">2.</span>
+                <span><strong>Telegram-bot Kabineti:</strong> Har bir usta/shifokor o'zining shaxsiy Telegram botiga kirib, nechta mijoz keltirgani va qancha bonusi yig'ilganini real vaqtda ko'rib turadi.</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-cyan-400 font-bold">3.</span>
+                <span><strong>Kassa chekida ko'rinishi:</strong> Har bir sotuv kassa chekiga usta/vrach kodi kiritilganda, chek ostida to'plangan ball avtomat chop etiladi.</span>
+              </div>
             </div>
           </div>
         )}

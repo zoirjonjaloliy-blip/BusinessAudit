@@ -56,19 +56,37 @@ export default async function handler(req, res) {
     ? "⚠️ AI ni faqat oddiy chatda ishlatadi"
     : "🚨 AI analitika ishlatilmaydi";
 
-  const isPitchNeeded = leadData.abcAnalysisStatus !== 'automated' || leadData.financialReportsStatus !== 'full_reports';
+  const isPharmacy = leadData.industry?.id === 'pharmacy' || leadData.industry === 'pharmacy';
+  const isClinic = leadData.industry?.id === 'clinic_medical' || leadData.industry === 'clinic_medical';
+
+  let specialIndustryTag = "";
+  if (isPharmacy) {
+    specialIndustryTag = `\n💊 <b>MAXSUS SOHA: DORIXONA & APTEKA!</b>\n• Srok godnosti nazorati: ${leadData.pharmacyExpiryTracking === 'automated' ? 'Avtomat' : '⚠️ Qo\'lda (spisaniya xavfi bor)'}\n• Blister bo\'linishi: ${leadData.pharmacyBlisterSplit === 'automated' ? 'Avtomat' : '⚠️ Qo\'lda chamalanadi'}\n`;
+  } else if (isClinic) {
+    specialIndustryTag = `\n🏥 <b>MAXSUS SOHA: XUSUSIY KLINIKA & TIBBIYOT!</b>\n• Kassa intizomi: ${leadData.clinicCashBypass === 'strict_cashier' ? 'Shaffof kassa' : '🚨 Kassa chetlab o\'tish xavfi yuqori (20-35% zarar!)'}\n• Reaktiv sarfi: ${leadData.clinicMaterialSpisanie === 'automated' ? 'Avtomat spisaniya' : '⚠️ Umumiy olinadi (isrof xavfi)'}\n`;
+  }
+
+  const fraudStatus = leadData.fraudVoidPermission === 'cashier_allowed'
+    ? "🚨 KASSIR BEKOR QILA OLADI ('Soxta vozvrat' xavfi!)"
+    : "✅ Faqat rahbar ruxsati bilan";
+
+  const isPitchNeeded = isPharmacy || isClinic || leadData.abcAnalysisStatus !== 'automated' || leadData.financialReportsStatus !== 'full_reports';
   const autoPitchBlock = isPitchNeeded
-    ? `\n💡 <b>SOTUV UCHUN ZOIRJONGA PODSKAZKA (AUTO-PITCH):</b>\n🎯 <i>Mijozga qo'ng'iroq qilganda oddiy kassa haqida emas, balki 1C orqali omboridagi $${(leadData.deadStockSum || leadData.deadStockCGroup || 0).toLocaleString()} nelikvid tovarlarni aniqlab berish va Telegramiga har kechqurun AI-Balans tahliliy xulosasini chiqarib berishni taklif qiling!</i>\n`
+    ? `\n💡 <b>SOTUV UCHUN ZOIRJONGA PODSKAZKA (AUTO-PITCH):</b>\n🎯 <i>${
+        isPharmacy ? "Mijozga 1C: Dorixona orqali srok godnosti tugayotgan dorilarni FIFO bo'yicha sotish va 1 pachkani blisterga bo'lishda kamomadni yo'qotishni taklif qiling!" :
+        isClinic ? "Mijozga 1C: Tibbiyot orqali elektron navbat o'rnatib, shifokor cho'ntagiga pul ketishini to'xtatish va yo'llanma beruvchi (napravitel) vrachlar keshbekini avtomatlashtirishni taklif qiling!" :
+        "Mijozga 1C orqali omboridagi nelikvid tovarlarni aniqlab berish, kassa bekor qilishlarini Telegramga qizil signal qilib chiqarish va AI-Balans hisobotini taklif qiling!"
+      }</i>\n`
     : '';
 
   const message = `
-🔥 <b>YANGI TADBIRKOR AUDITI! (PRO 4.0 AI & CFO Dossier)</b>
+🔥 <b>YANGI TADBIRKOR AUDITI! (PRO 5.0 Mikro-Rentgen & Anti-Fraud)</b>
 ━━━━━━━━━━━━━━━━━
 👤 <b>Ismi:</b> ${leadData.fullName || "Noma'lum"}
 🏢 <b>Biznes nomi:</b> ${leadData.businessName || "Kiritilmagan"}
 📞 <b>Telefon:</b> <code>${leadData.phone || "—"}</code>
 📍 <b>Shahar/Hudud:</b> ${leadData.city || "Ko'rsatilmagan"}
-
+${specialIndustryTag}
 📊 <b>BIZNES VA DASTUR HOLATI:</b>
 • <b>Sohasi:</b> ${leadData.industry?.name || "Savdo"}
 • <b>Hisob-kitob tizimi:</b> ${softwareStatus}
@@ -77,13 +95,16 @@ export default async function handler(req, res) {
 • <b>Soliq & Markirovka:</b> ${fiscalStatusText}
 • <b>Mijozlar bazasi (CRM):</b> ${leadData.hasCrm === 'yes' ? "Bor" : "Yo'q"}
 • <b>Bonus / Loyallik tizimi:</b> ${leadData.loyaltySystem === 'automated' ? "Avtomatlashgan" : leadData.loyaltySystem === 'verbal' ? "Og'zaki chegirma" : "Yo'q"}
-• <b>Sotuv jamoasi:</b> ${leadData.salesTeam === 'owner_only' ? "Egasi o'zi sotadi" : "Menejerlar bor"}
 
-🧠 <b>PRO 4.0 BOSHQARUV ANALITIKASI VA AI:</b>
-• <b>ABC / XYZ Tahlil:</b> ${abcStatusText}
-• <b>Balans & P&L hisoboti:</b> ${financialReportsText}
-• <b>AI & Telegram Analitika:</b> ${aiStatusText}
-• <b>Auto-Ordering (Min-Max):</b> ${leadData.autoOrderingStatus === 'automated' ? "Avtomatik" : "Out-of-Stock xavfi bor (8-12% yo'qotish)"}
+🛡️ <b>ANTI-FRAUD & XAVFSIZLIK:</b>
+• <b>Chek bekor qilish (Otmena):</b> ${fraudStatus}
+• <b>Tarozi integratsiyasi:</b> ${leadData.fraudScaleIntegration === 'direct_integrated' ? 'Avtomat ulangan' : 'Qo\'lda teriladi'}
+• <b>Prixod ustamasi:</b> ${leadData.fraudPriceEntry === 'manager_office' ? 'Ofis kiritadi' : 'Kassir kiritadi'}
+
+👥 <b>UNIT-PRODUCTIVITY:</b>
+• <b>Xodimlar:</b> ${leadData.employeesCount || "—"} nafar ($${(leadData.revenuePerEmployee || 0).toLocaleString()} /xodim)
+• <b>Maydon:</b> ${leadData.businessAreaSqM || "—"} kv.m ($${(leadData.revenuePerSqM || 0).toLocaleString()} /kv.m)
+• <b>Maksimal Chegirma Limiti:</b> ${leadData.maxAllowedDiscountPercent || 0}% dan oshmasligi shart
 
 💰 <b>MOLIYAVIY RENTGEN RAQAMLARI:</b>
 • <b>Oylik maqsad:</b> $${leadData.targetRevenue?.toLocaleString() || 0}
@@ -94,10 +115,9 @@ export default async function handler(req, res) {
   ↳ <i>Reklama behuda ketishi:</i> $${leadData.monthlyWastedMarketing?.toLocaleString() || 0}/oy
   ↳ <i>Kamomad/o'g'irlik:</i> $${leadData.inventoryShrinkLossMonthly?.toLocaleString() || 0}/oy
   ↳ <i>Out-of-Stock (Talab yo'qotish):</i> $${leadData.outOfStockLossMonthly?.toLocaleString() || 0}/oy
+• ⏱️ <b>Pul Aylanish Sikli (CCC):</b> ${leadData.cccTotalDays || 30} kun (15 kunga qisqartirilsa +$${(leadData.cashFreedUp15Days || 0).toLocaleString()} bo'shaydi)
 • 🧊 <b>Ombordagi muzlagan tovar (Nelikvid):</b> $${leadData.deadStockSum?.toLocaleString() || 0}
-• 📋 <b>Nasiya daftari xavfi:</b> $${leadData.estimatedDebtRiskSum?.toLocaleString() || 0}
 • 📅 <b>Zararsizlik kuni:</b> Oyning ${leadData.breakEvenDay || 1}-kuni
-• ⏱️ <b>Operatsionka vaqti:</b> ${leadData.yearlyOpHours || 0} soat/yil ($${leadData.yearlyTimeCost?.toLocaleString() || 0} tadbirkor vaqti qiymati)
 • 🏥 <b>Salomatlik balli:</b> ${leadData.scores?.overall}/100 (Boshqaruv/BI: ${leadData.scores?.bi || 50}/100)
 ${autoPitchBlock}
 ━━━━━━━━━━━━━━━━━

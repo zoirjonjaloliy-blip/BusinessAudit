@@ -10,6 +10,8 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
   const isHoreca = currentIndustry.id === 'horeca_cafe';
   const isEducation = currentIndustry.category === 'talim';
   const isServices = currentIndustry.category === 'xizmat' && !isHoreca;
+  const isPharmacy = formData.industry === 'pharmacy';
+  const isClinic = formData.industry === 'clinic_medical';
 
   // Soha bo'yicha dinamik matnlar
   let question1Title = "1. Tovarlar qoldig'i (ostatka), ombor va kassa qanday yuritiladi?";
@@ -23,7 +25,29 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
   let option2Paper = "Qarz daftari bor (Qo'lda)";
   let option2PaperDesc = "Qarzlar daftarga yoziladi, lekin eslatish va qidirish ko'p vaqt oladi";
 
-  if (isHoreca) {
+  if (isPharmacy) {
+    question1Title = "1. Dorilar qoldig'i, seriyali hisob va kassa qanday yuritiladi?";
+    option1Software = "Apteka POS / 1C Dorixona bor";
+    option1SoftwareDesc = "2D Asl Belgisi skaneri, srok godnosti va blister bo'lish moduli sozlangan";
+    option1ExcelDesc = "Excelda yuritiladi (muddati o'tgan dorilar va kassa cheki nazorati yo'q)";
+    option1PaperDesc = "Daftarda yoziladi (katta kamomad va jarima xavfi bor)";
+
+    question2Title = "2. Doimiy mijozlar va nasiyalar qanday yuritiladi?";
+    option2SoftwareDesc = "Dastur orqali qarzlar va doimiy xaridorlar bonusi nazorat qilinadi";
+    option2Paper = "Qarz daftarda";
+    option2PaperDesc = "Dori nasiyalari daftarda yoziladi, kech qaytadi";
+  } else if (isClinic) {
+    question1Title = "1. Registratura, bemorlar navbati va to'lovlar qanday yuritiladi?";
+    option1Software = "Klinika CRM / 1C Tibbiyot bor";
+    option1SoftwareDesc = "Elektron navbat, kassa cheki va shifokorlar kabineti markaziy dasturga ulangan";
+    option1ExcelDesc = "Faqat Excel va qog'oz jurnallarda (kassa chetlab o'tish xavfi bor)";
+    option1PaperDesc = "Daftarda yoki og'zaki (tushumning 30% gacha qismi hisobsiz ketadi)";
+
+    question2Title = "2. Shifokorlar va tashqi vrachlar (Napravitellar) bonusi qanday?";
+    option2SoftwareDesc = "Har bir yo'llanma va ko'rsatilgan xizmat bo'yicha KPI avtomat hisoblanadi";
+    option2Paper = "Qo'lda hisoblab chiqiladi";
+    option2PaperDesc = "Oylik oxirida shifokorlar bilan tushunmovchiliklar bo'lib turadi";
+  } else if (isHoreca) {
     question1Title = "1. Oshxona tex-kartasi, mahsulot sarfi va kassa qanday yuritiladi?";
     option1Software = "Restoran / Kafe POS tizimi bor";
     option1SoftwareDesc = "Ofitsiantlar, oshxona va kassa cheki maxsus dasturda avtomatlashgan";
@@ -507,6 +531,268 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
             </div>
             <div className="text-[11px] text-slate-400">AI orqali savdo va omborni tahlil qilish mumkinligini bilmasdim</div>
           </button>
+        </div>
+      </div>
+
+      {/* 💊 DORIXONA UCHUN MAXSUS MIKRO-OPERATSION BLOK (PRO 5.0) */}
+      {isPharmacy && (
+        <div className="bg-gradient-to-b from-emerald-950/40 via-slate-900 to-slate-900 border-2 border-emerald-500/40 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xl">
+          <div className="flex items-center gap-2.5 pb-2 border-b border-emerald-500/20">
+            <span className="text-xl">💊</span>
+            <div>
+              <h3 className="text-base sm:text-lg font-extrabold text-white">Dorixona & Farmatsevtika Maxsus Diagnostikasi</h3>
+              <p className="text-xs sm:text-sm text-emerald-400 font-medium">Srok godnosti, blister bo'linishi va Asl Belgisi 2D nazorati</p>
+            </div>
+          </div>
+
+          {/* Srok godnosti */}
+          <div>
+            <label className="block text-xs sm:text-sm font-bold text-white mb-2">
+              1. Yaroqlilik muddati (Srok godnosti) va Seriyali hisob nazorati:
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => onChange({ pharmacyExpiryTracking: 'automated' })}
+                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  formData.pharmacyExpiryTracking === 'automated'
+                    ? 'bg-emerald-600/20 border-emerald-400 text-white ring-1 ring-emerald-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <div className="font-bold text-xs sm:text-sm text-emerald-400 mb-1">✅ Dasturda qizil signal bilan ko'rinadi</div>
+                <div className="text-xs text-slate-300">Muddati 3-6 oy qolgan dorilar avtomat aksiyalarga chiqadi (0% zarar)</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onChange({ pharmacyExpiryTracking: 'manual' })}
+                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  formData.pharmacyExpiryTracking === 'manual'
+                    ? 'bg-red-600/20 border-red-400 text-white ring-1 ring-red-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <div className="font-bold text-xs sm:text-sm text-red-400 mb-1">⚠️ Provizorlar qo'lda tekshiradi</div>
+                <div className="text-xs text-slate-300">Omborning 4-8% qismi muddati o'tib 'spisaniya'ga (zararga) ketadi!</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Blister bo'linishi */}
+          <div>
+            <label className="block text-xs sm:text-sm font-bold text-white mb-2">
+              2. Dona / Pachka / Plastinka (Blister) bo'lib sotishda qoldiq aniqligi:
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => onChange({ pharmacyBlisterSplit: 'automated' })}
+                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  formData.pharmacyBlisterSplit === 'automated'
+                    ? 'bg-emerald-600/20 border-emerald-400 text-white ring-1 ring-emerald-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <div className="font-bold text-xs sm:text-sm text-emerald-400 mb-1">✅ Avtomatik bo'linadi (1/2, 1/3)</div>
+                <div className="text-xs text-slate-300">Dastur plastinkani ham, donani ham qoldiq va tannarxini to'g'ri olib boradi</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onChange({ pharmacyBlisterSplit: 'manual' })}
+                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  formData.pharmacyBlisterSplit === 'manual'
+                    ? 'bg-amber-600/20 border-amber-400 text-white ring-1 ring-amber-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <div className="font-bold text-xs sm:text-sm text-amber-400 mb-1">⚠️ Qo'lda yoki daftarda chamalanadi</div>
+                <div className="text-xs text-slate-300">Reviziyada doimiy peresort, tushunarsiz qoldiq va kamomad bo'ladi</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🏥 KLINIKA VA STOMATOLOGIYA UCHUN MAXSUS MIKRO-OPERATSION BLOK (PRO 5.0) */}
+      {isClinic && (
+        <div className="bg-gradient-to-b from-cyan-950/40 via-slate-900 to-slate-900 border-2 border-cyan-500/40 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xl">
+          <div className="flex items-center gap-2.5 pb-2 border-b border-cyan-500/20">
+            <span className="text-xl">🏥</span>
+            <div>
+              <h3 className="text-base sm:text-lg font-extrabold text-white">Xususiy Klinika va Stomatologiya Maxsus Diagnostikasi</h3>
+              <p className="text-xs sm:text-sm text-cyan-400 font-medium">Shifokorlar KPI, kassa chetlab o'tilishi va reaktivlar isrofi nazorati</p>
+            </div>
+          </div>
+
+          {/* Vrach cho'ntagiga to'lov / Kassa chetlab o'tish */}
+          <div>
+            <label className="block text-xs sm:text-sm font-bold text-white mb-2">
+              1. Navbat va "Kassa chetlab o'tilishi" (Vrach cho'ntagiga to'lov xavfi):
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => onChange({ clinicCashBypass: 'strict_cashier' })}
+                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  formData.clinicCashBypass === 'strict_cashier'
+                    ? 'bg-emerald-600/20 border-emerald-400 text-white ring-1 ring-emerald-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <div className="font-bold text-xs sm:text-sm text-emerald-400 mb-1">✅ Faqat markaziy kassa cheki bilan</div>
+                <div className="text-xs text-slate-300">Shifokor qabuliga faqat kassa to'lovi yoki navbat kodi bilan kiriladi (100% shaffof)</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onChange({ clinicCashBypass: 'risk_bypass' })}
+                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  formData.clinicCashBypass === 'risk_bypass'
+                    ? 'bg-red-600/20 border-red-400 text-white ring-1 ring-red-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <div className="font-bold text-xs sm:text-sm text-red-400 mb-1">🚨 Shifokor xonasida ham to'lov olinadi</div>
+                <div className="text-xs text-slate-300">Kassa chetlab o'tilib, klinika tushumining 20-35% gacha qismi yo'qoladi!</div>
+              </button>
+            </div>
+          </div>
+
+          {/* Reaktivlar va sarf materiallari */}
+          <div>
+            <label className="block text-xs sm:text-sm font-bold text-white mb-2">
+              2. Laboratoriya reaktivlari va Tibbiy sarf materiallari (Spisaniya):
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <button
+                type="button"
+                onClick={() => onChange({ clinicMaterialSpisanie: 'automated' })}
+                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  formData.clinicMaterialSpisanie === 'automated'
+                    ? 'bg-emerald-600/20 border-emerald-400 text-white ring-1 ring-emerald-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <div className="font-bold text-xs sm:text-sm text-emerald-400 mb-1">✅ Xizmat bo'yicha avtomatik spisaniya</div>
+                <div className="text-xs text-slate-300">Shprits, reaktiv, plomba normasi 1C da avtomat hisobdan chiqariladi</div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onChange({ clinicMaterialSpisanie: 'untracked' })}
+                className={`p-3.5 rounded-xl border text-left transition-all cursor-pointer ${
+                  formData.clinicMaterialSpisanie === 'untracked'
+                    ? 'bg-amber-600/20 border-amber-400 text-white ring-1 ring-amber-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                <div className="font-bold text-xs sm:text-sm text-amber-400 mb-1">⚠️ Umumiy olinadi, aniq norma yo'q</div>
+                <div className="text-xs text-slate-300">15-25% tibbiy sarf materiallari isrof bo'lishi yoki o'g'irlanishi mumkin</div>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 🛡️ ANTI-FRAUD & XAVFSIZLIK DETEKTORI: KASSA VA OMBOR O'G'RILIKLARINI TEKSHIRISH (BARCHA SOHALARGA) */}
+      <div className="bg-gradient-to-b from-rose-950/30 via-slate-900 to-slate-900 border-2 border-rose-500/40 rounded-2xl p-5 sm:p-6 space-y-4 shadow-xl">
+        <div className="flex items-center gap-2.5 pb-2 border-b border-rose-500/20">
+          <ShieldAlert className="w-5 h-5 text-rose-400 shrink-0" />
+          <div>
+            <h3 className="text-base sm:text-lg font-extrabold text-white">Anti-Fraud & Kassa Xavfsizligi Detektori</h3>
+            <p className="text-xs sm:text-sm text-rose-300 font-medium">Kassir va sotuvchilar tomonidan pul o'marilishi xavfini aniqlash</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {/* Otmena/Vozvrat */}
+          <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
+            <div className="text-xs sm:text-sm font-bold text-white mb-2">1. Chekni bekor qilish (Otmena/Vozvrat):</div>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => onChange({ fraudVoidPermission: 'manager_only' })}
+                className={`w-full p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition-all ${
+                  formData.fraudVoidPermission === 'manager_only'
+                    ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300 ring-1 ring-emerald-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                ✅ Faqat rahbar/administrator paroli bilan
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ fraudVoidPermission: 'cashier_allowed' })}
+                className={`w-full p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition-all ${
+                  formData.fraudVoidPermission === 'cashier_allowed'
+                    ? 'bg-red-600/20 border-red-500 text-red-300 ring-1 ring-red-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                🚨 Kassir o'zi bekor qila oladi ("Soxta vozvrat" xavfi!)
+              </button>
+            </div>
+          </div>
+
+          {/* Tarozi / Narx kiritish */}
+          <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
+            <div className="text-xs sm:text-sm font-bold text-white mb-2">2. Narx yoki vazn kiritish:</div>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => onChange({ fraudScaleIntegration: 'direct_integrated' })}
+                className={`w-full p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition-all ${
+                  formData.fraudScaleIntegration === 'direct_integrated'
+                    ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300 ring-1 ring-emerald-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                ✅ Dasturga avtomat ulanadi (qo'lda o'zgarmaydi)
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ fraudScaleIntegration: 'manual_entry' })}
+                className={`w-full p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition-all ${
+                  formData.fraudScaleIntegration === 'manual_entry'
+                    ? 'bg-amber-600/20 border-amber-500 text-amber-300 ring-1 ring-amber-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                ⚠️ Sotuvchi qo'lda teradi (arzonroq urish xavfi)
+              </button>
+            </div>
+          </div>
+
+          {/* Prixod va Ustama */}
+          <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
+            <div className="text-xs sm:text-sm font-bold text-white mb-2">3. Yangi tovar prixodini kiritish:</div>
+            <div className="space-y-2">
+              <button
+                type="button"
+                onClick={() => onChange({ fraudPriceEntry: 'manager_office' })}
+                className={`w-full p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition-all ${
+                  formData.fraudPriceEntry === 'manager_office'
+                    ? 'bg-emerald-600/20 border-emerald-500 text-emerald-300 ring-1 ring-emerald-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                ✅ Faqat ofis / ta'minotchi kiritadi
+              </button>
+              <button
+                type="button"
+                onClick={() => onChange({ fraudPriceEntry: 'cashier_entry' })}
+                className={`w-full p-2.5 rounded-lg border text-left text-xs font-semibold cursor-pointer transition-all ${
+                  formData.fraudPriceEntry === 'cashier_entry'
+                    ? 'bg-red-600/20 border-red-500 text-red-300 ring-1 ring-red-500'
+                    : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:bg-slate-800'
+                }`}
+              >
+                🚨 Sotuvchining o'zi kiritadi (tannarx chalkashligi)
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 

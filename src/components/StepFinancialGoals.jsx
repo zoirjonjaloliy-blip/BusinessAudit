@@ -194,6 +194,48 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
             Hozirda javonlarda/omborda muzlab turgan umumiy tovar qiymati
           </p>
         </div>
+
+        {/* 7. Xodimlar soni (PRO 5.0 Unit-Productivity) */}
+        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+          <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
+            <TrendingUp className="w-4 h-4 text-emerald-400" />
+            Jami xodimlar soni (nafar):
+          </label>
+          <div className="relative mt-2">
+            <input
+              type="number"
+              min="1"
+              value={formData.employeesCount || ''}
+              onChange={(e) => onChange({ employeesCount: e.target.value })}
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white font-semibold text-base focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              placeholder="Masalan: 5"
+            />
+          </div>
+          <p className="text-[11px] text-slate-400 mt-2">
+            1 xodimga to'g'ri keladigan savdo va sof foyda hisobi uchun
+          </p>
+        </div>
+
+        {/* 8. Bino / Do'kon / Ofis maydoni (PRO 5.0 Unit-Productivity) */}
+        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
+          <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
+            <Building className="w-4 h-4 text-cyan-400" />
+            Bino / Do'kon / Maydon hajmi (kv.m):
+          </label>
+          <div className="relative mt-2">
+            <input
+              type="number"
+              min="10"
+              value={formData.businessAreaSqM || ''}
+              onChange={(e) => onChange({ businessAreaSqM: e.target.value })}
+              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white font-semibold text-base focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              placeholder="Masalan: 60"
+            />
+          </div>
+          <p className="text-[11px] text-slate-400 mt-2">
+            1 kv.m maydon rentabelligi ($/kv.m) hisobi uchun
+          </p>
+        </div>
       </div>
 
       {/* 7. Moliyaviy Balans va 3 ta Asosiy Hisobot (P&L, Cash Flow, Balans) (PRO 4.0) */}

@@ -348,40 +348,120 @@ export function calculateBusinessAudit(formData) {
   else debtRiskPercent = 0.02;
   const estimatedDebtRiskSum = Math.round(targetRevenue * debtRiskPercent);
 
-  // F. UMUMIY OYLIK VA YILLIK YO'QOTISH (Grand Total Losses)
-  const totalMonthlyLoss = monthlyWastedMarketing + lostNetProfitMonthly + inventoryShrinkLossMonthly + outOfStockLossMonthly;
+  // F. Dorixona va Klinika Maxsus Yo'qotishlari (PRO 5.0)
+  let pharmacyExpiredLossMonthly = 0;
+  let pharmacyBlisterLossMonthly = 0;
+  if (industryKey === 'pharmacy') {
+    if (formData.pharmacyExpiryTracking === 'manual' || !formData.pharmacyExpiryTracking) {
+      pharmacyExpiredLossMonthly = Math.round(inventoryCapital * 0.05 / 12); // yillik 5% srok godnosti spisaniya
+    }
+    if (formData.pharmacyBlisterSplit === 'manual' || !formData.pharmacyBlisterSplit) {
+      pharmacyBlisterLossMonthly = Math.round(targetRevenue * 0.025); // 2.5% peresort/blister kamomadi
+    }
+  }
+
+  let clinicCashBypassLossMonthly = 0;
+  let clinicMaterialLossMonthly = 0;
+  if (industryKey === 'clinic_medical') {
+    if (formData.clinicCashBypass === 'risk_bypass') {
+      clinicCashBypassLossMonthly = Math.round(targetRevenue * 0.22); // 22% kassa chetlab o'tilishi
+    }
+    if (formData.clinicMaterialSpisanie === 'untracked') {
+      clinicMaterialLossMonthly = Math.round(targetRevenue * 0.08); // 8% reaktiv va sarf isrofi
+    }
+  }
+
+  // G. Anti-Fraud & Kassa O'g'riliklari Zarari (PRO 5.0)
+  let fraudVoidLossMonthly = 0;
+  let fraudScaleLossMonthly = 0;
+  let fraudPriceLossMonthly = 0;
+  if (formData.fraudVoidPermission === 'cashier_allowed') {
+    fraudVoidLossMonthly = Math.round(targetRevenue * 0.035); // 3.5% soxta vozvrat
+  }
+  if (formData.fraudScaleIntegration === 'manual_entry') {
+    fraudScaleLossMonthly = Math.round(targetRevenue * 0.02); // 2% qo'lda o'zgartirish
+  }
+  if (formData.fraudPriceEntry === 'cashier_entry') {
+    fraudPriceLossMonthly = Math.round(targetRevenue * 0.025); // 2.5% prixod ustama qallobligi
+  }
+  const fraudTotalMonthlyLoss = fraudVoidLossMonthly + fraudScaleLossMonthly + fraudPriceLossMonthly;
+
+  // H. UMUMIY OYLIK VA YILLIK YO'QOTISH (Grand Total Losses)
+  const totalMonthlyLoss = monthlyWastedMarketing + 
+    lostNetProfitMonthly + 
+    inventoryShrinkLossMonthly + 
+    outOfStockLossMonthly + 
+    pharmacyExpiredLossMonthly + 
+    pharmacyBlisterLossMonthly + 
+    clinicCashBypassLossMonthly + 
+    clinicMaterialLossMonthly + 
+    fraudTotalMonthlyLoss;
   const totalYearlyLoss = totalMonthlyLoss * 12;
 
-  // G. LTV va Bonus Tizimi Potensiali (Reklamasiz qo'shimcha tushum)
+  // I. Unit-Productivity: Xodimlar va Maydon (Kv.m) Samaradorligi (PRO 5.0)
+  const employeesCount = Math.max(1, Number(formData.employeesCount) || industry.typicalEmployees || 4);
+  const businessAreaSqM = Math.max(10, Number(formData.businessAreaSqM) || industry.typicalAreaSqM || 50);
+  const revenuePerEmployee = Math.round(targetRevenue / employeesCount);
+  const profitPerEmployee = Math.round((targetRevenue * (netMargin / 100)) / employeesCount);
+  const revenuePerSqM = Math.round(targetRevenue / businessAreaSqM);
+  const benchmarkRevPerEmp = Math.round(targetRevenue / (industry.typicalEmployees || 4));
+
+  let productivityDiagnosis = "Shtat va xodimlar unumdorligi barqaror darajada.";
+  let productivityColor = "emerald";
+  if (revenuePerEmployee < benchmarkRevPerEmp * 0.75) {
+    productivityDiagnosis = `Sizda 1 xodimga $${revenuePerEmployee.toLocaleString()} savdo to'g'ri kelmoqda (Soha normasi: ~$${benchmarkRevPerEmp.toLocaleString()}). Shtat shishirilgan yoki xodimlar motivatsiya/KPI tizimi ishlamayapti.`;
+    productivityColor = "amber";
+  } else if (revenuePerEmployee > benchmarkRevPerEmp * 1.3) {
+    productivityDiagnosis = `1 xodimga $${revenuePerEmployee.toLocaleString()} yuqori savdo to'g'ri kelmoqda. Jamoangiz zo'riqishda ishlamoqda, xodimlar yetishmasligi sababli mijozlar boy berilishi xavfi bor.`;
+    productivityColor = "blue";
+  }
+
+  // J. Krizis Stress-Testi va Maksimal Chegirma Chegarasi (PRO 5.0)
+  const crisisDropRevenue = Math.round(targetRevenue * 0.70); // -30% savdo tushsa
+  const crisisGrossProfit = Math.round(crisisDropRevenue * (netMargin / 100));
+  const crisisNetProfit = Math.round(crisisGrossProfit - fixedCosts);
+  const isCrisisDeficit = crisisNetProfit < 0;
+  const fixedCostRatioPercent = Number(((fixedCosts / targetRevenue) * 100).toFixed(1));
+  const maxAllowedDiscountPercent = Math.max(0, Number((netMargin - fixedCostRatioPercent).toFixed(1)));
+
+  // K. Pul Aylanish Sikli (CCC - Cash Conversion Cycle) (PRO 5.0)
+  const dioDays = industry.dio || 30; // Ombor aylanishi
+  const dsoDays = industry.dso || 15; // Nasiya qaytishi
+  const dpoDays = industry.dpo || 20; // Ta'minotchi to'lov muddati
+  const cccTotalDays = Math.max(1, dioDays + dsoDays - dpoDays);
+  // 15 kunga tezlashtirilsa erkin bo'shaydigan aylanma naqd pul
+  const cashFreedUp15Days = Math.round((targetRevenue / 30) * 15 * (1 - (netMargin / 100)));
+
+  // L. LTV va Bonus Tizimi Potensiali (Reklamasiz qo'shimcha tushum)
   let ltvGainPercent = formData.loyaltySystem === 'automated' ? 0 : 0.25;
   const potentialLtvMonthlyRevenue = Math.round(requiredCustomers * averageCheck * ltvGainPercent);
   const potentialLtvMonthlyProfit = Math.round(potentialLtvMonthlyRevenue * (netMargin / 100));
   const potentialLtvYearlyProfit = potentialLtvMonthlyProfit * 12;
 
-  // H. Muzlagan Kapital (Dead Stock / Nelikvid tovar)
+  // M. Muzlagan Kapital (Dead Stock / Nelikvid tovar)
   let deadStockRatio = 0.05;
   if (formData.inventoryStatus === 'dead_stock') deadStockRatio = 0.25;
   else if (formData.inventoryStatus === 'estimated') deadStockRatio = 0.16;
   else if (formData.accountingSoftware === 'paper' || formData.abcAnalysisStatus === 'none') deadStockRatio = 0.22;
   const deadStockSum = Math.round(inventoryCapital * deadStockRatio);
 
-  // I. ABC-Tahlil Ombordagi Taqsimot (Pareto 80/20 Matritsasi) (PRO 4.0)
+  // N. ABC-Tahlil Ombordagi Taqsimot (Pareto 80/20 Matritsasi) (PRO 4.0)
   const groupA_Stock = Math.round(inventoryCapital * 0.20); // 20% tovar = 80% savdo
   const groupB_Stock = Math.round(inventoryCapital * 0.30); // 30% tovar = 15% savdo
   const groupC_Stock = Math.round(inventoryCapital * 0.50); // 50% tovar = 5% savdo
   const deadStockCGroup = Math.round(inventoryCapital * 0.22); // C-guruhdagi o'lik kapital
 
-  // J. P&L vs Cash Flow xavfi: Qog'ozdagi soxta foyda (PRO 4.0)
+  // O. P&L vs Cash Flow xavfi: Qog'ozdagi soxta foyda (PRO 4.0)
   const expectedMonthlyNetProfit = Math.round(targetRevenue * (netMargin / 100));
   const paperProfitTrapped = formData.financialReportsStatus !== 'full_reports' 
     ? Math.round(expectedMonthlyNetProfit * 0.42) 
     : 0;
 
-  // K. AI va Strategik Vaqt Zaxirasi (PRO 4.0)
+  // P. AI va Strategik Vaqt Zaxirasi (PRO 4.0)
   const aiMonthlySavedHours = formData.aiUsageStatus !== 'integrated' ? 35 : 5;
   const aiDecisionLossMonthly = formData.aiUsageStatus !== 'integrated' ? Math.round(targetRevenue * 0.07) : 0;
 
-  // L. Zararsizlik Nuqtasi (Break-Even Point)
+  // Q. Zararsizlik Nuqtasi (Break-Even Point)
   const breakEvenRevenue = Math.round(fixedCosts / (netMargin / 100));
   const breakEvenDay = Math.min(30, Math.max(1, Math.round((breakEvenRevenue / targetRevenue) * 30)));
 
@@ -577,6 +657,34 @@ export function calculateBusinessAudit(formData) {
     fiscalRiskStatus,
     fiscalRiskColor,
     expectedGrossProfit: targetRevenue * (netMargin / 100),
+    // PRO 5.0 Yangi Rentgen & Anti-Fraud maydonlari:
+    pharmacyExpiredLossMonthly,
+    pharmacyBlisterLossMonthly,
+    clinicCashBypassLossMonthly,
+    clinicMaterialLossMonthly,
+    fraudVoidLossMonthly,
+    fraudScaleLossMonthly,
+    fraudPriceLossMonthly,
+    fraudTotalMonthlyLoss,
+    employeesCount,
+    businessAreaSqM,
+    revenuePerEmployee,
+    profitPerEmployee,
+    revenuePerSqM,
+    benchmarkRevPerEmp,
+    productivityDiagnosis,
+    productivityColor,
+    crisisDropRevenue,
+    crisisGrossProfit,
+    crisisNetProfit,
+    isCrisisDeficit,
+    fixedCostRatioPercent,
+    maxAllowedDiscountPercent,
+    dioDays,
+    dsoDays,
+    dpoDays,
+    cccTotalDays,
+    cashFreedUp15Days,
     scores: {
       overall: overallScore,
       marketing: marketingScore,

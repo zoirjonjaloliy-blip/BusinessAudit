@@ -93,6 +93,9 @@ export function StepAuditUnlock({ formData = {}, onChange, onUnlock, onDemo, onP
               <span className="ml-1.5 px-2 py-0.5 rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-[10px] font-extrabold uppercase tracking-wider">
                 BI & AI: {preview.scores?.bi || 50}%
               </span>
+              <span className="ml-1 px-2 py-0.5 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 text-[10px] font-extrabold uppercase tracking-wider">
+                Anti-Fraud: Faol
+              </span>
             </div>
           </div>
 

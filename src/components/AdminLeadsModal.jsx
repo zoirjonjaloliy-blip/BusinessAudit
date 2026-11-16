@@ -122,6 +122,9 @@ export function AdminLeadsModal({ isOpen, onClose, leads, onDeleteLead, onClearA
       "ABC Tahlil",
       "Moliyaviy Balans",
       "AI Holati",
+      "Anti-Fraud Xavfi ($)",
+      "Xodimlar Soni",
+      "Pul Sikli (Kun)",
       "Salomatlik Balli",
       "BI Balli"
     ];
@@ -142,6 +145,9 @@ export function AdminLeadsModal({ isOpen, onClose, leads, onDeleteLead, onClearA
       `"${item.abcAnalysisStatus === 'automated' ? "ABC bor" : item.abcAnalysisStatus === 'approximate' ? "Taxminan" : "ABC yo'q"}"`,
       `"${item.financialReportsStatus === 'full_reports' ? "3 hisobot bor" : item.financialReportsStatus === 'cash_only' ? "Faqat kassa" : "Moliyaviy ko'rlik"}"`,
       `"${item.aiUsageStatus === 'integrated' ? "AI ulangan" : item.aiUsageStatus === 'basic_chat' ? "Faqat chat" : "AI yo'q"}"`,
+      item.fraudTotalMonthlyLoss || '',
+      item.employeesCount || '',
+      item.cccTotalDays || '',
       item.scores?.overall || '',
       item.scores?.bi || ''
     ]);

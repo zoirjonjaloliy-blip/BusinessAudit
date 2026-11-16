@@ -1,5 +1,82 @@
-// Sohaviy benchmarklar va PRO 3.0 Texnik Arxitektura (Hardware & Software)
+// Sohaviy benchmarklar va PRO 5.0 Texnik Arxitektura (Hardware & Software)
 export const INDUSTRY_BENCHMARKS = {
+  pharmacy: {
+    id: 'pharmacy',
+    name: "Dorixona va Farmatsevtika (Chakana Apteka & Optom ombor)",
+    category: "farmatsevtika",
+    icon: 'Pill',
+    avgCpl: { instagram: 1.0, telegram: 0.5, google: 1.2, tiktok: 0.4 },
+    avgConversion: 65,
+    avgCheck: 9,
+    avgMargin: 24,
+    typicalFixedCosts: 1800,
+    typicalInventory: 32000,
+    typicalEmployees: 4,
+    typicalAreaSqM: 45,
+    autoInvestCost: 1100,
+    dio: 28,
+    dso: 4,
+    dpo: 22,
+    softwareTip: "1C: Dorixona (Аптека) yoki ixtisoslashgan Apteka-POS + 2D Asl Belgisi skaneri, seriyali srok godnosti va blister bo'lish moduli.",
+    tip: "Dorixonada muddati o'tgan dorilar spisaniyasi va 1 pachkani bo'lib sotishda peresort kamomadi asosiy o'g'ri hisoblanadi.",
+    benchmarks: [
+      { name: "Sof foyda marjasi", userMetric: "netMargin", userSuffix: "%", marketAvg: "18-24%", top10: "28-32%", note: "TOP-10% dorixonalar yuqori marjali parafarmatsevtika va BAA/vitaminlar hisobiga 30%+ marja oladi." },
+      { name: "Muddati o'tgan dori spisaniyasi", userValue: "<0.4%", marketAvg: "2.5-4%", top10: "<0.2%", note: "Dastur muddati 3-6 oy qolgan dorilarni qizil signal bilan sotuvga chiqarmasa, katta zarar keltiriladi." },
+      { name: "Ombor tovar aylanishi (DIO)", userValue: "30 kun", marketAvg: "35 kun", top10: "20-25 kun", note: "A-toifa lokomotiv dorilar tez aylanib, 'o'lik' dorilar aylanmani band qilmasligi kerak." },
+      { name: "Up-sell / Cross-sell konversiyasi", userValue: "25%", marketAvg: "15%", top10: "45%+", note: "Provizor har bir antibiotik yoniga probiotik yoki vitamin taklif qilishi o'rtacha chekni 22% ga oshiradi." }
+    ],
+    hardwareChecklist: [
+      { id: 'pos_terminal', name: "Sensorli POS-monoblok (Tezkor provizor kassa ekrani)", essential: true },
+      { id: 'scanner_2d', name: "2D Asl Belgisi va MXIK DataMatrix skaneri (Dori qutisidagi kodni o'qish uchun)", essential: true },
+      { id: 'receipt_printer', name: "80mm tezkor kassa chek printeri", essential: true },
+      { id: 'cash_drawer', name: "Avtomatik metall pul qutisi", essential: true },
+      { id: 'thermo_hygrometer', name: "Elektron termogigrometr (Dori saqlash haroratini nazorat qilish)", essential: true },
+      { id: 'ups', name: "UPS zaxira quvvatlagich (Muzlatgich va kassa uchun)", essential: false }
+    ],
+    rules: [
+      "Seriyali hisob: har bir partiya kirganda muddati (srok godnosti) kiritilsin va dastur FIFO qoidasi bo'yicha eng avval muddati tugaydiganini sotuvga chiqarsin.",
+      "1 pachka dorini plastinka (blister) yoki dona qilib sotganda qoldiq avtomat 0.1/0.5 bo'lib kamayishi shart, aks holda reviziyada doimiy kamomad chiqadi.",
+      "Asl Belgisi markirovkali dorilarni soliq chekiga faqat 2D skaner orqali chiqarishni ta'minlang."
+    ]
+  },
+  clinic_medical: {
+    id: 'clinic_medical',
+    name: "Xususiy Klinika, Stomatologiya va Diagnostika markazi",
+    category: "tibbiyot",
+    icon: 'Hospital',
+    avgCpl: { instagram: 3.2, telegram: 1.8, google: 4.5, tiktok: 1.5 },
+    avgConversion: 32,
+    avgCheck: 45,
+    avgMargin: 40,
+    typicalFixedCosts: 4200,
+    typicalInventory: 10000,
+    typicalEmployees: 8,
+    typicalAreaSqM: 120,
+    autoInvestCost: 1600,
+    dio: 18,
+    dso: 3,
+    dpo: 15,
+    softwareTip: "1C: Tibbiyot / Klinika CRM + Elektron navbat, EMR (Elektron tibbiy karta), Shifokor & Napravitel keshbek hisobi.",
+    tip: "Klinikada 'Kassa chetlab o'tilishi' (vrach cho'ntagiga to'lov) va reaktivlar isrofi tushumning 20-35% gacha yo'qolishiga sabab bo'ladi.",
+    benchmarks: [
+      { name: "Shifokor xonasi bandligi", userValue: "60%", marketAvg: "55%", top10: "85%+", note: "Onlayn yozilish va SMS eslatmalar shifokorlarning bo'sh turib qolish vaqtini 70% ga qisqartiradi." },
+      { name: "Bemor qaytish darajasi (LTV/Recall)", userValue: "40%", marketAvg: "35%", top10: "75%+", note: "Profilaktik ko'riklar va tahlil javoblarini Telegramga yuborish bemorlar qaytishini kafolatlaydi." },
+      { name: "Reaktiv va tibbiy sarf normasi", userValue: "18%", marketAvg: "20-25%", top10: "<12%", note: "Har bir muolajaga (shprits, reaktiv, plomba) qat'iy tex-karta kiritilib, avtomat hisobdan chiqariladi." },
+      { name: "Sof rentabellik marjasi", userMetric: "netMargin", userSuffix: "%", marketAvg: "30-35%", top10: "48%+", note: "Laboratoriya va diagnostika xizmatlarining to'g'ri unit-iqtisodiyoti hisobiga erishiladi." }
+    ],
+    hardwareChecklist: [
+      { id: 'reception_pc', name: "Resepshn va Registratura uchun tezkor kompyuter", essential: true },
+      { id: 'queue_screen', name: "Kutish zali uchun Elektron Navbat ekrani va kassa chek printeri", essential: true },
+      { id: 'doctor_tablets', name: "Shifokor xonalari uchun EMR planshetlari/noutbuklari", essential: true },
+      { id: 'lab_integration', name: "Laboratoriya analizatorlari bilan 1C to'g'ridan-to'g'ri integratsiya", essential: true },
+      { id: 'cash_drawer', name: "Markaziy kassa pul qutisi", essential: true }
+    ],
+    rules: [
+      "Bemor shifokor xonasiga faqat markaziy kassa cheki yoki elektron navbat kodi bilan kirishi shart — bu vrach cho'ntagiga pul ketishini 100% to'xtatadi.",
+      "Tashqi yo'llanma beruvchi (napravitel) shifokorlar bonusini dastur orqali shaffof hisoblab, har hafta hisobot bering.",
+      "Tahlil javoblarini qog'ozda emas, klinika Telegram boti orqali bemorning shaxsiy kabinetiga avtomat jo'nating."
+    ]
+  },
   retail_food: {
     id: 'retail_food',
     name: "Oziq-ovqat savdosi, Supermarket & Minimarket",
