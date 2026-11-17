@@ -1,6 +1,6 @@
 import React from 'react';
 import { INDUSTRY_BENCHMARKS } from '../data/industryBenchmarks';
-import { Store, Apple, Truck, Coffee, Factory, GraduationCap, Briefcase, Sparkles, User, UserCheck } from 'lucide-react';
+import { Store, Apple, Truck, Coffee, Factory, GraduationCap, Briefcase, Sparkles, User, UserCheck, AlertCircle } from 'lucide-react';
 
 // Custom inline SVG icons for 100% build safety on all environments
 function PillIcon({ className = "w-5 h-5" }) {
@@ -38,7 +38,10 @@ const ICONS = {
   Sparkles
 };
 
-export function StepBusinessProfile({ formData, onChange, onNext, onPrev }) {
+export function StepBusinessProfile({ formData, onChange, onNext, onPrev, errors = [], errorMessage = '' }) {
+  const hasOwnerError = errors.includes('isOwner');
+  const hasIndustryError = errors.includes('industry');
+
   const handleIndustrySelect = (id) => {
     onChange({ industry: id });
   };
@@ -82,10 +85,24 @@ export function StepBusinessProfile({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 1-savol: Boshqaruvdagi rol */}
-      <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 sm:p-6 shadow-lg">
-        <label className="block text-base font-bold text-white mb-3">
-          1. Siz korxonada qanday lavozimdasiz?
-        </label>
+      <div 
+        data-error={hasOwnerError ? "true" : undefined}
+        className={`rounded-2xl p-5 sm:p-6 shadow-lg transition-all ${
+          hasOwnerError 
+            ? 'bg-red-950/20 border-2 border-red-500 ring-2 ring-red-500/30' 
+            : 'bg-slate-900/80 border border-slate-700/80'
+        }`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-base font-bold text-white">
+            1. Siz korxonada qanday lavozimdasiz?
+          </label>
+          {hasOwnerError && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+              <AlertCircle className="w-3.5 h-3.5" /> Javob tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
           <button
             type="button"
@@ -126,14 +143,28 @@ export function StepBusinessProfile({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 2-savol: Soha tanlash */}
-      <div className="bg-slate-900/80 border border-slate-700/80 rounded-2xl p-5 sm:p-6 shadow-lg">
+      <div 
+        data-error={hasIndustryError ? "true" : undefined}
+        className={`rounded-2xl p-5 sm:p-6 shadow-lg transition-all ${
+          hasIndustryError 
+            ? 'bg-red-950/20 border-2 border-red-500 ring-2 ring-red-500/30' 
+            : 'bg-slate-900/80 border border-slate-700/80'
+        }`}
+      >
         <div className="flex items-center justify-between mb-3">
           <label className="block text-base font-bold text-white">
             2. Biznesingiz sohasini tanlang:
           </label>
-          <span className="text-xs text-cyan-400 font-semibold bg-cyan-950/60 border border-cyan-800/60 px-2 py-0.5 rounded-full">
-            10 ta soha
-          </span>
+          <div className="flex items-center gap-2">
+            {hasIndustryError && (
+              <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                <AlertCircle className="w-3.5 h-3.5" /> Soha tanlang
+              </span>
+            )}
+            <span className="text-xs text-cyan-400 font-semibold bg-cyan-950/60 border border-cyan-800/60 px-2 py-0.5 rounded-full">
+              10 ta soha
+            </span>
+          </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {Object.values(INDUSTRY_BENCHMARKS).map((ind) => {
@@ -149,7 +180,7 @@ export function StepBusinessProfile({ formData, onChange, onNext, onPrev }) {
                   isSelected
                     ? 'bg-blue-600/20 border-blue-400 text-white shadow-md ring-2 ring-blue-500/50'
                     : isHighlighted
-                    ? 'bg-gradient-to-r from-slate-800/80 to-slate-800/50 border-slate-600/90 text-slate-100 hover:border-cyan-500/60 hover:bg-slate-800'
+                    ? 'bg-slate-800/50 border-cyan-500/50 text-slate-200 hover:border-cyan-400 hover:bg-slate-800'
                     : 'bg-slate-800/50 border-slate-700 text-slate-200 hover:bg-slate-800 hover:border-slate-600'
                 }`}
               >
@@ -182,6 +213,14 @@ export function StepBusinessProfile({ formData, onChange, onNext, onPrev }) {
           })}
         </div>
       </div>
+
+      {/* Validatsiya xatolik ogohlantirishi */}
+      {errorMessage && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-red-950/90 border-2 border-red-500 text-red-200 text-xs sm:text-sm font-bold flex items-center gap-3 shadow-xl shadow-red-950/50 animate-shake">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 animate-pulse" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* Navigation Buttons */}
       <div className={`flex items-center ${onPrev ? 'justify-between' : 'justify-end'} pt-2`}>

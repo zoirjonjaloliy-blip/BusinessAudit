@@ -12,6 +12,7 @@ import { AdminLeadsModal } from './components/AdminLeadsModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { calculateBusinessAudit } from './utils/auditCalculator';
 import { sendLeadToTelegram } from './utils/telegramNotifier';
+import { validateStep } from './utils/stepValidator';
 
 export const BLANK_FORM_DATA = {
   fullName: '',
@@ -115,6 +116,10 @@ export default function App() {
   const [auditResult, setAuditResult] = useState(null);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
+  // Qat'iy Validatsiya holatlari
+  const [stepErrors, setStepErrors] = useState([]);
+  const [validationAlertMessage, setValidationAlertMessage] = useState('');
+
   // 1-QADAM: Welcome Disclaimer holati (har safar saytga kirganda 1-bosqichda chiqadi)
   const [showDisclaimer, setShowDisclaimer] = useState(true);
 
@@ -149,20 +154,50 @@ export default function App() {
 
   const updateFormData = (fields) => {
     setFormData((prev) => ({ ...prev, ...fields }));
+    const updatedKeys = Object.keys(fields);
+    setStepErrors((prev) => prev.filter((field) => !updatedKeys.includes(field)));
+    setValidationAlertMessage('');
   };
 
   const handleNext = () => {
+    const validation = validateStep(currentStep, formData);
+    if (!validation.isValid) {
+      setStepErrors(validation.errors);
+      setValidationAlertMessage(validation.message || "⚠️ Davom etish uchun barcha savollarga javob tanlang va kerakli maydonlarni to'ldiring!");
+      // Qizil xatolik bo'lgan birinchi elementga yumshoq scroll
+      setTimeout(() => {
+        const firstErrorEl = document.querySelector('[data-error="true"], .border-red-500');
+        if (firstErrorEl) {
+          firstErrorEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      }, 50);
+      return;
+    }
+
+    setStepErrors([]);
+    setValidationAlertMessage('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setCurrentStep((prev) => Math.min(6, prev + 1));
   };
 
   const handlePrev = () => {
+    setStepErrors([]);
+    setValidationAlertMessage('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setCurrentStep((prev) => Math.max(1, prev - 1));
   };
 
   // VIP Qulfni ochish (Ism, biznes va telefon kiritilganda)
   const handleUnlockSubmit = () => {
+    const validation = validateStep(6, formData);
+    if (!validation.isValid) {
+      setStepErrors(validation.errors);
+      setValidationAlertMessage(validation.message || "⚠️ Ism, Biznes nomi va 9 ta raqamli telefoningizni to'liq kiriting!");
+      return;
+    }
+
+    setStepErrors([]);
+    setValidationAlertMessage('');
     const result = calculateBusinessAudit(formData);
     const leadSnapshot = { ...formData };
     
@@ -219,16 +254,6 @@ export default function App() {
       .catch(() => {});
   };
 
-  // Demo ko'rish (Kontakt kiritmasdan cheklangan prevyu)
-  const handleDemoSubmit = () => {
-    const result = calculateBusinessAudit(formData);
-    setSubmittedLeadData({ ...formData });
-    setAuditResult(result);
-    setIsSubmitted(true);
-    setIsUnlocked(false);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   const handleDeleteLead = (id) => {
     setLeads((prev) => prev.filter((item, idx) => (item.id ? item.id !== id : idx !== id)));
   };
@@ -248,6 +273,8 @@ export default function App() {
     setIsUnlocked(false);
     setAuditResult(null);
     setShowDisclaimer(true);
+    setStepErrors([]);
+    setValidationAlertMessage('');
     try {
       localStorage.removeItem('biz_audit_data');
       localStorage.removeItem('biznestahlili_disclaimer_accepted');
@@ -281,6 +308,8 @@ export default function App() {
                 formData={formData}
                 onChange={updateFormData}
                 onNext={handleNext}
+                errors={stepErrors}
+                errorMessage={validationAlertMessage}
               />
             )}
 
@@ -291,6 +320,8 @@ export default function App() {
                 onChange={updateFormData}
                 onNext={handleNext}
                 onPrev={handlePrev}
+                errors={stepErrors}
+                errorMessage={validationAlertMessage}
               />
             )}
 
@@ -301,6 +332,8 @@ export default function App() {
                 onChange={updateFormData}
                 onNext={handleNext}
                 onPrev={handlePrev}
+                errors={stepErrors}
+                errorMessage={validationAlertMessage}
               />
             )}
 
@@ -311,6 +344,8 @@ export default function App() {
                 onChange={updateFormData}
                 onNext={handleNext}
                 onPrev={handlePrev}
+                errors={stepErrors}
+                errorMessage={validationAlertMessage}
               />
             )}
 
@@ -321,6 +356,8 @@ export default function App() {
                 onChange={updateFormData}
                 onNext={handleNext}
                 onPrev={handlePrev}
+                errors={stepErrors}
+                errorMessage={validationAlertMessage}
               />
             )}
 
@@ -330,8 +367,9 @@ export default function App() {
                 formData={formData}
                 onChange={updateFormData}
                 onUnlock={handleUnlockSubmit}
-                onDemo={handleDemoSubmit}
                 onPrev={handlePrev}
+                errors={stepErrors}
+                errorMessage={validationAlertMessage}
               />
             )}
           </div>

@@ -1,7 +1,12 @@
 import React from 'react';
 import { Database, Users, Clock, RefreshCw, CheckCircle2, AlertCircle, XCircle, Gift } from 'lucide-react';
 
-export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
+export function StepSalesSystem({ formData, onChange, onNext, onPrev, errors = [], errorMessage = '' }) {
+  const getCardStyle = (name) => {
+    return errors.includes(name)
+      ? 'border-2 border-red-500 ring-2 ring-red-500/30 bg-red-950/20'
+      : 'border border-slate-800 bg-slate-900/60';
+  };
   return (
     <div className="space-y-6 animate-fadeIn">
       <div>
@@ -17,10 +22,20 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 1. CRM Holati */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-3">
-          1. Sizda CRM tizimi mavjudmi?
-        </label>
+      <div 
+        data-error={errors.includes('hasCrm') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('hasCrm')}`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-semibold text-slate-200">
+            1. Sizda CRM tizimi mavjudmi?
+          </label>
+          {errors.includes('hasCrm') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
@@ -79,10 +94,20 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 2. Sotuv bo'limi */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-3">
-          2. Alohida sotuv bo'limi (Menejerlar) bormi?
-        </label>
+      <div 
+        data-error={errors.includes('salesTeam') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('salesTeam')}`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-semibold text-slate-200">
+            2. Alohida sotuv bo'limi (Menejerlar) bormi?
+          </label>
+          {errors.includes('salesTeam') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
@@ -126,10 +151,20 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 3. Javob berish tezligi */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-3">
-          3. Reklamadan tushgan lidga odatda qancha vaqtda javob beriladi?
-        </label>
+      <div 
+        data-error={errors.includes('responseTime') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('responseTime')}`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-semibold text-slate-200">
+            3. Reklamadan tushgan lidga odatda qancha vaqtda javob beriladi?
+          </label>
+          {errors.includes('responseTime') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
@@ -173,11 +208,21 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 4. Mijozlarni ushlab qolish: Bonus / Keshbek / Loyallik (PRO 3.0) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <Gift className="w-4 h-4 text-pink-400" />
-          4. Mijozlarni ushlab qolish (Bonus / Keshbek / Loyallik tizimi):
-        </label>
+      <div 
+        data-error={errors.includes('loyaltySystem') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('loyaltySystem')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <Gift className="w-4 h-4 text-pink-400" />
+            4. Mijozlarni ushlab qolish (Bonus / Keshbek / Loyallik tizimi):
+          </label>
+          {errors.includes('loyaltySystem') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Eski xaridorlar qayta sotib olishi uchun maxsus dasturiy rag'batlantirish bormi?
         </p>
@@ -222,6 +267,14 @@ export function StepSalesSystem({ formData, onChange, onNext, onPrev }) {
           </button>
         </div>
       </div>
+
+      {/* Validatsiya xatolik ogohlantirishi */}
+      {errorMessage && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-red-950/90 border-2 border-red-500 text-red-200 text-xs sm:text-sm font-bold flex items-center gap-3 shadow-xl shadow-red-950/50 animate-shake">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 animate-pulse" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="flex items-center justify-between pt-2">

@@ -1,6 +1,6 @@
 import React from 'react';
 import { PLATFORMS } from '../data/industryBenchmarks';
-import { Send, Globe, Video, Users, HeartHandshake, CheckCircle2, AlertTriangle, XCircle, Check } from 'lucide-react';
+import { Send, Globe, Video, Users, HeartHandshake, CheckCircle2, AlertTriangle, XCircle, Check, AlertCircle } from 'lucide-react';
 
 function InstagramIcon({ className = "w-4 h-4" }) {
   return (
@@ -21,10 +21,16 @@ const PLATFORM_ICONS = {
   HeartHandshake
 };
 
-export function StepMarketingTraffic({ formData, onChange, onNext, onPrev }) {
+export function StepMarketingTraffic({ formData, onChange, onNext, onPrev, errors = [], errorMessage = '' }) {
   const selectedPlatforms = Array.isArray(formData.platforms) 
     ? formData.platforms 
     : (formData.platform ? [formData.platform] : []);
+
+  const getCardStyle = (name) => {
+    return errors.includes(name)
+      ? 'border-2 border-red-500 ring-2 ring-red-500/30 bg-red-950/20'
+      : 'border border-slate-800 bg-slate-900/60';
+  };
 
   const togglePlatform = (id) => {
     let updated;
@@ -51,11 +57,23 @@ export function StepMarketingTraffic({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* Savol: Asosiy reklama kanallari (Multi-select) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1 flex items-center justify-between">
-          <span>1. Asosiy mijoz oqimi (reklama) qaysi kanallardan keladi?</span>
-          <span className="text-[11px] font-normal text-cyan-400">Bir nechtasini belgilang</span>
-        </label>
+      <div 
+        data-error={errors.includes('platforms') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('platforms')}`}
+      >
+        <div className="flex items-center justify-between mb-1">
+          <label className="block text-sm font-semibold text-slate-200">
+            1. Asosiy mijoz oqimi (reklama) qaysi kanallardan keladi?
+          </label>
+          <div className="flex items-center gap-2">
+            {errors.includes('platforms') && (
+              <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                <AlertCircle className="w-3.5 h-3.5" /> Kamida 1 ta tanlang
+              </span>
+            )}
+            <span className="text-[11px] font-normal text-cyan-400">Bir nechtasini belgilang</span>
+          </div>
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Tanlangan kanallar soni: <strong className="text-white">{selectedPlatforms.length} ta</strong>
         </p>
@@ -94,10 +112,20 @@ export function StepMarketingTraffic({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* Savol: Upakovka va ijtimoiy tarmoqlar holati */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-3">
-          2. Ijtimoiy tarmoqlaringiz holati (Upakovka & Brending)?
-        </label>
+      <div 
+        data-error={errors.includes('socialStatus') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('socialStatus')}`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-semibold text-slate-200">
+            2. Ijtimoiy tarmoqlaringiz holati (Upakovka & Brending)?
+          </label>
+          {errors.includes('socialStatus') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
@@ -162,10 +190,20 @@ export function StepMarketingTraffic({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* Savol: Sayt / Landing sahifa bormi? */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-3">
-          3. Reklama qayerga olib boradi? (Qabul qilish kanali)
-        </label>
+      <div 
+        data-error={errors.includes('leadChannel') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('leadChannel')}`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-semibold text-slate-200">
+            3. Reklama qayerga olib boradi? (Qabul qilish kanali)
+          </label>
+          {errors.includes('leadChannel') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
@@ -207,6 +245,14 @@ export function StepMarketingTraffic({ formData, onChange, onNext, onPrev }) {
           </button>
         </div>
       </div>
+
+      {/* Validatsiya xatolik ogohlantirishi */}
+      {errorMessage && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-red-950/90 border-2 border-red-500 text-red-200 text-xs sm:text-sm font-bold flex items-center gap-3 shadow-xl shadow-red-950/50 animate-shake">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 animate-pulse" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* Navigation Buttons */}
       <div className="flex items-center justify-between pt-2">

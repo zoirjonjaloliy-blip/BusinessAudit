@@ -56,6 +56,15 @@ html.light header button {
 html.light header button:hover {
   background-color: #e2e8f0 !important;
 }
+html.light header .bg-slate-900,
+html.light header [class*="bg-slate-900"] {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+html.light header .text-cyan-300 {
+  color: #0284c7 !important;
+}
 html.light footer {
   background-color: #ffffff !important;
   border-top-color: #e2e8f0 !important;
@@ -110,6 +119,7 @@ html.light [class*="border-slate-600"] {
 html.light button[class*="bg-slate-800"],
 html.light div[class*="bg-slate-800"],
 html.light button[class*="bg-slate-700"],
+html.light button[class*="bg-slate-900"],
 html.light button[class*="from-slate-800"] {
   background-color: #ffffff !important;
   background-image: none !important;
@@ -120,6 +130,7 @@ html.light button[class*="from-slate-800"] {
 
 html.light button[class*="bg-slate-800"]:hover,
 html.light button[class*="bg-slate-700"]:hover,
+html.light button[class*="bg-slate-900"]:hover,
 html.light button[class*="from-slate-800"]:hover {
   background-color: #f8fafc !important;
   border-color: #94a3b8 !important;
@@ -128,6 +139,10 @@ html.light button[class*="from-slate-800"]:hover {
 /* Tanlanmagan tugma ichidagi matnlar */
 html.light button[class*="bg-slate-800"] .text-white,
 html.light button[class*="bg-slate-800"] .font-bold,
+html.light button[class*="bg-slate-800"] .font-semibold,
+html.light button[class*="bg-slate-700"] .text-white,
+html.light button[class*="bg-slate-700"] .font-bold,
+html.light button[class*="bg-slate-700"] .font-semibold,
 html.light button[class*="from-slate-800"] .text-white,
 html.light button[class*="from-slate-800"] .font-bold {
   color: #0f172a !important;
@@ -135,6 +150,8 @@ html.light button[class*="from-slate-800"] .font-bold {
 html.light button[class*="bg-slate-800"] .text-slate-400,
 html.light button[class*="bg-slate-800"] .text-slate-300,
 html.light button[class*="bg-slate-800"] .text-slate-200,
+html.light button[class*="bg-slate-700"] .text-slate-400,
+html.light button[class*="bg-slate-700"] .text-slate-300,
 html.light button[class*="from-slate-800"] .text-slate-400,
 html.light button[class*="from-slate-800"] .text-slate-300 {
   color: #475569 !important;
@@ -142,18 +159,23 @@ html.light button[class*="from-slate-800"] .text-slate-300 {
 
 /* Tanlanmagan variantdagi ikonka qutisi */
 html.light button[class*="bg-slate-800"] [class*="bg-slate-700"],
-html.light button[class*="bg-slate-700"] [class*="bg-slate-700"] {
+html.light button[class*="bg-slate-800"] .bg-slate-700,
+html.light button[class*="bg-slate-700"] [class*="bg-slate-700"],
+html.light button[class*="bg-slate-700"] .bg-slate-700 {
   background-color: #f1f5f9 !important;
   color: #334155 !important;
 }
-html.light button[class*="bg-slate-800"] [class*="bg-slate-700"] svg {
+html.light button[class*="bg-slate-800"] [class*="bg-slate-700"] svg,
+html.light button[class*="bg-slate-800"] .bg-slate-700 svg,
+html.light button[class*="bg-slate-700"] svg {
   color: #334155 !important;
 }
 
 /* 5. TANLANGAN TUGMALAR (SELECTED STATES) */
 
 /* A. Moviy / Ko'k tanlangan tugma (Soha tanlash, Unit-iqtisodiyot va h.k.) */
-html.light button[class*="bg-blue-600\/"],
+html.light button[class*="bg-blue-600"],
+html.light div[class*="bg-blue-600"],
 html.light button[class*="ring-blue-500"] {
   background-color: #eff6ff !important;
   background-image: none !important;
@@ -161,31 +183,32 @@ html.light button[class*="ring-blue-500"] {
   color: #1e3a8a !important;
   box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3), 0 4px 6px -1px rgba(37, 99, 235, 0.1) !important;
 }
-html.light button[class*="bg-blue-600\/"] .text-white,
-html.light button[class*="bg-blue-600\/"] .font-bold,
-html.light button[class*="bg-blue-600\/"] .font-semibold,
+html.light button[class*="bg-blue-600"] .text-white,
+html.light button[class*="bg-blue-600"] .font-bold,
+html.light button[class*="bg-blue-600"] .font-semibold,
 html.light button[class*="ring-blue-500"] .text-white {
   color: #1e3a8a !important;
 }
-html.light button[class*="bg-blue-600\/"] .text-slate-400,
-html.light button[class*="bg-blue-600\/"] .text-slate-300,
-html.light button[class*="bg-blue-600\/"] .text-slate-200,
+html.light button[class*="bg-blue-600"] .text-slate-400,
+html.light button[class*="bg-blue-600"] .text-slate-300,
+html.light button[class*="bg-blue-600"] .text-slate-200,
 html.light button[class*="ring-blue-500"] .text-slate-400 {
   color: #1d4ed8 !important;
 }
 /* Tanlangan tugmadagi ikonka qutisi */
-html.light button[class*="bg-blue-600\/"] .bg-blue-600,
+html.light button[class*="bg-blue-600"] .bg-blue-600,
 html.light button[class*="ring-blue-500"] .bg-blue-600 {
   background-color: #2563eb !important;
   color: #ffffff !important;
 }
-html.light button[class*="bg-blue-600\/"] .bg-blue-600 svg,
+html.light button[class*="bg-blue-600"] .bg-blue-600 svg,
 html.light button[class*="ring-blue-500"] .bg-blue-600 svg {
   color: #ffffff !important;
 }
 
 /* B. Yashil / Zumrad tanlangan tugma (Dastur bor, CRM bor) */
-html.light button[class*="bg-emerald-600\/"],
+html.light button[class*="bg-emerald-600"],
+html.light div[class*="bg-emerald-600"],
 html.light button[class*="ring-emerald-500"] {
   background-color: #f0fdf4 !important;
   background-image: none !important;
@@ -193,19 +216,21 @@ html.light button[class*="ring-emerald-500"] {
   color: #14532d !important;
   box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.3), 0 4px 6px -1px rgba(22, 163, 74, 0.1) !important;
 }
-html.light button[class*="bg-emerald-600\/"] .text-white,
-html.light button[class*="bg-emerald-600\/"] .font-semibold,
+html.light button[class*="bg-emerald-600"] .text-white,
+html.light button[class*="bg-emerald-600"] .font-bold,
+html.light button[class*="bg-emerald-600"] .font-semibold,
 html.light button[class*="ring-emerald-500"] .text-white {
   color: #14532d !important;
 }
-html.light button[class*="bg-emerald-600\/"] .text-slate-400,
-html.light button[class*="bg-emerald-600\/"] .text-slate-300,
+html.light button[class*="bg-emerald-600"] .text-slate-400,
+html.light button[class*="bg-emerald-600"] .text-slate-300,
 html.light button[class*="ring-emerald-500"] .text-slate-400 {
   color: #15803d !important;
 }
 
 /* C. Sariq / Qahrabo tanlangan tugma (Excelda yuritiladi) */
-html.light button[class*="bg-amber-600\/"],
+html.light button[class*="bg-amber-600"],
+html.light div[class*="bg-amber-600"],
 html.light button[class*="ring-amber-500"] {
   background-color: #fffbeb !important;
   background-image: none !important;
@@ -213,19 +238,21 @@ html.light button[class*="ring-amber-500"] {
   color: #78350f !important;
   box-shadow: 0 0 0 2px rgba(217, 119, 6, 0.3) !important;
 }
-html.light button[class*="bg-amber-600\/"] .text-white,
-html.light button[class*="bg-amber-600\/"] .font-semibold,
+html.light button[class*="bg-amber-600"] .text-white,
+html.light button[class*="bg-amber-600"] .font-bold,
+html.light button[class*="bg-amber-600"] .font-semibold,
 html.light button[class*="ring-amber-500"] .text-white {
   color: #78350f !important;
 }
-html.light button[class*="bg-amber-600\/"] .text-slate-400,
-html.light button[class*="bg-amber-600\/"] .text-slate-300,
+html.light button[class*="bg-amber-600"] .text-slate-400,
+html.light button[class*="bg-amber-600"] .text-slate-300,
 html.light button[class*="ring-amber-500"] .text-slate-400 {
   color: #92400e !important;
 }
 
 /* D. Qizil tanlangan tugma (Daftarda, CRM yo'q) */
-html.light button[class*="bg-red-600\/"],
+html.light button[class*="bg-red-600"],
+html.light div[class*="bg-red-600"],
 html.light button[class*="ring-red-500"] {
   background-color: #fef2f2 !important;
   background-image: none !important;
@@ -233,19 +260,21 @@ html.light button[class*="ring-red-500"] {
   color: #7f1d1d !important;
   box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.3) !important;
 }
-html.light button[class*="bg-red-600\/"] .text-white,
-html.light button[class*="bg-red-600\/"] .font-semibold,
+html.light button[class*="bg-red-600"] .text-white,
+html.light button[class*="bg-red-600"] .font-bold,
+html.light button[class*="bg-red-600"] .font-semibold,
 html.light button[class*="ring-red-500"] .text-white {
   color: #7f1d1d !important;
 }
-html.light button[class*="bg-red-600\/"] .text-slate-400,
-html.light button[class*="bg-red-600\/"] .text-slate-300,
+html.light button[class*="bg-red-600"] .text-slate-400,
+html.light button[class*="bg-red-600"] .text-slate-300,
 html.light button[class*="ring-red-500"] .text-slate-400 {
   color: #991b1b !important;
 }
 
 /* E. Cyan tanlangan tugma (Marketing platformalari) */
-html.light button[class*="bg-cyan-600\/"],
+html.light button[class*="bg-cyan-600"],
+html.light div[class*="bg-cyan-600"],
 html.light button[class*="ring-cyan-400"],
 html.light button[class*="ring-cyan-500"] {
   background-color: #eff6ff !important;
@@ -254,16 +283,19 @@ html.light button[class*="ring-cyan-500"] {
   color: #075985 !important;
   box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.3) !important;
 }
-html.light button[class*="bg-cyan-600\/"] .text-white,
-html.light button[class*="bg-cyan-600\/"] .font-semibold {
+html.light button[class*="bg-cyan-600"] .text-white,
+html.light button[class*="bg-cyan-600"] .font-bold,
+html.light button[class*="bg-cyan-600"] .font-semibold {
   color: #075985 !important;
 }
-html.light button[class*="bg-cyan-600\/"] .text-slate-400 {
+html.light button[class*="bg-cyan-600"] .text-slate-400,
+html.light button[class*="bg-cyan-600"] .text-slate-300 {
   color: #0369a1 !important;
 }
 
 /* F. Binafsha tanlangan tugma */
-html.light button[class*="bg-purple-600\/"],
+html.light button[class*="bg-purple-600"],
+html.light div[class*="bg-purple-600"],
 html.light button[class*="ring-purple-500"] {
   background-color: #faf5ff !important;
   background-image: none !important;
@@ -271,31 +303,33 @@ html.light button[class*="ring-purple-500"] {
   color: #581c87 !important;
   box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.3) !important;
 }
-html.light button[class*="bg-purple-600\/"] .text-white,
-html.light button[class*="bg-purple-600\/"] .font-semibold {
+html.light button[class*="bg-purple-600"] .text-white,
+html.light button[class*="bg-purple-600"] .font-bold,
+html.light button[class*="bg-purple-600"] .font-semibold {
   color: #581c87 !important;
 }
-html.light button[class*="bg-purple-600\/"] .text-slate-400 {
+html.light button[class*="bg-purple-600"] .text-slate-400,
+html.light button[class*="bg-purple-600"] .text-slate-300 {
   color: #6b21a8 !important;
 }
 
-/* 6. Dorixona va Klinika kartalari (StepBusinessProfile) */
-html.light .bg-emerald-600\/20 {
+/* 6. Dorixona, Klinika va Soha belgilari */
+html.light [class*="bg-emerald-600"] {
   background-color: #dcfce7 !important;
   border-color: #86efac !important;
-  color: #16a34a !important;
+  color: #15803d !important;
 }
-html.light .bg-cyan-600\/20 {
+html.light [class*="bg-cyan-600"] {
   background-color: #e0f2fe !important;
   border-color: #7dd3fc !important;
   color: #0284c7 !important;
 }
-html.light .bg-blue-500\/20 {
+html.light [class*="bg-blue-500"] {
   background-color: #dbeafe !important;
   border-color: #bfdbfe !important;
   color: #1d4ed8 !important;
 }
-html.light .bg-cyan-950\/60 {
+html.light [class*="bg-cyan-950"] {
   background-color: #eff6ff !important;
   border-color: #bfdbfe !important;
   color: #0284c7 !important;
@@ -324,7 +358,7 @@ html.light textarea:focus {
 /* 8. Qizil / Zarar / Ogohlantirish bloklari */
 html.light [class*="bg-red-950"],
 html.light [class*="bg-rose-950"],
-html.light .bg-red-500\/10 {
+html.light [class*="bg-red-500"] {
   background-color: #fef2f2 !important;
   border-color: #fecaca !important;
 }
@@ -337,8 +371,7 @@ html.light .text-rose-300 {
 
 /* 9. Yashil / Muvaffaqiyat bloklari */
 html.light [class*="bg-emerald-950"],
-html.light .bg-emerald-500\/10,
-html.light .bg-emerald-500\/15 {
+html.light [class*="bg-emerald-500"] {
   background-color: #f0fdf4 !important;
   border-color: #bbf7d0 !important;
 }
@@ -349,8 +382,7 @@ html.light .text-emerald-300 {
 
 /* 10. Qahrabo / Sariq bloklar */
 html.light [class*="bg-amber-950"],
-html.light .bg-amber-500\/10,
-html.light .bg-amber-500\/15 {
+html.light [class*="bg-amber-500"] {
   background-color: #fffbeb !important;
   border-color: #fde68a !important;
 }
@@ -381,7 +413,7 @@ html.light .text-indigo-300 {
 
 /* 12. Binafsha bloklar */
 html.light [class*="bg-purple-950"],
-html.light .bg-purple-500\/10 {
+html.light [class*="bg-purple-500"] {
   background-color: #faf5ff !important;
   border-color: #e9d5ff !important;
 }
@@ -391,7 +423,7 @@ html.light .text-purple-300 {
 }
 
 /* 13. VIP Qulfni ochish kartasi (StepAuditUnlock) */
-html.light .bg-gradient-to-b.from-slate-900.via-indigo-950\/40.to-slate-900 {
+html.light [class*="via-indigo-950"] {
   background: linear-gradient(to bottom, #ffffff, #f0fdf4, #ffffff) !important;
   border-color: #10b981 !important;
   box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.1) !important;
@@ -506,4 +538,15 @@ html.light .bg-slate-900\/95 {
   .text-amber-400, .text-amber-300 {
     color: #d97706 !important;
   }
+}
+
+/* Shake animatsiyasi xatolik yuz berganda e'tiborni tortish uchun */
+@keyframes shakeAlert {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.animate-shake {
+  animation: shakeAlert 0.4s ease-in-out;
 }

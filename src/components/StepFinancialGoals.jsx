@@ -1,12 +1,24 @@
 import React from 'react';
 import { 
   DollarSign, Percent, Receipt, PieChart, Sparkles, Building, Landmark, Package, 
-  Scale, FileSpreadsheet, CheckCircle2, AlertTriangle, XCircle, TrendingUp 
+  Scale, FileSpreadsheet, CheckCircle2, AlertTriangle, XCircle, TrendingUp, AlertCircle
 } from 'lucide-react';
 import { INDUSTRY_BENCHMARKS } from '../data/industryBenchmarks';
 
-export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
+export function StepFinancialGoals({ formData, onChange, onNext, onPrev, errors = [], errorMessage = '' }) {
   const currentIndustry = INDUSTRY_BENCHMARKS[formData.industry] || INDUSTRY_BENCHMARKS.retail_general;
+
+  const getInputStyle = (name) => {
+    return errors.includes(name)
+      ? 'border-2 border-red-500 ring-2 ring-red-500/40 bg-red-950/20'
+      : 'border-slate-700/80 bg-slate-950';
+  };
+
+  const getCardStyle = (name) => {
+    return errors.includes(name)
+      ? 'border-2 border-red-500 ring-2 ring-red-500/40 bg-red-950/20'
+      : 'border-slate-800 bg-slate-900/60';
+  };
 
   const handleApplyBenchmark = () => {
     onChange({
@@ -50,11 +62,21 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {/* 1. Oylik Daromad Maqsadi */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-          <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
-            <DollarSign className="w-4 h-4 text-emerald-400" />
-            Oylik DAROMAD (Tushum) maqsadi ($ da):
-          </label>
+        <div 
+          data-error={errors.includes('targetRevenue') ? "true" : undefined}
+          className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('targetRevenue')}`}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-200 flex items-center gap-1.5">
+              <DollarSign className="w-4 h-4 text-emerald-400" />
+              Oylik DAROMAD (Tushum) maqsadi ($ da):
+            </label>
+            {errors.includes('targetRevenue') && (
+              <span className="text-[11px] font-bold text-red-400 bg-red-950/80 px-2 py-0.5 rounded border border-red-500/40">
+                * Musbat son ({'>'} 0)
+              </span>
+            )}
+          </div>
           <div className="relative mt-2">
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
             <input
@@ -63,7 +85,7 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
               step="500"
               value={formData.targetRevenue}
               onChange={(e) => onChange({ targetRevenue: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl pl-8 pr-4 py-2.5 text-white font-semibold text-base focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              className={`w-full rounded-xl pl-8 pr-4 py-2.5 text-white font-semibold text-base focus:outline-none transition-all ${getInputStyle('targetRevenue')}`}
               placeholder="Masalan: 10000"
             />
           </div>
@@ -82,11 +104,21 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
         </div>
 
         {/* 2. O'rtacha Chek */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-          <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
-            <Receipt className="w-4 h-4 text-cyan-400" />
-            O'rtacha chek qancha? ($ da):
-          </label>
+        <div 
+          data-error={errors.includes('averageCheck') ? "true" : undefined}
+          className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('averageCheck')}`}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-200 flex items-center gap-1.5">
+              <Receipt className="w-4 h-4 text-cyan-400" />
+              O'rtacha chek qancha? ($ da):
+            </label>
+            {errors.includes('averageCheck') && (
+              <span className="text-[11px] font-bold text-red-400 bg-red-950/80 px-2 py-0.5 rounded border border-red-500/40">
+                * Musbat son ({'>'} 0)
+              </span>
+            )}
+          </div>
           <div className="relative mt-2">
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
             <input
@@ -94,7 +126,7 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
               min="1"
               value={formData.averageCheck}
               onChange={(e) => onChange({ averageCheck: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl pl-8 pr-4 py-2.5 text-white font-semibold text-base focus:border-cyan-500 focus:outline-none focus:ring-1 focus:ring-cyan-500"
+              className={`w-full rounded-xl pl-8 pr-4 py-2.5 text-white font-semibold text-base focus:outline-none transition-all ${getInputStyle('averageCheck')}`}
               placeholder="Masalan: 60"
             />
           </div>
@@ -104,11 +136,21 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
         </div>
 
         {/* 3. Sotuv Konversiyasi */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-          <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
-            <Percent className="w-4 h-4 text-amber-400" />
-            Sotuv konversiyasi (% da):
-          </label>
+        <div 
+          data-error={errors.includes('conversionRate') ? "true" : undefined}
+          className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('conversionRate')}`}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-200 flex items-center gap-1.5">
+              <Percent className="w-4 h-4 text-amber-400" />
+              Sotuv konversiyasi (% da):
+            </label>
+            {errors.includes('conversionRate') && (
+              <span className="text-[11px] font-bold text-red-400 bg-red-950/80 px-2 py-0.5 rounded border border-red-500/40">
+                * 1% - 100% oralig'ida
+              </span>
+            )}
+          </div>
           <div className="relative mt-2">
             <input
               type="number"
@@ -116,7 +158,7 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
               max="100"
               value={formData.conversionRate}
               onChange={(e) => onChange({ conversionRate: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white font-semibold text-base focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className={`w-full rounded-xl px-4 py-2.5 text-white font-semibold text-base focus:outline-none transition-all ${getInputStyle('conversionRate')}`}
               placeholder="Masalan: 25"
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
@@ -127,19 +169,29 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
         </div>
 
         {/* 4. Sof Foyda Marjasi */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-          <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
-            <PieChart className="w-4 h-4 text-purple-400" />
-            Sof foyda marjasi (% da):
-          </label>
+        <div 
+          data-error={errors.includes('netMargin') ? "true" : undefined}
+          className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('netMargin')}`}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-200 flex items-center gap-1.5">
+              <PieChart className="w-4 h-4 text-purple-400" />
+              Sof foyda marjasi (% da):
+            </label>
+            {errors.includes('netMargin') && (
+              <span className="text-[11px] font-bold text-red-400 bg-red-950/80 px-2 py-0.5 rounded border border-red-500/40">
+                * 1% - 100% oralig'ida
+              </span>
+            )}
+          </div>
           <div className="relative mt-2">
             <input
               type="number"
-              min="5"
-              max="95"
+              min="1"
+              max="100"
               value={formData.netMargin}
               onChange={(e) => onChange({ netMargin: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white font-semibold text-base focus:border-purple-500 focus:outline-none focus:ring-1 focus:ring-purple-500"
+              className={`w-full rounded-xl px-4 py-2.5 text-white font-semibold text-base focus:outline-none transition-all ${getInputStyle('netMargin')}`}
               placeholder="Masalan: 30"
             />
             <span className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">%</span>
@@ -150,20 +202,30 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
         </div>
 
         {/* 5. Oylik doimiy xarajatlar (PRO 3.0) */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-          <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
-            <Landmark className="w-4 h-4 text-rose-400" />
-            Oylik DOIMIY xarajatlar ($ da):
-          </label>
+        <div 
+          data-error={errors.includes('fixedCosts') ? "true" : undefined}
+          className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('fixedCosts')}`}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-200 flex items-center gap-1.5">
+              <Landmark className="w-4 h-4 text-rose-400" />
+              Oylik DOIMIY xarajatlar ($ da):
+            </label>
+            {errors.includes('fixedCosts') && (
+              <span className="text-[11px] font-bold text-red-400 bg-red-950/80 px-2 py-0.5 rounded border border-red-500/40">
+                * Majburiy ({'>='} 0)
+              </span>
+            )}
+          </div>
           <div className="relative mt-2">
             <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 font-bold">$</span>
             <input
               type="number"
-              min="100"
+              min="0"
               step="100"
-              value={formData.fixedCosts || ''}
+              value={formData.fixedCosts !== undefined ? formData.fixedCosts : ''}
               onChange={(e) => onChange({ fixedCosts: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl pl-8 pr-4 py-2.5 text-white font-semibold text-base focus:border-rose-500 focus:outline-none focus:ring-1 focus:ring-rose-500"
+              className={`w-full rounded-xl pl-8 pr-4 py-2.5 text-white font-semibold text-base focus:outline-none transition-all ${getInputStyle('fixedCosts')}`}
               placeholder="Masalan: 1800"
             />
           </div>
@@ -196,18 +258,28 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
         </div>
 
         {/* 7. Xodimlar soni (PRO 5.0 Unit-Productivity) */}
-        <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-          <label className="block text-xs sm:text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-1.5">
-            <TrendingUp className="w-4 h-4 text-emerald-400" />
-            Jami xodimlar soni (nafar):
-          </label>
+        <div 
+          data-error={errors.includes('employeesCount') ? "true" : undefined}
+          className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('employeesCount')}`}
+        >
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-xs sm:text-sm font-semibold text-slate-200 flex items-center gap-1.5">
+              <TrendingUp className="w-4 h-4 text-emerald-400" />
+              Jami xodimlar soni (nafar):
+            </label>
+            {errors.includes('employeesCount') && (
+              <span className="text-[11px] font-bold text-red-400 bg-red-950/80 px-2 py-0.5 rounded border border-red-500/40">
+                * Kamida 1 nafar
+              </span>
+            )}
+          </div>
           <div className="relative mt-2">
             <input
               type="number"
               min="1"
               value={formData.employeesCount || ''}
               onChange={(e) => onChange({ employeesCount: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-700/80 rounded-xl px-4 py-2.5 text-white font-semibold text-base focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className={`w-full rounded-xl px-4 py-2.5 text-white font-semibold text-base focus:outline-none transition-all ${getInputStyle('employeesCount')}`}
               placeholder="Masalan: 5"
             />
           </div>
@@ -239,11 +311,21 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 7. Moliyaviy Balans va 3 ta Asosiy Hisobot (P&L, Cash Flow, Balans) (PRO 4.0) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <Scale className="w-4 h-4 text-emerald-400" />
-          7. Moliyaviy Balans va 3 ta Asosiy Hisobot (P&L, Cash Flow, Balans):
-        </label>
+      <div 
+        data-error={errors.includes('financialReportsStatus') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('financialReportsStatus')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <Scale className="w-4 h-4 text-emerald-400" />
+            7. Moliyaviy Balans va 3 ta Asosiy Hisobot (P&L, Cash Flow, Balans):
+          </label>
+          {errors.includes('financialReportsStatus') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Kassadagi puldan tashqari, biznesingizning haqiqiy Balansini (Aktivlar, Nasiyalar, Sof Foyda - P&L) har oy yakunida ko'ra olasizmi?
         </p>
@@ -299,11 +381,21 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 8. Unit-Iqtisodiyot va Haqiqiy Sof Foyda (Tannarx tahlili) (PRO 4.0) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <FileSpreadsheet className="w-4 h-4 text-cyan-400" />
-          8. Unit-Iqtisodiyot va Tovar Rentabelligi (Haqiqiy Tannarx):
-        </label>
+      <div 
+        data-error={errors.includes('unitEconomicsStatus') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('unitEconomicsStatus')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <FileSpreadsheet className="w-4 h-4 text-cyan-400" />
+            8. Unit-Iqtisodiyot va Tovar Rentabelligi (Haqiqiy Tannarx):
+          </label>
+          {errors.includes('unitEconomicsStatus') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Ustiga qo'yilgan foizni emas, balki yo'l kira, brak, bonus va xarajatlardan so'ng qoladigan HAQIQIY SOF FOYDANI bilasizmi?
         </p>
@@ -341,6 +433,14 @@ export function StepFinancialGoals({ formData, onChange, onNext, onPrev }) {
           </button>
         </div>
       </div>
+
+      {/* Validatsiya xatolik ogohlantirishi */}
+      {errorMessage && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-red-950/90 border-2 border-red-500 text-red-200 text-xs sm:text-sm font-bold flex items-center gap-3 shadow-xl shadow-red-950/50 animate-shake">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 animate-pulse" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="flex items-center justify-between pt-2">

@@ -1,17 +1,23 @@
 import React from 'react';
 import { 
   CheckCircle2, AlertTriangle, XCircle, BookOpen, AlertOctagon, 
-  Package, Clock, ShieldAlert, Sparkles, BarChart3, BrainCircuit, Layers
+  Package, Clock, ShieldAlert, Sparkles, BarChart3, BrainCircuit, Layers, AlertCircle
 } from 'lucide-react';
 import { INDUSTRY_BENCHMARKS } from '../data/industryBenchmarks';
 
-export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
+export function StepAutomationSoftware({ formData, onChange, onNext, onPrev, errors = [], errorMessage = '' }) {
   const currentIndustry = INDUSTRY_BENCHMARKS[formData.industry] || INDUSTRY_BENCHMARKS.retail_general;
   const isHoreca = currentIndustry.id === 'horeca_cafe';
   const isEducation = currentIndustry.category === 'talim';
   const isServices = currentIndustry.category === 'xizmat' && !isHoreca;
   const isPharmacy = formData.industry === 'pharmacy';
   const isClinic = formData.industry === 'clinic_medical';
+
+  const getCardStyle = (name) => {
+    return errors.includes(name)
+      ? 'border-2 border-red-500 ring-2 ring-red-500/30 bg-red-950/20'
+      : 'border border-slate-800 bg-slate-900/60';
+  };
 
   // Soha bo'yicha dinamik matnlar
   let question1Title = "1. Tovarlar qoldig'i (ostatka), ombor va kassa qanday yuritiladi?";
@@ -97,10 +103,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 1. Kassa va hisob tizimi */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-3">
-          {question1Title}
-        </label>
+      <div 
+        data-error={errors.includes('accountingSoftware') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('accountingSoftware')}`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-semibold text-slate-200">
+            {question1Title}
+          </label>
+          {errors.includes('accountingSoftware') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
@@ -159,10 +175,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 2. Nasiya va qarzlar */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-3">
-          {question2Title}
-        </label>
+      <div 
+        data-error={errors.includes('debtTracking') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('debtTracking')}`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <label className="block text-sm font-semibold text-slate-200">
+            {question2Title}
+          </label>
+          {errors.includes('debtTracking') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <button
             type="button"
@@ -221,11 +247,21 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 3. Ombor va Nelikvid holati (PRO 3.0) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <Package className="w-4 h-4 text-blue-400" />
-          3. Ombor va Nelikvid (Muzlagan tovarlar) holati qanday?
-        </label>
+      <div 
+        data-error={errors.includes('inventoryStatus') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('inventoryStatus')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <Package className="w-4 h-4 text-blue-400" />
+            3. Ombor va Nelikvid (Muzlagan tovarlar) holati qanday?
+          </label>
+          {errors.includes('inventoryStatus') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Ombordagi tovarlar qanchalik tez pulga aylanadi va hisobi aniqmi?
         </p>
@@ -272,11 +308,21 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 4. Soliq, Markirovka (Asl Belgisi) integratsiyasi (PRO 3.0) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <ShieldAlert className="w-4 h-4 text-cyan-400" />
-          4. Soliq, Markirovka (Asl Belgisi) va Kassa integratsiyasi:
-        </label>
+      <div 
+        data-error={errors.includes('fiscalMarking') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('fiscalMarking')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <ShieldAlert className="w-4 h-4 text-cyan-400" />
+            4. Soliq, Markirovka (Asl Belgisi) va Kassa integratsiyasi:
+          </label>
+          {errors.includes('fiscalMarking') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Soliq talablari va 2D skaner orqali markirovka tizimlashganmi?
         </p>
@@ -323,11 +369,21 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 5. Kunlik operatsionkaga ketadigan vaqt */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <Clock className="w-4 h-4 text-purple-400" />
-          5. Kunlik operatsionkaga (hisob-kitob, qoldiq tekshirish, nazorat) qancha shaxsiy vaqtingiz ketadi?
-        </label>
+      <div 
+        data-error={errors.includes('dailyOperationalHours') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('dailyOperationalHours')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <Clock className="w-4 h-4 text-purple-400" />
+            5. Kunlik operatsionkaga (hisob-kitob, qoldiq tekshirish, nazorat) qancha shaxsiy vaqtingiz ketadi?
+          </label>
+          {errors.includes('dailyOperationalHours') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3">
           <button
             type="button"
@@ -371,11 +427,21 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 6. Ombor va Tovarlar Analitikasi (ABC / XYZ tahlil) (PRO 4.0) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <BarChart3 className="w-4 h-4 text-emerald-400" />
-          6. Ombor va Tovarlar Analitikasi (ABC / XYZ tahlil):
-        </label>
+      <div 
+        data-error={errors.includes('abcAnalysisStatus') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('abcAnalysisStatus')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-emerald-400" />
+            6. Ombor va Tovarlar Analitikasi (ABC / XYZ tahlil):
+          </label>
+          {errors.includes('abcAnalysisStatus') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Qaysi 20% mahsulot 80% sof foyda keltirishini va qaysi tovarlar 60 kundan ortiq muzlab yotganini (Nelikvid) aniq bilasizmi?
         </p>
@@ -431,11 +497,21 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 7. Xarid va Ta'minotchilar Prognozi (Auto-Ordering) (PRO 4.0) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <Layers className="w-4 h-4 text-indigo-400" />
-          7. Xarid va Ta'minotchilar Prognozi (Auto-Ordering / Min-Max):
-        </label>
+      <div 
+        data-error={errors.includes('autoOrderingStatus') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('autoOrderingStatus')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <Layers className="w-4 h-4 text-indigo-400" />
+            7. Xarid va Ta'minotchilar Prognozi (Auto-Ordering / Min-Max):
+          </label>
+          {errors.includes('autoOrderingStatus') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Yangi tovar xarid qilayotganda yoki xomashyo olayotganda miqdorni qanday belgilaysiz?
         </p>
@@ -475,11 +551,21 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
       </div>
 
       {/* 8. Sun'iy Intellekt (AI) va Avto-Hisobotlardan foydalanish (PRO 4.0) */}
-      <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-4 sm:p-5">
-        <label className="block text-sm font-semibold text-slate-200 mb-1.5 flex items-center gap-2">
-          <BrainCircuit className="w-4 h-4 text-cyan-400" />
-          8. Sun'iy Intellekt (AI) va Avtomatik Telegram-bot Analitikasi:
-        </label>
+      <div 
+        data-error={errors.includes('aiUsageStatus') ? "true" : undefined}
+        className={`rounded-2xl p-4 sm:p-5 transition-all ${getCardStyle('aiUsageStatus')}`}
+      >
+        <div className="flex items-center justify-between mb-1.5">
+          <label className="block text-sm font-semibold text-slate-200 flex items-center gap-2">
+            <BrainCircuit className="w-4 h-4 text-cyan-400" />
+            8. Sun'iy Intellekt (AI) va Avtomatik Telegram-bot Analitikasi:
+          </label>
+          {errors.includes('aiUsageStatus') && (
+            <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+              <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+            </span>
+          )}
+        </div>
         <p className="text-xs text-slate-400 mb-3">
           Biznesingizda Sun'iy Intellekt (AI) va avtomatik Telegram-bot analitikasidan foydalanasizmi?
         </p>
@@ -546,10 +632,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           </div>
 
           {/* Srok godnosti */}
-          <div>
-            <label className="block text-xs sm:text-sm font-bold text-white mb-2">
-              1. Yaroqlilik muddati (Srok godnosti) va Seriyali hisob nazorati:
-            </label>
+          <div 
+            data-error={errors.includes('pharmacyExpiryTracking') ? "true" : undefined}
+            className={`p-3.5 rounded-xl transition-all ${errors.includes('pharmacyExpiryTracking') ? 'border-2 border-red-500 ring-2 ring-red-500/30 bg-red-950/20' : ''}`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-white">
+                1. Yaroqlilik muddati (Srok godnosti) va Seriyali hisob nazorati:
+              </label>
+              {errors.includes('pharmacyExpiryTracking') && (
+                <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                  <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+                </span>
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
@@ -580,10 +676,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           </div>
 
           {/* Blister bo'linishi */}
-          <div>
-            <label className="block text-xs sm:text-sm font-bold text-white mb-2">
-              2. Dona / Pachka / Plastinka (Blister) bo'lib sotishda qoldiq aniqligi:
-            </label>
+          <div 
+            data-error={errors.includes('pharmacyBlisterSplit') ? "true" : undefined}
+            className={`p-3.5 rounded-xl transition-all ${errors.includes('pharmacyBlisterSplit') ? 'border-2 border-red-500 ring-2 ring-red-500/30 bg-red-950/20' : ''}`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-white">
+                2. Dona / Pachka / Plastinka (Blister) bo'lib sotishda qoldiq aniqligi:
+              </label>
+              {errors.includes('pharmacyBlisterSplit') && (
+                <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                  <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+                </span>
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
@@ -627,10 +733,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           </div>
 
           {/* Vrach cho'ntagiga to'lov / Kassa chetlab o'tish */}
-          <div>
-            <label className="block text-xs sm:text-sm font-bold text-white mb-2">
-              1. Navbat va "Kassa chetlab o'tilishi" (Vrach cho'ntagiga to'lov xavfi):
-            </label>
+          <div 
+            data-error={errors.includes('clinicCashBypass') ? "true" : undefined}
+            className={`p-3.5 rounded-xl transition-all ${errors.includes('clinicCashBypass') ? 'border-2 border-red-500 ring-2 ring-red-500/30 bg-red-950/20' : ''}`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-white">
+                1. Navbat va "Kassa chetlab o'tilishi" (Vrach cho'ntagiga to'lov xavfi):
+              </label>
+              {errors.includes('clinicCashBypass') && (
+                <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                  <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+                </span>
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
@@ -661,10 +777,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           </div>
 
           {/* Reaktivlar va sarf materiallari */}
-          <div>
-            <label className="block text-xs sm:text-sm font-bold text-white mb-2">
-              2. Laboratoriya reaktivlari va Tibbiy sarf materiallari (Spisaniya):
-            </label>
+          <div 
+            data-error={errors.includes('clinicMaterialSpisanie') ? "true" : undefined}
+            className={`p-3.5 rounded-xl transition-all ${errors.includes('clinicMaterialSpisanie') ? 'border-2 border-red-500 ring-2 ring-red-500/30 bg-red-950/20' : ''}`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-white">
+                2. Laboratoriya reaktivlari va Tibbiy sarf materiallari (Spisaniya):
+              </label>
+              {errors.includes('clinicMaterialSpisanie') && (
+                <span className="text-xs font-bold text-red-400 bg-red-950/80 border border-red-500/50 px-2.5 py-0.5 rounded-full flex items-center gap-1 shrink-0">
+                  <AlertCircle className="w-3.5 h-3.5" /> Tanlang
+                </span>
+              )}
+            </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
@@ -708,8 +834,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {/* Otmena/Vozvrat */}
-          <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
-            <div className="text-xs sm:text-sm font-bold text-white mb-2">1. Chekni bekor qilish (Otmena/Vozvrat):</div>
+          <div 
+            data-error={errors.includes('fraudVoidPermission') ? "true" : undefined}
+            className={`p-3.5 rounded-xl transition-all ${
+              errors.includes('fraudVoidPermission') 
+                ? 'bg-red-950/40 border-2 border-red-500 ring-2 ring-red-500/30' 
+                : 'bg-slate-950/60 border border-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs sm:text-sm font-bold text-white">1. Chekni bekor qilish:</div>
+              {errors.includes('fraudVoidPermission') && (
+                <span className="text-[10px] font-bold text-red-400 bg-red-950 px-1.5 py-0.5 rounded border border-red-500/40">Tanlang</span>
+              )}
+            </div>
             <div className="space-y-2">
               <button
                 type="button"
@@ -737,8 +875,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           </div>
 
           {/* Tarozi / Narx kiritish */}
-          <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
-            <div className="text-xs sm:text-sm font-bold text-white mb-2">2. Narx yoki vazn kiritish:</div>
+          <div 
+            data-error={errors.includes('fraudScaleIntegration') ? "true" : undefined}
+            className={`p-3.5 rounded-xl transition-all ${
+              errors.includes('fraudScaleIntegration') 
+                ? 'bg-red-950/40 border-2 border-red-500 ring-2 ring-red-500/30' 
+                : 'bg-slate-950/60 border border-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs sm:text-sm font-bold text-white">2. Narx yoki vazn kiritish:</div>
+              {errors.includes('fraudScaleIntegration') && (
+                <span className="text-[10px] font-bold text-red-400 bg-red-950 px-1.5 py-0.5 rounded border border-red-500/40">Tanlang</span>
+              )}
+            </div>
             <div className="space-y-2">
               <button
                 type="button"
@@ -766,8 +916,20 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           </div>
 
           {/* Prixod va Ustama */}
-          <div className="bg-slate-950/60 p-3.5 rounded-xl border border-slate-800">
-            <div className="text-xs sm:text-sm font-bold text-white mb-2">3. Yangi tovar prixodini kiritish:</div>
+          <div 
+            data-error={errors.includes('fraudPriceEntry') ? "true" : undefined}
+            className={`p-3.5 rounded-xl transition-all ${
+              errors.includes('fraudPriceEntry') 
+                ? 'bg-red-950/40 border-2 border-red-500 ring-2 ring-red-500/30' 
+                : 'bg-slate-950/60 border border-slate-800'
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="text-xs sm:text-sm font-bold text-white">3. Yangi tovar prixodini:</div>
+              {errors.includes('fraudPriceEntry') && (
+                <span className="text-[10px] font-bold text-red-400 bg-red-950 px-1.5 py-0.5 rounded border border-red-500/40">Tanlang</span>
+              )}
+            </div>
             <div className="space-y-2">
               <button
                 type="button"
@@ -795,6 +957,14 @@ export function StepAutomationSoftware({ formData, onChange, onNext, onPrev }) {
           </div>
         </div>
       </div>
+
+      {/* Validatsiya xatolik ogohlantirishi */}
+      {errorMessage && (
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-red-950/90 border-2 border-red-500 text-red-200 text-xs sm:text-sm font-bold flex items-center gap-3 shadow-xl shadow-red-950/50 animate-shake">
+          <AlertCircle className="w-5 h-5 text-red-400 shrink-0 animate-pulse" />
+          <span>{errorMessage}</span>
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="flex items-center justify-between pt-2">
