@@ -11,7 +11,8 @@ export function StepAuditUnlock({
   onUnlock, 
   onPrev,
   errors = [],
-  errorMessage = ''
+  errorMessage = '',
+  t = (s) => s
 }) {
   // Dastlabki hisob-kitob (prevyu uchun)
   const preview = calculateBusinessAudit(formData);
@@ -292,11 +293,11 @@ export function StepAuditUnlock({
           onClick={onPrev}
           className="px-5 py-2.5 rounded-xl border border-slate-700 text-slate-300 hover:bg-slate-800 text-xs sm:text-sm font-medium transition-all cursor-pointer"
         >
-          &larr; Orqaga (Moliyaviy reja)
+          &larr; {t("Orqaga (Moliyaviy reja)")}
         </button>
 
         <span className="text-[11px] text-slate-500">
-          6 / 6-Bosqich
+          {formData.auditMode === 'fast' ? t("4 / 4-Bosqich") : t("6 / 6-Bosqich")}
         </span>
       </div>
 
@@ -308,7 +309,7 @@ export function StepAuditUnlock({
           className="w-full py-3.5 px-4 rounded-xl font-black text-sm flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-400 via-teal-400 to-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/30 cursor-pointer active:scale-95 transition-transform"
         >
           <Unlock className="w-4 h-4 text-slate-950 shrink-0" />
-          <span>Barcha Tahlillarni Ko'rish 🔓</span>
+          <span>{t("Barcha Tahlillarni Ko'rish 🔓")}</span>
         </button>
       </div>
     </div>

@@ -11,7 +11,7 @@ import {
 } from 'lucide-react';
 import { calculateBusinessAudit } from '../utils/auditCalculator';
 
-export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnlock, onReset, previousAudit = null }) {
+export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnlock, onReset, previousAudit = null, t = (s) => s }) {
   const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'software' | 'funnel' | 'roadmap'
   const [activeDiyTab, setActiveDiyTab] = useState('debt_scripts'); // 'debt_scripts' | 'sales_scripts' | 'kpi_calc' | 'revision_checklist'
   const [copiedId, setCopiedId] = useState(null);
@@ -20,6 +20,39 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
   const data = auditData || calculateBusinessAudit(safeRaw);
 
   const fmt = (n) => Number(n || 0).toLocaleString();
+
+  const getKarta2Title = () => {
+    if (safeRaw.industry === 'manufacturing') return t("Xomashyo Zaxirasi & Otxod Xavfi");
+    if (safeRaw.industry === 'education_courses') return t("To'lmagan Guruhlar & O'quvchilar (LTV) Potensiali");
+    if (safeRaw.industry === 'clinic_medical') return t("Kassa Chetlab O'tilishi & Reaktivlar");
+    if (safeRaw.industry === 'horeca_cafe') return t("Oshxona Zaxirasi & Food-Cost");
+    if (safeRaw.industry === 'services_general') return t("Ustalar Bandligi & Sarf Nazorati");
+    return t("Muzlagan Pul (Nelikvid)");
+  };
+
+  const getKarta2Subtitle = () => {
+    if (safeRaw.industry === 'manufacturing') return t("Xomashyo zaxirasi va otxod (chiqindi) xavfi");
+    if (safeRaw.industry === 'education_courses') return t("To'lmagan o'rinlar va ketib qolayotgan o'quvchilar (LTV) potensiali");
+    if (safeRaw.industry === 'clinic_medical') return t("Kassani chetlab o'tish va sarf materiallari");
+    if (safeRaw.industry === 'horeca_cafe') return t("Oshxona masalliqlari va chek bekor qilish");
+    if (safeRaw.industry === 'services_general') return t("Bo'sh soatlar va ustalar unumdorligi");
+    return t("Omborda muzlab yotgan tovarlar");
+  };
+
+  const getCustomersLabel = () => {
+    if (safeRaw.industry === 'manufacturing') return t("Oylik buyurtmalar (shartnomalar) soni");
+    if (safeRaw.industry === 'education_courses') return t("Jami faol o'quvchilar soni");
+    if (safeRaw.industry === 'clinic_medical') return t("Oylik qabul qilingan bemorlar soni");
+    if (safeRaw.industry === 'pharmacy' || safeRaw.industry === 'retail_food') return t("Oylik xaridorlar soni");
+    return t("Kerakli mijozlar soni");
+  };
+
+  const getLeadsLabel = () => {
+    if (safeRaw.industry === 'pharmacy' || safeRaw.industry === 'retail_food') return t("Oylik xarid cheklari soni");
+    if (safeRaw.industry === 'education_courses') return t("Sinov darsiga yozilgan o'quvchilar (Lidlar)");
+    if (safeRaw.industry === 'manufacturing') return t("Narx hisoblatgan buyurtmachilar soni");
+    return t("Kerakli lidlar (Murojaatlar soni)");
+  };
 
   const hasSoftware = safeRaw.accountingSoftware === 'software';
   const hasDebtTracking = safeRaw.debtTracking === 'software';
@@ -141,7 +174,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
       `⚠️ Umumiy yo'qotish rezervi: $${fmt(data.totalMonthlyLoss)}/oy\n` +
       `📅 Zararsizlik kuni: Oyning ${data.breakEvenDay || 15}-kuni\n` +
       `🏥 Salomatlik indeksi: ${data.scores?.overall || 60}/100\n\n` +
-      `Xolis konsalting & avtomatlashtirish: BDM kompaniyasi (10 yillik tajribaga ega) (+998995160021, @Jalolov_IST)`
+      `Xolis konsalting & avtomatlashtirish: BDM (BIZNES DASTURLASH MARKAZI) (+998 99 516 00 21)`
     );
     window.open(`https://t.me/share/url?url=https://biznestahlili.uz&text=${text}`, '_blank');
   };
@@ -380,14 +413,14 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
           <div className="bg-amber-950/20 border border-amber-900/50 rounded-2xl p-5 flex flex-col justify-between hover:border-amber-800/80 transition-all">
             <div>
               <div className="flex items-center justify-between text-amber-400 text-xs font-bold uppercase tracking-wider mb-2">
-                <span>Muzlagan Pul (Nelikvid)</span>
+                <span>{getKarta2Title()}</span>
                 <Package className="w-4 h-4" />
               </div>
               <div className="text-2xl sm:text-3xl font-black text-amber-400">
                 ${fmt(data.deadStockSum)}
               </div>
               <div className="text-[11px] text-amber-300/80 mt-1">
-                Omborda muzlab yotgan tovarlar
+                {getKarta2Subtitle()}
               </div>
 
               <div className="mt-4 pt-3 border-t border-amber-900/30 space-y-1.5 text-xs text-slate-300">
@@ -701,7 +734,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             </span>
           </div>
           <p className="text-xs text-slate-300">
-            Zoirjon Jalolov tomonidan 1C / POS tizimingizga ulab beriladigan AI Telegram-bot har kuni soat 21:00 da rahbarga quyidagi formatda aqlli hisobot beradi:
+            BDM (BIZNES DASTURLASH MARKAZI) tomonidan 1C / POS tizimingizga ulab beriladigan AI Telegram-bot har kuni soat 21:00 da rahbarga quyidagi formatda aqlli hisobot beradi:
           </p>
 
           {/* Telegram Chat Mockup */}
@@ -1034,6 +1067,86 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 <div className="font-bold text-white mb-1">Reaktiv va tibbiy sarf materiallari:</div>
                 <div className="text-amber-400 font-bold">Isrof: ~${fmt(data.clinicMaterialLossMonthly || 350)} /oy</div>
                 <div className="text-slate-400 mt-1">Har bir tahlil va muolajaga qat'iy tex-karta bo'yicha avto-spisaniya sozlansin.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {safeRaw.industry === 'manufacturing' && (
+          <div className="p-5 rounded-2xl bg-amber-950/30 border-2 border-amber-500/50 space-y-3">
+            <div className="flex items-center gap-2 text-amber-400 font-extrabold text-sm uppercase">
+              <span>🏭 Ishlab Chiqarish & Sexlar Diagnostikasi Bo'yicha Xulosa</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-950 border border-amber-900/60">
+                <div className="font-bold text-white mb-1">Xomashyo, Otxod va Tannarx Teshigi:</div>
+                <div className="text-rose-400 font-bold">Yo'qotish: ~${fmt(Math.round((data.targetRevenue || 10000) * 0.08))} /oy</div>
+                <div className="text-slate-400 mt-1">1C Ishlab chiqarish moduli orqali har bir buyurtmaga xomashyo va chiqindi normasi kiritiladi.</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-amber-900/60">
+                <div className="font-bold text-white mb-1">B2B Debitorlik va Ishbay (Sdelniy) Nazorat:</div>
+                <div className="text-amber-400 font-bold">Qarzdorlik xavfi: ~${fmt(Math.round((data.targetRevenue || 10000) * 0.06))} /oy</div>
+                <div className="text-slate-400 mt-1">Dilerlar bilan Akt-sverki va ustalarning bajargan ishiga qarab oylik avtomatlashadi.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {safeRaw.industry === 'education_courses' && (
+          <div className="p-5 rounded-2xl bg-blue-950/30 border-2 border-blue-500/50 space-y-3">
+            <div className="flex items-center gap-2 text-blue-400 font-extrabold text-sm uppercase">
+              <span>🎓 O'quv Markazi & Kurslar Diagnostikasi Bo'yicha Xulosa</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-950 border border-blue-900/60">
+                <div className="font-bold text-white mb-1">To'lmagan Guruhlar & To'lov Nazorati Teshigi:</div>
+                <div className="text-rose-400 font-bold">Boy berilgan daromad: ~${fmt(Math.round((data.targetRevenue || 5000) * 0.22))} /oy</div>
+                <div className="text-slate-400 mt-1">Guruhlar to'lish darajasi va avtomatik to'lov eslatmalari joriy qilinadi.</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-blue-900/60">
+                <div className="font-bold text-white mb-1">Davomat va Churn (Ketib Qolish) Tahlili:</div>
+                <div className="text-amber-400 font-bold">Xavf: ~${fmt(Math.round((data.targetRevenue || 5000) * 0.10))} /oy</div>
+                <div className="text-slate-400 mt-1">1-oydan keyin o'qishni tashlab ketuvchilar sababini nazorat qiluvchi CRM voronka ishga tushadi.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {safeRaw.industry === 'horeca_cafe' && (
+          <div className="p-5 rounded-2xl bg-orange-950/30 border-2 border-orange-500/50 space-y-3">
+            <div className="flex items-center gap-2 text-orange-400 font-extrabold text-sm uppercase">
+              <span>🍽️ Kafe & Restoran Diagnostikasi Bo'yicha Xulosa</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-950 border border-orange-900/60">
+                <div className="font-bold text-white mb-1">Oshxona Food-cost va Masalliqlar Isrofi:</div>
+                <div className="text-rose-400 font-bold">Isrof xavfi: ~${fmt(Math.round((data.targetRevenue || 8000) * 0.08))} /oy</div>
+                <div className="text-slate-400 mt-1">Har bir taom tex-kartasi bo'yicha masalliqlar grammigacha ombordan avtomat yechiladi.</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-orange-900/60">
+                <div className="font-bold text-white mb-1">Ofitsiant Chekini Bekor Qilish (Otmena):</div>
+                <div className="text-amber-400 font-bold">Kassa xavfi: ~${fmt(Math.round((data.targetRevenue || 8000) * 0.05))} /oy</div>
+                <div className="text-slate-400 mt-1">Bekor qilish va chegirmalar faqat administrator paroli bilan cheklanadi.</div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {safeRaw.industry === 'services_general' && (
+          <div className="p-5 rounded-2xl bg-purple-950/30 border-2 border-purple-500/50 space-y-3">
+            <div className="flex items-center gap-2 text-purple-400 font-extrabold text-sm uppercase">
+              <span>✂️ Xizmat Ko'rsatish Diagnostikasi Bo'yicha Xulosa</span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3 rounded-xl bg-slate-950 border border-purple-900/60">
+                <div className="font-bold text-white mb-1">Ustalar Bandligi & Bo'sh Soatlar Teshigi:</div>
+                <div className="text-rose-400 font-bold">Boy berilgan tushum: ~${fmt(Math.round((data.targetRevenue || 4000) * 0.20))} /oy</div>
+                <div className="text-slate-400 mt-1">Onlayn navbat va jadval orqali ustalar kuni 80%+ ga to'ldiriladi.</div>
+              </div>
+              <div className="p-3 rounded-xl bg-slate-950 border border-purple-900/60">
+                <div className="font-bold text-white mb-1">Sarf Materiallari va Ehtiyot Qismlar Nazorati:</div>
+                <div className="text-amber-400 font-bold">Kamomad: ~${fmt(Math.round((data.targetRevenue || 4000) * 0.06))} /oy</div>
+                <div className="text-slate-400 mt-1">Har bir xizmatdan keyin ishlatilgan moy, bo'yoq yoki detal ombordan avtomat chiqadi.</div>
               </div>
             </div>
           </div>
@@ -1812,12 +1925,12 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             </div>
           </div>
 
-          {/* 2-USTUN: TIZIMLI AVTOMATLASHTIRISH (Zoirjon Jalolov bilan) */}
+          {/* 2-USTUN: TIZIMLI AVTOMATLASHTIRISH (BDM - BIZNES DASTURLASH MARKAZI bilan) */}
           <div className="p-6 rounded-3xl bg-gradient-to-br from-blue-950/60 via-indigo-950/50 to-slate-900 border-2 border-blue-500/40 flex flex-col justify-between relative overflow-hidden shadow-2xl">
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
-                  🚀 2-Yo'l: BDM kompaniyasi bilan "Pod Klyuch"
+                  🚀 2-Yo'l: BDM (BIZNES DASTURLASH MARKAZI) bilan "Pod Klyuch"
                 </span>
                 <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
                   ROI: ~1.5 oyda o'zini oqlaydi
@@ -1825,7 +1938,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
               </div>
 
               <h4 className="text-lg font-bold text-white">
-                10 yillik tajribaga ega BDM kompaniyasi mutaxassislari bilan to'liq avtomatlashtirish
+                BDM (BIZNES DASTURLASH MARKAZI) kompaniyasi mutaxassislari bilan to'liq avtomatlashtirish (10 yillik tajriba)
               </h4>
 
               <div className="space-y-2.5 text-xs text-slate-300">
@@ -1860,7 +1973,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                   className="py-2.5 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition-all text-center"
                 >
                   <Send className="w-3.5 h-3.5" />
-                  <span>@Jalolov_IST</span>
+                  <span>BDM Markazi (Telegram)</span>
                 </a>
               </div>
             </div>
@@ -1965,7 +2078,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
             </div>
 
             <div className="mt-4 pt-3 border-t border-slate-800/80 text-[11px] text-blue-300 font-medium">
-              🛒 Zoirjon Jalolov barcha uskunalarni yetkazib, dasturga ulab beradi.
+              🛒 BDM (BIZNES DASTURLASH MARKAZI) barcha uskunalarni yetkazib, dasturga ulab beradi.
             </div>
           </div>
 
@@ -2078,7 +2191,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                   3
                 </div>
                 <div>
-                  <h4 className="text-sm font-bold text-white">BDM kompaniyasi (10 yillik tajriba) bilan individual sozlash yoki dastur o'rnatish</h4>
+                  <h4 className="text-sm font-bold text-white">BDM (BIZNES DASTURLASH MARKAZI) bilan individual sozlash yoki dastur o'rnatish</h4>
                   <p className="text-xs text-slate-400 mt-1 leading-relaxed">
                     {hasSoftware
                       ? "Mavjud dasturingizni professional audit qilib, individual xatoliklarni to'g'rilang va xodimlarni o'qiting."
@@ -2235,7 +2348,7 @@ export function AuditReport({ auditData, rawFormData, isUnlocked = true, onUnloc
                 </div>
 
                 <div className="mt-6 pt-3 border-t border-slate-800 text-[11px] text-slate-500 font-medium">
-                  Mas'ul: {safeRaw.fullName || "Biznes egasi"} & BDM kompaniyasi (10 yillik tajriba)
+                  Mas'ul: {safeRaw.fullName || "Biznes egasi"} & BDM (BIZNES DASTURLASH MARKAZI)
                 </div>
               </div>
             ))}

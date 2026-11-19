@@ -13,6 +13,7 @@ import { ErrorBoundary } from './components/ErrorBoundary';
 import { calculateBusinessAudit } from './utils/auditCalculator';
 import { sendLeadToTelegram } from './utils/telegramNotifier';
 import { validateStep } from './utils/stepValidator';
+import { translate } from './utils/transliterate';
 
 export const BLANK_FORM_DATA = {
   fullName: '',
@@ -21,9 +22,11 @@ export const BLANK_FORM_DATA = {
   city: '',
   isOwner: '',
   industry: '',
+  auditMode: 'deep', // 'deep' (6 bosqich) | 'fast' (4 bosqich)
   accountingSoftware: '',
   debtTracking: '',
   inventoryStatus: '',
+  capacityUtilization: '',
   fiscalMarking: '',
   dailyOperationalHours: '',
   // PRO 4.0 Yangi Boshqaruv, Moliyaviy Balans & AI maydonlari:
@@ -32,7 +35,16 @@ export const BLANK_FORM_DATA = {
   aiUsageStatus: '',
   financialReportsStatus: '',
   unitEconomicsStatus: '',
-  // PRO 5.0 Dorixona, Klinika, Anti-Fraud & Unit-Productivity:
+  // PRO 5.0 Dorixona, Klinika, Ishlab chiqarish, Xizmatlar & Anti-Fraud:
+  productionWastage: '',
+  productionCostCalculation: '',
+  productionB2bOrders: '',
+  educationAttendance: '',
+  educationChurn: '',
+  servicesSpecialistSchedule: '',
+  servicesMaterialUsage: '',
+  horecaKitchenFoodCost: '',
+  horecaOrderVoidControl: '',
   pharmacyExpiryTracking: '',
   pharmacyBlisterSplit: '',
   pharmacyDataMatrix: '',
@@ -71,6 +83,30 @@ export default function App() {
       return 'dark';
     }
   });
+
+  // Lotin / Kirill tili holati (O'z | Ўз)
+  const [lang, setLang] = useState(() => {
+    try {
+      return localStorage.getItem('biznestahlili_lang') || 'uz';
+    } catch (e) {
+      return 'uz';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('biznestahlili_lang', lang);
+    } catch (e) {}
+  }, [lang]);
+
+  const toggleLang = () => {
+    setLang((prev) => (prev === 'uz' ? 'cyrl' : 'uz'));
+  };
+
+  const t = (text) => {
+    if (typeof text !== 'string') return text;
+    return translate(text, lang);
+  };
 
   // Rejimni (Kungi / Tungi) qo'llash va saqlash
   useEffect(() => {
@@ -120,7 +156,7 @@ export default function App() {
   const [stepErrors, setStepErrors] = useState([]);
   const [validationAlertMessage, setValidationAlertMessage] = useState('');
 
-  // 1-QADAM: Welcome Disclaimer holati (har safar saytga kirganda 1-bosqichda chiqadi)
+  // 1-QADAM: Welcome Disclaimer holati
   const [showDisclaimer, setShowDisclaimer] = useState(true);
 
   const handleAcceptDisclaimer = () => {
@@ -135,6 +171,13 @@ export default function App() {
     } catch (e) {}
     return null;
   });
+
+  // Dinamik bosqichlar ketma-ketligi:
+  // Tezkor rejim: 1 -> 2 -> 5 -> 6 (4 bosqich)
+  // Chuqur rejim: 1 -> 2 -> 3 -> 4 -> 5 -> 6 (6 bosqich)
+  const stepSequence = formData.auditMode === 'fast' ? [1, 2, 5, 6] : [1, 2, 3, 4, 5, 6];
+  const currentStepIndex = Math.max(1, stepSequence.indexOf(currentStep) + 1);
+  const totalStepsCount = stepSequence.length;
 
   // Saqlash faqat to'ldirish paytida (agar audit topshirilmagan bo'lsa)
   useEffect(() => {
@@ -164,7 +207,6 @@ export default function App() {
     if (!validation.isValid) {
       setStepErrors(validation.errors);
       setValidationAlertMessage(validation.message || "⚠️ Davom etish uchun barcha savollarga javob tanlang va kerakli maydonlarni to'ldiring!");
-      // Qizil xatolik bo'lgan birinchi elementga yumshoq scroll
       setTimeout(() => {
         const firstErrorEl = document.querySelector('[data-error="true"], .border-red-500');
         if (firstErrorEl) {
@@ -177,14 +219,24 @@ export default function App() {
     setStepErrors([]);
     setValidationAlertMessage('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCurrentStep((prev) => Math.min(6, prev + 1));
+
+    const currentIdx = stepSequence.indexOf(currentStep);
+    if (currentIdx !== -1 && currentIdx < stepSequence.length - 1) {
+      setCurrentStep(stepSequence[currentIdx + 1]);
+    }
   };
 
   const handlePrev = () => {
     setStepErrors([]);
     setValidationAlertMessage('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setCurrentStep((prev) => Math.max(1, prev - 1));
+
+    const currentIdx = stepSequence.indexOf(currentStep);
+    if (currentIdx > 0) {
+      setCurrentStep(stepSequence[currentIdx - 1]);
+    } else {
+      setCurrentStep(1);
+    }
   };
 
   // VIP Qulfni ochish (Ism, biznes va telefon kiritilganda)
@@ -198,8 +250,19 @@ export default function App() {
 
     setStepErrors([]);
     setValidationAlertMessage('');
-    const result = calculateBusinessAudit(formData);
-    const leadSnapshot = { ...formData };
+
+    // Tezkor auditda o'tkazib yuborilgan maydonlarga xavfsiz standart qiymatlar berish
+    const preparedData = { ...formData };
+    if (formData.auditMode === 'fast') {
+      if (!preparedData.conversionRate) preparedData.conversionRate = 15;
+      if (!preparedData.fixedCosts) preparedData.fixedCosts = Math.round(Number(preparedData.targetRevenue || 10000) * 0.2);
+      if (!preparedData.employeesCount) preparedData.employeesCount = 3;
+      if (!preparedData.financialReportsStatus) preparedData.financialReportsStatus = 'cash_only';
+      if (!preparedData.unitEconomicsStatus) preparedData.unitEconomicsStatus = 'markup_only';
+    }
+
+    const result = calculateBusinessAudit(preparedData);
+    const leadSnapshot = { ...preparedData };
     
     setSubmittedLeadData(leadSnapshot);
     setAuditResult(result);
@@ -215,7 +278,7 @@ export default function App() {
       ...result
     };
 
-    // 1. Zoirjon Jalolovning Telegram botiga yuborish
+    // 1. BDM (BIZNES DASTURLASH MARKAZI) Telegram botiga yuborish
     sendLeadToTelegram(newLead);
 
     // 2. Mahalliy bazaga ham saqlash
@@ -235,7 +298,7 @@ export default function App() {
       }));
     } catch (e) {}
 
-    // 4. Telefondan keshni tozalash va formani bo'shatish (keyingi foydalanuvchi uchun)
+    // 4. Formani tozalash
     try {
       localStorage.removeItem('biz_audit_data');
     } catch (e) {}
@@ -288,14 +351,17 @@ export default function App() {
     }`}>
       {/* Header */}
       <Header
-        currentStep={currentStep}
-        totalSteps={6}
+        currentStep={currentStepIndex}
+        totalSteps={totalStepsCount}
         isSubmitted={isSubmitted}
         onReset={handleReset}
         leadsCount={leads.length}
         onOpenAdmin={() => setIsAdminOpen(true)}
         theme={theme}
         onToggleTheme={toggleTheme}
+        lang={lang}
+        onToggleLang={toggleLang}
+        t={t}
       />
 
       {/* Main Content Area */}
@@ -310,6 +376,7 @@ export default function App() {
                 onNext={handleNext}
                 errors={stepErrors}
                 errorMessage={validationAlertMessage}
+                t={t}
               />
             )}
 
@@ -322,10 +389,11 @@ export default function App() {
                 onPrev={handlePrev}
                 errors={stepErrors}
                 errorMessage={validationAlertMessage}
+                t={t}
               />
             )}
 
-            {/* 3-Bosqich: Marketing & Trafik */}
+            {/* 3-Bosqich: Marketing & Trafik (Faqat Chuqur rejimda) */}
             {currentStep === 3 && (
               <StepMarketingTraffic
                 formData={formData}
@@ -334,10 +402,11 @@ export default function App() {
                 onPrev={handlePrev}
                 errors={stepErrors}
                 errorMessage={validationAlertMessage}
+                t={t}
               />
             )}
 
-            {/* 4-Bosqich: Sotuv tizimi va Voronka */}
+            {/* 4-Bosqich: Sotuv tizimi va Voronka (Faqat Chuqur rejimda) */}
             {currentStep === 4 && (
               <StepSalesSystem
                 formData={formData}
@@ -346,6 +415,7 @@ export default function App() {
                 onPrev={handlePrev}
                 errors={stepErrors}
                 errorMessage={validationAlertMessage}
+                t={t}
               />
             )}
 
@@ -358,6 +428,7 @@ export default function App() {
                 onPrev={handlePrev}
                 errors={stepErrors}
                 errorMessage={validationAlertMessage}
+                t={t}
               />
             )}
 
@@ -370,6 +441,7 @@ export default function App() {
                 onPrev={handlePrev}
                 errors={stepErrors}
                 errorMessage={validationAlertMessage}
+                t={t}
               />
             )}
           </div>
@@ -385,6 +457,7 @@ export default function App() {
               }}
               onReset={handleReset}
               previousAudit={previousAudit}
+              t={t}
             />
           </ErrorBoundary>
         )}
@@ -396,7 +469,7 @@ export default function App() {
         onAccept={handleAcceptDisclaimer}
       />
 
-      {/* Admin Leads Modal (Parol bilan himoyalangan: 19990127) */}
+      {/* Admin Leads Modal (Parol: 19990127) */}
       <AdminLeadsModal
         isOpen={isAdminOpen}
         onClose={() => setIsAdminOpen(false)}
@@ -407,7 +480,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-slate-900 bg-slate-950 py-6 text-center text-xs text-slate-500 no-print">
-        <p>© {new Date().getFullYear()} BiznesTahlili.uz — Xolis Biznes-Laboratoriya va Yechimlar Markazi. Dasturlash va avtomatlashtirish: BDM kompaniyasi (10 yillik tajribaga ega).</p>
+        <p>© {new Date().getFullYear()} BiznesTahlili.uz — {t("Xolis Biznes-Laboratoriya va Yechimlar Markazi. Dasturlash va avtomatlashtirish:")} BDM (BIZNES DASTURLASH MARKAZI) (10 {t("yillik tajribaga ega")}).</p>
       </footer>
     </div>
   );
